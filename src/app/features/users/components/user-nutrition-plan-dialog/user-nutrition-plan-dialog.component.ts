@@ -11,10 +11,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 
-import { FoodCatalogItem, MealType, UserNutritionPlan, UserNutritionPlanMealItem } from '../../../../core/models/gym.models';
+import { FoodCatalogItem, Meals, UserNutritionPlan, UserNutritionPlanMealItem } from '../../../../core/models/gym.models';
 import { AskDialogComponent } from '../../../../shared/ui/ask-dialog.component';
 import { FoodsApiService } from '../../../foods/data-access/foods-api.service';
 import { UserNutritionPlansApiService } from '../../data-access/user-nutrition-plans-api.service';
+import { MealsApiService } from '../../../foods/data-access/meals-api.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 export interface UserNutritionPlanDialogData {
   userId: string;
@@ -43,6 +45,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly toastr = inject(ToastrService);
   private readonly foodsApiService = inject(FoodsApiService);
+  private readonly mealsApiService = inject(MealsApiService);
   private readonly plansApiService = inject(UserNutritionPlansApiService);
 
   readonly data = inject<UserNutritionPlanDialogData>(MAT_DIALOG_DATA);
@@ -51,8 +54,9 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   readonly userPlans = signal<UserNutritionPlan[]>([]);
   readonly selectedItems = signal<UserNutritionPlanMealItem[]>([]);
   readonly editingPlanId = signal<string | null>(null);
+  private readonly authService = inject(AuthService);
+  readonly mealTypeOptions: Meals[] = [];
 
-  readonly mealTypeOptions: MealType[] = ['Desayuno', 'Media manana', 'Almuerzo', 'Merienda', 'Cena', 'Snack'];
   readonly mealColumns = ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'actions'];
 
   readonly totals = computed(() => {
@@ -78,7 +82,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   });
 
   readonly mealForm = this.fb.nonNullable.group({
-    mealType: ['Desayuno' as MealType, Validators.required],
+    mealType: ['Desayuno' as Meals, Validators.required],
     foodId: [0, Validators.required],
     quantity: [1, [Validators.required, Validators.min(0.1)]],
     notes: ['']
@@ -87,6 +91,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   ngOnInit(): void {
     this.loadFoods();
     this.loadPlans();
+    this.loadMeals();
   }
 
   addMealItem(): void {
@@ -245,7 +250,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       notes: ''
     });
     this.mealForm.reset({
-      mealType: 'Desayuno',
+      mealType: { id: 1, nombre: 'Desayuno' },
       foodId: 0,
       quantity: 1,
       notes: ''
@@ -258,6 +263,19 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       error: (error: unknown) => {
         this.toastr.error(this.getErrorMessage(error, 'No se pudo cargar el catalogo de alimentos.'));
       }
+    });
+  }
+
+  private loadMeals(): void {
+     const companyId = this.authService.snapshot?.user.idEmpresa || 0;
+    this.mealsApiService.getByEmpresa(companyId).pipe(take(1)).subscribe({
+      next: (meals) => {
+        this.mealTypeOptions.push(...meals);
+        console.log('Meals loaded:', meals);
+      },
+      error: (error: unknown) => {
+        this.toastr.error(this.getErrorMessage(error, 'No se pudieron cargar las comidas predefinidas.'));
+        }
     });
   }
 

@@ -48,8 +48,8 @@
         <mat-form-field appearance="outline">
           <mat-label>Comida</mat-label>
           <mat-select formControlName="mealType">
-            @for (mealType of mealTypeOptions; track mealType) {
-              <mat-option [value]="mealType">{{ mealType }}</mat-option>
+            @for (mealType of mealTypeOptions; track mealType.id) {
+              <mat-option [value]="mealType">{{ mealType.nombre }}</mat-option>
             }
           </mat-select>
         </mat-form-field>

@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { ApiResponse, MealType, UserNutritionPlan, UserNutritionPlanMealItem } from '../../../core/models/gym.models';
+import { ApiResponse, UserNutritionPlan, UserNutritionPlanMealItem } from '../../../core/models/gym.models';
 
 type ApiUserNutritionPlanItem = {
   id?: string | number;
@@ -167,7 +167,7 @@ export class UserNutritionPlansApiService {
 
     return {
       id: dto.id != null ? String(dto.id) : crypto.randomUUID(),
-      mealType: this.toMealType(dto.mealType),
+    //  mealType: this.toMealType(dto.mealType),
       foodId: this.toNumber(dto.foodId),
       foodName: dto.foodName ?? '',
       quantity: this.toNumber(dto.quantity, 1),
@@ -197,7 +197,7 @@ export class UserNutritionPlansApiService {
   private toApiItem(item: UserNutritionPlanMealItem): ApiUserNutritionPlanItem {
     return {
       id: item.id,
-      mealType: item.mealType,
+      //mealType: item.mealType,
       foodId: item.foodId,
       foodName: item.foodName,
       quantity: item.quantity,
@@ -215,9 +215,9 @@ export class UserNutritionPlansApiService {
     return Number.isFinite(parsed) ? parsed : fallback;
   }
 
-  private toMealType(value: string | undefined): MealType {
+  /*private toMealType(value: string | undefined): Meals {
     const normalized = String(value ?? '').trim();
-    const allowed: MealType[] = ['Desayuno', 'Media manana', 'Almuerzo', 'Merienda', 'Cena', 'Snack'];
-    return allowed.includes(normalized as MealType) ? (normalized as MealType) : 'Desayuno';
-  }
+    const allowed: Meals[] = ['Desayuno', 'Media manana', 'Almuerzo', 'Merienda', 'Cena', 'Snack'];
+    return allowed.includes(normalized as Meals) ? (normalized as Meals) : 'Desayuno';
+  }*/
 }

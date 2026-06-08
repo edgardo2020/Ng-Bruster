@@ -187,11 +187,18 @@ export interface FoodCatalogItem {
   active?: boolean;
 }
 
-export type MealType = 'Desayuno' | 'Media manana' | 'Almuerzo' | 'Merienda' | 'Cena' | 'Snack';
+//export type MealType = 'Desayuno' | 'Media manana' | 'Almuerzo' | 'Merienda' | 'Cena' | 'Snack';
+
+export type Meals = {
+  id?:  number;
+  nombre?: string ;
+  idEmpresa?: number;
+};
+
 
 export interface UserNutritionPlanMealItem {
   id: string;
-  mealType: MealType;
+  mealType?: Meals;
   foodId: number;
   foodName: string;
   quantity: number;
