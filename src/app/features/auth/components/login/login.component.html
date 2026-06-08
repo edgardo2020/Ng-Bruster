@@ -1,0 +1,31 @@
+<div class="login-bg">
+  <div class="decorative-circles">
+    <span class="circle circle1"></span>
+    <span class="circle circle2"></span>
+    <span class="circle circle3"></span>
+  </div>
+  <div class="login-container glass">
+    <div class="login-header">
+      <img src="assets/icons/bear-hoodie-dumbbell.svg" alt="BearGym Logo" class="login-logo" />
+      <h1 class="title">TEAM BRUSTER</h1>
+    </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="input-group" [class.invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+        <span class="input-icon">
+          <i class="material-icons">person</i>
+        </span>
+        <input type="text" formControlName="username" placeholder="Usuario" />
+      </div>
+      <div class="input-group" [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+        <span class="input-icon">
+          <i class="material-icons">lock</i>
+        </span>
+        <input [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Contraseña" />
+        <button type="button" class="toggle-password" (click)="togglePassword()" tabindex="-1">
+          <i class="material-icons">{{ hidePassword ? 'visibility_off' : 'visibility' }}</i>
+        </button>
+      </div>
+      <button class="login-btn" type="submit">Entrar a BearGym</button>
+    </form>
+  </div>
+</div>

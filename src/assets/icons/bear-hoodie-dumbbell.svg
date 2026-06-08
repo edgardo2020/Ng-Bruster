@@ -1,0 +1,27 @@
+<!-- SVG de ejemplo, reemplaza por una ilustración profesional si lo deseas -->
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="48" cy="48" rx="46" ry="46" fill="#0f2027"/>
+  <ellipse cx="48" cy="48" rx="38" ry="38" fill="#1a2980"/>
+  <g filter="url(#glow)">
+    <path d="M32 60 Q48 80 64 60 Q68 44 48 44 Q28 44 32 60 Z" fill="#00c6fb" stroke="#7f53ac" stroke-width="2"/>
+    <ellipse cx="48" cy="38" rx="16" ry="14" fill="#222" stroke="#00c6fb" stroke-width="2"/>
+    <ellipse cx="40" cy="36" rx="3" ry="4" fill="#fff"/>
+    <ellipse cx="56" cy="36" rx="3" ry="4" fill="#fff"/>
+    <rect x="38" y="24" width="20" height="10" rx="5" fill="#7f53ac"/>
+    <rect x="28" y="18" width="8" height="24" rx="4" fill="#00c6fb"/>
+    <rect x="60" y="18" width="8" height="24" rx="4" fill="#00c6fb"/>
+    <rect x="18" y="54" width="12" height="8" rx="4" fill="#7f53ac"/>
+    <rect x="66" y="54" width="12" height="8" rx="4" fill="#7f53ac"/>
+    <rect x="10" y="56" width="6" height="4" rx="2" fill="#00c6fb"/>
+    <rect x="80" y="56" width="6" height="4" rx="2" fill="#00c6fb"/>
+  </g>
+  <defs>
+    <filter id="glow" x="0" y="0" width="96" height="96" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>

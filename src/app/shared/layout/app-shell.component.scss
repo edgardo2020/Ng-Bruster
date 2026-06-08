@@ -1,0 +1,234 @@
+.shell-container {
+  min-height: 100vh;
+  background: transparent;
+}
+
+.user-menu-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem 0.85rem;
+  min-width: 220px;
+  pointer-events: none;
+}
+
+.user-menu-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--app-primary, #1050d6), var(--app-secondary, #7c3aed));
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-menu-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  overflow: hidden;
+
+  strong {
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  span {
+    font-size: 0.78rem;
+    color: var(--app-text-muted, #6b7280);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.user-menu-roles {
+  font-size: 0.72rem !important;
+  font-weight: 600;
+  color: var(--app-primary, #1050d6) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.user-menu-expiry {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.2rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.74rem !important;
+  font-weight: 600;
+  width: fit-content;
+
+  &.user-menu-expiry--ok {
+    background: rgba(22, 163, 74, 0.13);
+    color: #166534 !important;
+  }
+
+  &.user-menu-expiry--expired {
+    background: rgba(239, 68, 68, 0.13);
+    color: #991b1b !important;
+  }
+}
+
+.shell-sidenav {
+  width: 280px;
+  padding: 1.25rem;
+  border-right: 1px solid rgba(17, 34, 59, 0.08);
+  background: linear-gradient(180deg, rgba(250, 252, 255, 0.98), rgba(240, 245, 251, 0.96));
+}
+
+.shell-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0 0.2rem 0.1rem;
+  margin-bottom: 0.2rem;
+}
+
+.shell-brand img {
+  width: 80px !important;
+  height: 80px !important;
+  margin-right: 0.3rem;
+  margin-top: 0rem !important;
+}
+
+.shell-brand strong {
+  font-size: 1.1rem;
+  line-height: 1.1;
+}
+
+.shell-brand p {
+  font-size: 0.7rem !important;
+  margin: 0.1rem 0 0 0;
+}
+
+.shell-brand__mark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--app-primary), var(--app-secondary));
+  overflow: hidden;
+}
+
+.shell-brand__mark img {
+  width: 2.2rem;
+  height: 2.2rem;
+  object-fit: contain;
+  display: block;
+}
+
+.shell-brand p,
+.shell-cta p {
+  margin: 0.15rem 0 0;
+  color: var(--app-text-muted);
+}
+
+.shell-cta {
+  margin-top: 1rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(231, 241, 255, 0.95));
+}
+
+.shell-cta__eyebrow {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shell-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(17, 34, 59, 0.08);
+  background: rgba(247, 250, 253, 0.9);
+  backdrop-filter: blur(12px);
+}
+
+.shell-toolbar__menu {
+  display: inline-flex;
+}
+
+.shell-toolbar__spacer {
+  flex: 1;
+}
+
+.shell-user {
+  min-height: 3rem;
+  height: auto;
+  padding: 0.35rem 0.85rem;
+  line-height: 1;
+  border-radius: 999px;
+}
+
+.shell-user__content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  white-space: nowrap;
+}
+
+.shell-user__avatar {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: rgba(16, 80, 214, 0.14);
+  color: var(--app-primary);
+  font-weight: 800;
+}
+
+.shell-user__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.shell-user strong,
+.shell-user small {
+  display: inline;
+  text-align: left;
+}
+
+.shell-user strong {
+  line-height: 1;
+}
+
+.shell-user small {
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--app-text-muted);
+}
+
+.shell-user__roles::before {
+  content: "|";
+  margin-right: 0.35rem;
+  opacity: 0.65;
+}
+
+.shell-content {
+  padding: 1.5rem;
+}
+
+.mdc-list-item.is-active {
+  border-radius: 16px;
+  background: rgba(16, 80, 214, 0.12);
+  color: var(--app-primary);
+}
+
+@media (max-width: 959px) {
+  .shell-content {
+    padding: 1rem;
+  }
+}

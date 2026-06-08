@@ -1,0 +1,73 @@
+<section class="login-page">
+  <div class="login-layout">
+    <div class="login-card" [class.login-card--loading]="isSubmitting()">
+      <div class="login-brand">
+        <h5>TEAM BRUSTER</h5>
+      </div>
+      <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="field">
+          <label for="email" class="field__label">Usuario</label>
+          <div class="field__control">
+            <input id="usuario" type="text" formControlName="usuario" placeholder="Usuario" autocomplete="username" />
+          </div>
+          @if (usuarioControl.hasError('required') && (usuarioControl.dirty || usuarioControl.touched)) {
+            <p class="field__error">El usuario es obligatorio.</p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="password" class="field__label">Contraseña</label>
+          <div class="field__control">
+            <input
+              id="password"
+              [type]="hidePassword() ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Contraseña"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="field__icon-button"
+              [attr.aria-label]="hidePassword() ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+              (click)="togglePassword()"
+            >
+              <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+            </button>
+          </div>
+          @if (passwordControl.hasError('required') && (passwordControl.dirty || passwordControl.touched)) {
+            <p class="field__error">La contraseña es obligatoria.</p>
+          }
+        </div>
+
+        @if (backendError(); as message) {
+          <div class="login-error" role="alert" aria-live="assertive">
+            <mat-icon>error</mat-icon>
+            <span>{{ message }}</span>
+          </div>
+        }
+
+        <button class="login-submit" type="submit" [disabled]="form.invalid || isSubmitting()">
+          @if (isSubmitting()) {
+            <mat-spinner diameter="16"></mat-spinner>
+          }
+          <span>{{ isSubmitting() ? 'Validando...' : 'LOGIN' }}</span>
+        </button>
+
+        <!--<button type="button" class="forgot-link" (click)="requestPasswordReset()">¿Olvidaste tu contraseña?</button>
+        <button type="button" class="first-access-link" >¿Primer acceso?</button>-->
+      </form>
+    </div>
+
+    <aside class="login-hero" aria-hidden="true">
+      <div class="mascot-orbit">
+        <div class="mascot-orbit__ring mascot-orbit__ring--outer"></div>
+        <div class="mascot-orbit__ring mascot-orbit__ring--mid"></div>
+        <div class="mascot-orbit__ring mascot-orbit__ring--inner"></div>
+        <div class="mascot-orbit__core">
+          <img src="assets/icons/gym_icon.png" alt="Logo TEAM BRUSTER" width="150" height="150" style="display: block; margin: 0 auto; object-fit: contain;" />
+        </div>
+      </div>
+      <p>La fuerza de tus datos para impulsar rutinas, membresias y resultados.</p>
+    </aside>
+  </div>
+</section>

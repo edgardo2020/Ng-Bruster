@@ -1,0 +1,109 @@
+<mat-card class="progress-card">
+  <div class="header">
+    <div>
+      <h2>Tu progreso</h2>
+      <span class="badge">Semana {{week}} de {{totalWeeks}}</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 4px;">
+      <mat-icon class="progress-icon">trending_up</mat-icon>
+      <button mat-icon-button (click)="toggleCollapse()" [attr.aria-label]="isCollapsed ? 'Expandir' : 'Comprimir'">
+        <mat-icon>{{ isCollapsed ? 'unfold_more' : 'unfold_less' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div [@collapseContent]="isCollapsed ? 'closed' : 'open'">
+    <div class="plan-row">
+      <mat-icon >assignment</mat-icon>
+      <span class="plan-name">{{ planName }}</span>
+    </div>
+    <div class="plan-row">
+      <div class="plan-badge">
+        <mat-icon>calendar_month</mat-icon>
+        {{ totalWeeks }} semanas
+      </div>
+      <span class="plan-date">Inicio: {{ startDate | date: 'dd/MM/yyyy' }}</span>
+    </div>
+    <div class="content">
+    <!-- Progreso circular -->
+    <div class="progress-circle">
+      <svg viewBox="0 0 48 48" width="150" height="150">
+        <defs>
+          <linearGradient id="progress-gradient-gy" x1="0" y1="0" x2="1" y2="1">
+
+            <!-- verde suave -->
+            <stop offset="0%" stop-color="#4ade80" />
+
+            <!-- verde medio -->
+            <stop offset="50%" stop-color="#a3e635" />
+
+            <!-- amarillo -->
+            <stop offset="100%" stop-color="#facc15" />
+          </linearGradient>
+          <linearGradient id="progress-gradient-yellow" x1="0" y1="0" x2="1" y2="1">
+
+            <stop offset="0%" stop-color="#fef9c3" />
+            <stop offset="100%" stop-color="#eab308" />
+          </linearGradient>
+          <linearGradient id="progress-gradient-red" x1="0" y1="0" x2="1" y2="1">
+
+            <stop offset="0%" stop-color="#fecaca" />
+            <stop offset="100%" stop-color="#ef4444" />
+          </linearGradient>
+          <linearGradient id="progress-gradient-green" x1="0" y1="0" x2="1" y2="1">
+
+            <stop offset="0%" stop-color="#bbf7d0" />
+            <stop offset="100%" stop-color="#22c55e" />
+          </linearGradient>
+          <linearGradient id="progress-gradient-blue" x1="0" y1="0" x2="1" y2="1">
+
+            <stop offset="0%" stop-color="#93c5fd" />
+            <stop offset="100%" stop-color="#3b82f6" />
+          </linearGradient>
+        </defs>
+        <circle class="bg" cx="24" cy="24" r="20" [attr.stroke]="'#e5e7eb'" stroke-width="4" fill="none" />
+        <circle class="progress" cx="24" cy="24" r="20"
+          [attr.stroke-dasharray]="circumference"
+          [attr.stroke-dashoffset]="getProgressDashOffset()"
+          [attr.stroke]="'url(#' + getProgressGradientId() + ')'"
+          stroke-width="4"
+          fill="none"
+          style="transform: rotate(-90deg); transform-origin: 50% 50%;" />
+        <text x="24" y="25" text-anchor="middle" alignment-baseline="middle">{{progress}}%</text>
+      </svg>
+    </div>
+    <div class="info">
+      <div class="plan-badge--focus">
+        <mat-icon>flag</mat-icon>
+        <span>{{ focus }}</span>
+      </div>
+      <button mat-raised-button color="primary" (click)="onContinue()">
+        Continuar
+      </button>
+    </div>
+    </div>
+    <!-- Stats -->
+    <div class="stats">
+    <mat-card class="stat-card">
+      <div class="stat">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{completedRoutines}}/{{totalRoutines}}</span>
+        <p>Rutinas</p>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="stat">
+        <mat-icon>fitness_center</mat-icon>
+        <span>{{exercises}}</span>
+        <p>Ejercicios</p>
+      </div>
+    </mat-card>
+    <mat-card class="stat-card">
+      <div class="stat">
+        <mat-icon>calendar_today</mat-icon>
+        <span>{{days}}</span>
+        <p>Días </p>
+      </div>
+    </mat-card>
+    </div>
+  </div>
+</mat-card>

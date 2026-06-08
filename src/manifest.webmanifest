@@ -1,0 +1,20 @@
+{
+  "name": "TEAM BRUSTER",
+  "short_name": "TEAM BRUSTER",
+  "theme_color": "#242222",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "assets/icons/gym_icon_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/gym_icon_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

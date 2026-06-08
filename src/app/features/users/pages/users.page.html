@@ -1,0 +1,244 @@
+<section class="app-page">
+  <app-page-header
+    title="Gestión de usuarios"
+    subtitle="Clientes y operadores con filtros, roles y estado de membresía."
+    meta="Usuarios"
+  />
+
+  <section class="entity-layout">
+    <article class="card-surface" style="grid-column: 1 / -1">
+      @if (selectedUserForHistory) {
+        <div class="user-history-page">
+          <button mat-icon-button (click)="closeUserHistory()" matTooltip="Volver" class="btn-back">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <app-user-history-dialog
+            [userName]="selectedUserForHistory.nombre"
+            [userId]="selectedUserForHistory.id"
+          ></app-user-history-dialog>
+        </div>
+      }
+      @else if (store.vm$ | async; as vm) {
+        <div class="panel-header">
+          <div class="header-actions">
+           <!-- <button mat-icon-button color="primary" type="button" (click)="openFoodsCatalog()" matTooltip="Catalogo alimentos" class="btn-foods">
+              <mat-icon>restaurant_menu</mat-icon>
+            </button>-->
+            <button mat-icon-button color="primary" type="button" (click)="openDialog()" matTooltip="Agregar usuario" class="btn-add-user"
+              [disabled]="vm.data.length >= USER_REGISTRATION_LIMIT">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+        <form class="filters-row" [formGroup]="filtersForm">
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Buscar</mat-label>
+            <input matInput formControlName="search" placeholder="Nombre o correo" />
+          </mat-form-field>
+
+          <!-- Eliminado selector de rol de los filtros -->
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="status">
+              @for (status of statusOptions; track status.value) {
+                <mat-option [value]="status.value">{{ status.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </form>
+        <div class="responsive-table">
+          <table mat-table [dataSource]="vm.filtered" class="mat-elevation-z0 desktop-table">
+            <ng-container matColumnDef="nombre">
+              <th mat-header-cell *matHeaderCellDef>Usuarios</th>
+              <td mat-cell *matCellDef="let user">
+                <strong>{{ user.nombre }}</strong>
+                <div>{{ user.Correo }}</div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="roleName">
+              <th mat-header-cell *matHeaderCellDef>Rol</th>
+              <td mat-cell *matCellDef="let user">{{ getRoleName(user.idRol) }}</td>
+            </ng-container>
+            <ng-container matColumnDef="membershipStatus">
+              <th mat-header-cell *matHeaderCellDef>Membresía</th>
+              <td mat-cell *matCellDef="let user">
+                <span class="status-chip" [class]="statusClass(user.membershipStatus)">{{ getMembershipStatusLabel(user.membershipStatus) }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="expiracion">
+              <th mat-header-cell *matHeaderCellDef>Expiración</th>
+              <td mat-cell *matCellDef="let user">
+                <span class="expiry-badge"
+                  [class.expiry-badge--ok]="user.expiredTime && !isExpired(user.expiredTime)"
+                  [class.expiry-badge--expired]="user.expiredTime && isExpired(user.expiredTime)"
+                  [class.expiry-badge--none]="!user.expiredTime">
+                  {{ user.expiredTime ? (user.expiredTime | date:'dd/MM/yyyy') : 'Sin fecha' }}
+                </span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="history">
+              <th mat-header-cell *matHeaderCellDef>Historial</th>
+              <td mat-cell *matCellDef="let user">
+                 <button mat-icon-button class="btn-history" type="button" (click)="showHistory(user)" matTooltip="Historial">
+                    <mat-icon>history</mat-icon>
+                  </button>
+                <button mat-icon-button class="btn-assignments" type="button" (click)="openUserAssignments(user)" matTooltip="Asignaciones">
+                  <mat-icon>assignment</mat-icon>
+                </button>
+                <button mat-icon-button class="btn-routines" type="button" (click)="openUserRoutines(user)" matTooltip="Rutinas">
+                  <mat-icon>fitness_center</mat-icon>
+                </button>
+                <button mat-icon-button class="btn-nutrition" type="button" (click)="openUserNutritionPlans(user)" matTooltip="Plan alimentacion">
+                  <mat-icon>restaurant</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Acciones</th>
+              <td mat-cell *matCellDef="let user">
+                <button mat-icon-button class="btn-edit" type="button" (click)="edit(user)" matTooltip="Editar">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button class="btn-delete" type="button" (click)="remove(user)" matTooltip="Eliminar">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+          <!-- Tabla tipo card para móvil -->
+          <div class="mobile-table">
+            @for (user of vm.filtered; track user.id) {
+              <div class="user-card">
+                <div class="user-card-row">
+                  <span class="user-card-label">Nombre</span>
+                  <span class="user-card-value"><strong>{{ user.nombre }}</strong></span>
+                </div>
+                <div class="user-card-row">
+                  <span class="user-card-label">Correo</span>
+                  <span class="user-card-value">{{ user.Correo }}</span>
+                </div>
+                <div class="user-card-row">
+                  <span class="user-card-label">Rol</span>
+                  <span class="user-card-value">{{ getRoleName(user.idRol) }}</span>
+                </div>
+                <div class="user-card-row">
+                  <span class="user-card-label">Membresía</span>
+                  <span class="user-card-value"><span class="status-chip" [class]="statusClass(user.membershipStatus)">{{ getMembershipStatusLabel(user.membershipStatus) }}</span></span>
+                </div>
+                <div class="user-card-row">
+                  <span class="user-card-label">Expiración</span>
+                  <span class="user-card-value">
+                    <span class="expiry-badge"
+                      [class.expiry-badge--ok]="user.expiredTime && !isExpired(user.expiredTime)"
+                      [class.expiry-badge--expired]="user.expiredTime && isExpired(user.expiredTime)"
+                      [class.expiry-badge--none]="!user.expiredTime">
+                      {{ user.expiredTime ? (user.expiredTime | date:'dd/MM/yyyy') : 'Sin fecha' }}
+                    </span>
+                  </span>
+                </div>
+
+                <div class="user-card-actions">
+                  <button mat-icon-button class="btn-history" type="button" (click)="showHistory(user)" matTooltip="Historial">
+                    <mat-icon>history</mat-icon>
+                  </button>
+                  <button mat-icon-button class="btn-assignments" type="button" (click)="openUserAssignments(user)" matTooltip="Asignaciones">
+                    <mat-icon>assignment</mat-icon>
+                  </button>
+                  <button mat-icon-button class="btn-routines" type="button" (click)="openUserRoutines(user)" matTooltip="Rutinas">
+                    <mat-icon>fitness_center</mat-icon>
+                  </button>
+                  <button mat-icon-button class="btn-nutrition" type="button" (click)="openUserNutritionPlans(user)" matTooltip="Plan alimentacion">
+                    <mat-icon>restaurant</mat-icon>
+                  </button>
+                  <button mat-icon-button class="btn-edit" type="button" (click)="edit(user)" matTooltip="Editar">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button class="btn-delete" type="button" (click)="remove(user)" matTooltip="Eliminar">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+        @if (!vm.filtered.length) {
+          <div class="empty-state">No hay usuarios que coincidan con los filtros actuales.</div>
+        }
+      }
+    </article>
+
+    <!-- Card de alta y edición eliminado -->
+
+    <ng-template #formDialog>
+      <h2 mat-dialog-title class="dialog-title">
+        <span>{{ editingUser() ? 'Editar usuario' : 'Nuevo usuario' }}</span>
+        <button mat-icon-button mat-dialog-close type="button" aria-label="Cerrar dialogo">
+          <mat-icon>close</mat-icon>
+        </button>
+      </h2>
+    
+      <mat-dialog-content class="dialog-content">
+          <br>
+        <form class="form-grid dialog-form" [formGroup]="form">
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Nombre completo</mat-label>
+            <input matInput formControlName="nombre" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Correo</mat-label>
+            <input matInput formControlName="Correo" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="Telefono" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Usuario</mat-label>
+            <input matInput formControlName="usuario" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Password</mat-label>
+            <input matInput formControlName="password" type="password" />
+            @if (!editingUser()) {
+              <mat-hint>Por defecto: 123456</mat-hint>
+            }
+          </mat-form-field>
+
+          <!-- Rol fijo, no se muestra selector -->
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Estado de membresía</mat-label>
+            <mat-select formControlName="membershipStatus">
+              @for (status of membershipValues; track status) {
+                <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-checkbox formControlName="active">Usuario activo</mat-checkbox>
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Expiración</mat-label>
+            <input matInput [matDatepicker]="expiredTimePicker" formControlName="expiredTime" readonly />
+            <mat-datepicker-toggle matIconSuffix [for]="expiredTimePicker"></mat-datepicker-toggle>
+            <mat-datepicker #expiredTimePicker touchUi></mat-datepicker>
+          </mat-form-field>
+        </form>
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close type="button">Cancelar</button>
+        <button mat-flat-button color="primary" type="button" (click)="save()" class="btn-dialog-black">
+          {{ editingUser() ? 'Editar' : 'Crear usuario' }}
+        </button>
+      </mat-dialog-actions>
+    </ng-template>
+
+  </section>
+</section>

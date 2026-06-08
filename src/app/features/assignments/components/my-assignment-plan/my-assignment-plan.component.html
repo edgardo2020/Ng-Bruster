@@ -1,0 +1,89 @@
+<section class="my-assignment-plan">
+  <header class="panel-header">
+    <div>
+      <h2>Mi plan actual</h2>
+      <p>Consulta tu plan activo y el detalle de ejercicios programados.</p>
+    </div>
+  </header>
+
+  @if (latestDetail; as plan) {
+    <mat-card class="plan-summary" appearance="outlined">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>assignment</mat-icon>
+        <mat-card-title>{{ plan.planName }}</mat-card-title>
+        <mat-card-subtitle>Inicio: {{ plan.startDate | date: 'dd/MM/yyyy' }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <mat-chip-set>
+          <mat-chip>
+            <mat-icon>calendar_month</mat-icon>
+            {{ getEffectiveWeeks(plan) }} semanas
+          </mat-chip>
+          @if (plan.focus) {
+            <mat-chip>
+              <mat-icon>flag</mat-icon>
+              {{ plan.focus }}
+            </mat-chip>
+          }
+          @if (plan.intensity) {
+            <mat-chip>
+              <mat-icon>speed</mat-icon>
+              {{ plan.intensity }}
+            </mat-chip>
+          }
+        </mat-chip-set>
+
+        @if (plan.notes) {
+          <p class="plan-notes">{{ plan.notes }}</p>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    @if (getAgendaWithExercises(plan).length > 0) {
+      <div class="agenda-grid">
+        @for (item of getAgendaWithExercises(plan); track $index) {
+          <mat-card class="agenda-card" appearance="outlined">
+            <mat-card-header>
+              <mat-card-title>{{ getAgendaLabel(item.week, item.day) }}</mat-card-title>
+              <mat-card-subtitle>{{ item.exercises.length }} ejercicios</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <mat-divider></mat-divider>
+              <ul class="exercise-list">
+                @for (exercise of item.exercises; track exercise.id) {
+                  <li>
+                    <div class="exercise-main">
+                      <strong>{{ exercise.name }}</strong>
+                      @if (exercise.description) {
+                        <p>{{ exercise.description }}</p>
+                      }
+                      <div class="exercise-badges">
+                        <span class="metric-badge">Series: {{ getAssignedSets(exercise, plan.intensity) }}</span>
+                        <span class="metric-badge">Reps: {{ getAssignedReps(exercise, plan.intensity) }}</span>
+                        <span class="metric-badge">Kilos: {{ getAssignedWeight(exercise, plan.intensity) }} kg</span>
+                      </div>
+                    </div>
+                  </li>
+                }
+              </ul>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    } @else {
+      <article class="empty-state">
+        <mat-icon>event_note</mat-icon>
+        <h3>Tu plan no tiene agenda cargada</h3>
+        <p>Pide a tu entrenador que complete la agenda de entrenamientos para ver el detalle aqui.</p>
+      </article>
+    }
+  } @else {
+    <article class="empty-state">
+      <mat-icon>event_busy</mat-icon>
+      <h3>Aun no tienes un plan asignado</h3>
+      <p>Solicita una asignacion para comenzar tu entrenamiento.</p>
+    </article>
+  }
+</section>

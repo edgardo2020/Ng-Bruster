@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+.dialog-title {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  background: var(--mat-sys-primary, #272727);
+  color: var(--mat-sys-on-primary, #ffffff);
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-primary, #272727) 80%, black);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  span {
+    font-weight: 600;
+  }
+
+  button {
+    color: var(--mat-sys-on-primary, #ffffff);
+  }
+}
+
+.dialog-content {
+  max-height: 70vh;
+  overflow: auto;
+}

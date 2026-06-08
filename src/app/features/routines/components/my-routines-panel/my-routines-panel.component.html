@@ -1,0 +1,86 @@
+<section class="my-routines-panel">
+  <header class="panel-header">
+    <div>
+      <h2>Mis rutinas</h2>
+      <p>Revisa tus ejercicios, series y peso sugerido para cada entrenamiento.</p>
+    </div>
+  </header>
+
+  @if (routines.length > 0) {
+    <div class="routines-grid">
+      @for (routine of routines; track routine.id) {
+        <mat-card class="routine-card" appearance="outlined">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>fitness_center</mat-icon>
+            <mat-card-title>{{ routine.name }}</mat-card-title>
+            <mat-card-subtitle>{{ routine.description }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="routine-stats">
+              <mat-chip-set>
+                <mat-chip>
+                  <mat-icon>list_alt</mat-icon>
+                  {{ routine.exercises.length }} ejercicios
+                </mat-chip>
+                <mat-chip>
+                  <mat-icon>repeat</mat-icon>
+                  {{ getTotalSets(routine) }} series
+                </mat-chip>
+                <mat-chip>
+                  <mat-icon>monitor_weight</mat-icon>
+                  {{ getAverageWeight(routine) }} kg promedio
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <ul class="exercise-list">
+              @for (exercise of routine.exercises; track exercise.id) {
+                <li>
+                  <div class="exercise-main">
+                    <strong>{{ exercise.exerciseName }}</strong>
+                    @if (exercise.exerciseDescription) {
+                      <p class="exercise-description">{{ exercise.exerciseDescription }}</p>
+                    }
+                    <div class="exercise-badges">
+                      <span class="metric-badge">Series: {{ exercise.sets }}</span>
+                      <span class="metric-badge">Repeticiones: {{ exercise.reps }}</span>
+                      <span class="metric-badge">Peso: {{ exercise.weight }} kg</span>
+                    </div>
+                  </div>
+                  @if (exercise.ImageBase64) {
+                    <button mat-icon-button type="button" class="exercise-help-btn" (click)="showImagePreview(exercise)" aria-label="Ver imagen del ejercicio">
+                      <mat-icon>help_outline</mat-icon>
+                    </button>
+                  }
+                </li>
+              }
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  } @else {
+    <article class="empty-state">
+      <mat-icon>event_busy</mat-icon>
+      <h3>Aun no tienes rutinas asignadas</h3>
+      <p>Solicita a tu entrenador una rutina personalizada para comenzar tu plan de trabajo.</p>
+    </article>
+  }
+</section>
+
+@if (previewExercise()) {
+  <div class="image-preview-overlay" (click)="closeImagePreview()">
+    <div class="image-preview-card" (click)="$event.stopPropagation()">
+      <div class="image-preview-header">
+        <span class="image-preview-title">{{ previewExercise()!.exerciseName }}</span>
+        <button mat-icon-button type="button" (click)="closeImagePreview()" aria-label="Cerrar">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <img class="image-preview-img" [src]="'data:image/*;base64,' + previewExercise()!.ImageBase64" [alt]="previewExercise()!.exerciseName" />
+    </div>
+  </div>
+}

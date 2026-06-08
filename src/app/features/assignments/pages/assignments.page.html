@@ -1,0 +1,175 @@
+<section class="app-page">
+  <app-page-header
+    [title]="title()"
+    [subtitle]="subtitle()"
+    [meta]="meta()"
+  />
+
+  <section class="entity-layout">
+    @if (isRole1()) {
+      <article class="card-surface">
+        <div class="panel-header">
+          <div>
+            <h2>Asignaciones de planes</h2>
+            <p>Historial de asignaciones por usuario con fecha de inicio.</p>
+          </div>
+          <div class="header-actions header-actions-responsive">
+            <button mat-stroked-button color="primary" type="button" (click)="openCustomizationDialog()">
+              <mat-icon>tune</mat-icon> Personalizar
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="openCreateDialog()">
+              <mat-icon>add</mat-icon> Nueva
+            </button>
+          </div>
+        </div>
+
+        @if (store.vm$ | async; as vm) {
+          @if (!isMobileView()) {
+            <table mat-table [dataSource]="asArray(vm.data)" class="mat-elevation-z0">
+              <ng-container matColumnDef="userName">
+                <th mat-header-cell *matHeaderCellDef>Usuario</th>
+                <td mat-cell *matCellDef="let assignment">{{ assignment.userName }}</td>
+              </ng-container>
+              <ng-container matColumnDef="planName">
+                <th mat-header-cell *matHeaderCellDef>Plan</th>
+                <td mat-cell *matCellDef="let assignment">{{ assignment.planName }}</td>
+              </ng-container>
+              <ng-container matColumnDef="startDate">
+                <th mat-header-cell *matHeaderCellDef>Inicio</th>
+                <td mat-cell *matCellDef="let assignment">{{ assignment.startDate | date: 'dd/MM/yyyy' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let assignment">
+                  <button mat-icon-button type="button" (click)="edit(assignment)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" (click)="remove(assignment)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          } @else {
+            <div class="mobile-assignment-list">
+              @for (assignment of asArray(vm.data); track assignment.id) {
+                <div class="mobile-assignment-card">
+                  <div class="mobile-assignment-header">
+                    <span class="mobile-assignment-user">{{ assignment.userName }}</span>
+                    <span class="mobile-assignment-date">{{ assignment.startDate | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div class="mobile-assignment-plan">{{ assignment.planName }}</div>
+                  <div class="mobile-assignment-actions">
+                    <button mat-icon-button type="button" (click)="edit(assignment)">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button" (click)="remove(assignment)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+      </article>
+
+      <article class="card-surface">
+        <div class="panel-header">
+          <div>
+            <h2>Plan actual por usuario</h2>
+            <p>Se muestra la asignacion mas reciente por cada usuario.</p>
+          </div>
+        </div>
+
+        @if (!isMobileView()) {
+          <table mat-table [dataSource]="asArray(currentPlanByUser())" class="mat-elevation-z0">
+            <ng-container matColumnDef="userName">
+              <th mat-header-cell *matHeaderCellDef>Usuario</th>
+              <td mat-cell *matCellDef="let assignment">{{ assignment.userName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="planName">
+              <th mat-header-cell *matHeaderCellDef>Plan actual</th>
+              <td mat-cell *matCellDef="let assignment">{{ assignment.planName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="startDate">
+              <th mat-header-cell *matHeaderCellDef>Desde</th>
+              <td mat-cell *matCellDef="let assignment">{{ assignment.startDate | date: 'dd/MM/yyyy' }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="['userName', 'planName', 'startDate']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['userName', 'planName', 'startDate']"></tr>
+          </table>
+        } @else {
+          <div class="mobile-assignment-list">
+            @for (assignment of asArray(currentPlanByUser()); track assignment.id) {
+              <div class="mobile-assignment-card">
+                <div class="mobile-assignment-header">
+                  <span class="mobile-assignment-user">{{ assignment.userName }}</span>
+                  <span class="mobile-assignment-date">{{ assignment.startDate | date: 'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="mobile-assignment-plan">{{ assignment.planName }}</div>
+              </div>
+            }
+          </div>
+        }
+      </article>
+    }
+
+    <article class="card-surface" style="grid-column: 1 / -1" [hidden]="!isRole2()">
+      <app-my-assignment-plan [details]="userAssignmentDetails()"></app-my-assignment-plan>
+    </article>
+  </section>
+
+  <ng-template #formDialog>
+    <h2 mat-dialog-title class="dialog-title">
+      <span>{{ editingId() ? 'Editar asignacion' : 'Nueva asignacion' }}</span>
+      <button mat-icon-button mat-dialog-close type="button" aria-label="Cerrar dialogo">
+        <mat-icon>close</mat-icon>
+      </button>
+    </h2>
+
+    <mat-dialog-content class="dialog-content">
+      <br>
+      <form class="form-grid dialog-form" [formGroup]="form" (ngSubmit)="save()">
+        @if (editingId()) {
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Usuario</mat-label>
+            <input matInput [value]="editingUserName()" readonly disabled />
+          </mat-form-field>
+        } @else {
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Usuario</mat-label>
+            <mat-select formControlName="userId">
+              @for (user of usersWithoutAssignment(); track user.id) {
+                <mat-option [value]="user.id">{{ user.nombre }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+
+        <mat-form-field appearance="outline" [floatLabel]="'auto'">
+          <mat-label>Plan</mat-label>
+          <mat-select formControlName="planId">
+            @for (plan of plans(); track plan.id) {
+              <mat-option [value]="plan.id">{{ plan.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-span" [floatLabel]="'auto'">
+          <mat-label>Fecha de inicio</mat-label>
+          <input matInput type="date" formControlName="startDate" />
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close type="button">Cancelar</button>
+      <button mat-flat-button color="primary" type="button" (click)="save()">
+        {{ editingId() ? 'Guardar cambios' : 'Asignar plan' }}
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
+</section>

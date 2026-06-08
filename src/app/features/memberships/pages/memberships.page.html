@@ -1,0 +1,103 @@
+<section class="app-page">
+  <app-page-header
+    title="Membresías"
+    subtitle="Configura planes, duración, precio y estado operativo desde un flujo simple y mantenible."
+    meta="Integración REST encapsulada"
+  />
+
+  <section class="entity-layout">
+    <article class="card-surface">
+      <div class="panel-header">
+        <div>
+          <h2>Planes disponibles</h2>
+          <p>Gestión de ciclo de vida: activa, vencida o cancelada.</p>
+        </div>
+      </div>
+
+      @if (store.vm$ | async; as vm) {
+        <table mat-table [dataSource]="vm.data" class="mat-elevation-z0">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Plan</th>
+            <td mat-cell *matCellDef="let membership">{{ membership.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="price">
+            <th mat-header-cell *matHeaderCellDef>Precio</th>
+            <td mat-cell *matCellDef="let membership">{{ membership.price | currency:'USD':'symbol':'1.0-0' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="durationInDays">
+            <th mat-header-cell *matHeaderCellDef>Duración</th>
+            <td mat-cell *matCellDef="let membership">{{ membership.durationInDays }} días</td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let membership">
+              <span class="status-chip" [class]="statusClass(membership.status)">{{ membership.status }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let membership">
+              <button mat-icon-button type="button" (click)="edit(membership)">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button type="button" (click)="remove(membership)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      }
+    </article>
+
+    <article class="card-surface">
+      <div class="panel-header">
+        <div>
+          <h2>{{ editingId() ? 'Editar plan' : 'Crear plan' }}</h2>
+          <p>Definición de precio y beneficios para frontoffice y ventas.</p>
+        </div>
+      </div>
+
+      <form class="form-grid" [formGroup]="form" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" [floatLabel]="'auto'">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" [floatLabel]="'auto'">
+          <mat-label>Precio</mat-label>
+          <input matInput type="number" formControlName="price" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" [floatLabel]="'auto'">
+          <mat-label>Duración en días</mat-label>
+          <input matInput type="number" formControlName="durationInDays" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" [floatLabel]="'auto'">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="status">
+            @for (status of statuses; track status) {
+              <mat-option [value]="status">{{ status }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-span" [floatLabel]="'auto'">
+          <mat-label>Beneficios</mat-label>
+          <textarea matInput rows="5" formControlName="benefitsText" placeholder="Uno por línea"></textarea>
+        </mat-form-field>
+
+        <div class="full-span">
+          <button mat-flat-button color="primary" type="submit">{{ editingId() ? 'Guardar cambios' : 'Crear membresía' }}</button>
+        </div>
+      </form>
+    </article>
+  </section>
+</section>

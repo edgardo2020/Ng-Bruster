@@ -1,0 +1,375 @@
+// Forzar fondo negro y texto blanco en el botón de crear usuario, usando ::ng-deep para romper el encapsulamiento de Angular
+::ng-deep .btn-dialog-black.mat-flat-button {
+  background: #000 !important;
+  color: #fff !important;
+  border-radius: 4px;
+  box-shadow: none !important;
+  border: none !important;
+}
+// Botón 'Crear usuario' en el diálogo: fondo negro, texto blanco, máxima prioridad
+.btn-dialog-black.mat-flat-button {
+  background: #000 !important;
+  color: #fff !important;
+  border-radius: 4px;
+}
+// Botón 'Crear usuario' en el diálogo: fondo negro, texto blanco, máxima especificidad
+.mat-dialog-container .mat-dialog-actions button.mat-flat-button[color="primary"] {
+  background: #000 !important;
+  color: #fff !important;
+  border-radius: 4px;
+}
+// Botón principal del diálogo en negro
+.mat-dialog-actions button[mat-flat-button][color="primary"] {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+// Título del diálogo en blanco
+h2.mat-dialog-title, .dialog-title, .dialog-title span {
+  color: #fff !important;
+}
+// Solo fondo del diálogo de nuevo usuario negro
+.mat-dialog-container {
+  background: #111 !important;
+}
+.dialog-content, .dialog-content .mat-form-field, .dialog-content .mat-form-field label, .dialog-content .mat-form-field .mat-input-element, .dialog-content .mat-select-value, .dialog-content .mat-option {
+  color: #fff !important;
+}
+.mat-dialog-actions button[mat-button],
+.mat-dialog-actions button[mat-flat-button] {
+  color: #fff !important;
+}
+.mat-dialog-actions button[mat-flat-button] {
+  background: #000 !important;
+}
+// Espacio mínimo entre header y contenido
+// Sin margen entre header y contenido
+
+// Sin margen en panel-header
+.panel-header {
+  margin-bottom: 1 !important;
+}
+
+
+.btn-add-user {
+  background: #000 !important;
+  color: #fff !important;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.btn-add-user mat-icon {
+  color: #fff !important;
+}
+@media (max-width: 600px) {
+  .dialog-content .form-grid.dialog-form {
+    gap: 0.18rem !important;
+  }
+  .dialog-content .mat-form-field {
+    margin-bottom: 0.18rem !important;
+  }
+  .dialog-content .mat-checkbox {
+    margin-top: 0.1rem !important;
+    margin-bottom: 0.1rem !important;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+    font-size: 1.04rem !important;
+    letter-spacing: 0.01em;
+  }
+  .dialog-content .mat-hint {
+    font-size: 0.68rem !important;
+    color: #888 !important;
+    margin-top: 0.1rem !important;
+  }
+}
+.desktop-table,
+th[mat-header-cell], td[mat-cell],
+tr[mat-header-row], tr[mat-row],
+.mat-table, .mat-header-cell, .mat-cell {
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+  font-size: 1.04rem;
+  color: #222;
+  letter-spacing: 0.01em;
+}
+// Tabla responsiva tipo card para móvil
+.responsive-table {
+  width: 100%;
+}
+.desktop-table {
+  width: 100%;
+}
+
+
+.mobile-table {
+  display: none !important;
+}
+
+
+.responsive-table {
+  width: 100%;
+  min-height: 1px;
+  max-height: unset;
+  overflow: visible;
+}
+.desktop-table {
+  width: 100%;
+}
+.mobile-table {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  .desktop-table {
+    display: none !important;
+  }
+  .mobile-table {
+    display: block !important;
+    width: 100% !important;
+    min-height: 1px;
+    max-height: unset;
+    overflow: visible !important;
+    position: relative;
+    z-index: 1;
+  }
+  .responsive-table {
+    min-height: 1px;
+    max-height: unset;
+    overflow: visible !important;
+  }
+  .card-surface {
+    
+    min-height: 1px;
+    max-height: unset;
+    overflow: visible !important;
+    background: #fff;
+  }
+  .entity-layout {
+    min-height: 1px;
+    max-height: unset;
+    overflow: visible !important;
+  }
+  .user-card {
+    background: #fafafa !important;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.5) !important; ;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 80px;
+    overflow: visible;
+  }
+  .user-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.97rem;
+    padding: 0.1rem 0;
+  }
+  .user-card-label {
+    font-weight: 500;
+    color: #757575;
+    min-width: 90px;
+  }
+  .user-card-value {
+    text-align: right;
+    flex: 1;
+    margin-left: 1rem;
+  }
+  .user-card-actions {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .desktop-table {
+    display: none !important;
+  }
+  .mobile-table {
+    display: block;
+  }
+  .user-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .user-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.97rem;
+    padding: 0.1rem 0;
+  }
+  .user-card-label {
+    font-weight: 500;
+    color: #757575;
+    min-width: 90px;
+  }
+  .user-card-value {
+    text-align: right;
+    flex: 1;
+    margin-left: 1rem;
+  }
+  .user-card-actions {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+}
+
+
+:host {
+  display: block;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+}
+
+body, html {
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+}
+
+.panel-header {
+  margin-bottom: 0.5rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+button[mat-flat-button],
+button[mat-icon-button],
+.mat-flat-button, .mat-icon-button {
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+  font-size: 1.04rem;
+  letter-spacing: 0.01em;
+}
+
+mat-form-field, .mat-form-field, .mat-select, .mat-option {
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+  font-size: 1.04rem;
+  letter-spacing: 0.01em;
+}
+
+// Botones de acción con colores personalizados
+.btn-assignments {
+  color: #0c0c0c;
+  background: #e3f2fd;
+}
+.btn-assignments:hover {
+  background: #bbdefb;
+}
+.btn-routines {
+  color: #388e3c;
+  background: #e8f5e9;
+}
+.btn-routines:hover {
+  background: #c8e6c9;
+}
+.btn-foods {
+  color: #c2410c;
+  background: #ffedd5;
+}
+.btn-foods:hover {
+  background: #fed7aa;
+}
+.btn-nutrition {
+  color: #0f766e;
+  background: #ccfbf1;
+}
+.btn-nutrition:hover {
+  background: #99f6e4;
+}
+.btn-edit {
+  color: #fbc02d;
+  background: #fffde7;
+}
+.btn-edit:hover {
+  background: #fff9c4;
+}
+.btn-delete {
+  color: #d32f2f;
+  background: #ffebee;
+}
+.btn-delete:hover {
+  background: #ffcdd2;
+}
+
+// Espaciado reducido entre header y sección
+.entity-layout {
+  margin-top: 0.5rem;
+}
+
+// Responsividad
+@media (max-width: 600px) {
+  .card-surface {
+    padding: 0.8rem !important;
+  }
+  table[mat-table] {
+    font-size: 0.92rem;
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+  }
+  th[mat-header-cell], td[mat-cell] {
+    padding: 0.3rem 0.2rem;
+    min-width: 80px;
+  }
+  .panel-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+// Fuente para el diálogo de nuevo usuario
+.dialog-title, .dialog-content, .dialog-title span, .dialog-content *, .mat-dialog-title, .mat-dialog-content, .mat-dialog-actions {
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif !important;
+  font-size: 1.04rem !important;
+  letter-spacing: 0.01em;
+}
+.dialog-title {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  background: var(--mat-sys-primary, #272727);
+  color: var(--mat-sys-on-primary, #ffffff);
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-primary, #272727) 80%, black);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  span {
+    font-weight: 600;
+  }
+
+  button {
+    color: var(--mat-sys-on-primary, #ffffff);
+  }
+}
+
+.dialog-content {
+  max-height: 70vh;
+  overflow: auto;
+}
+
+td[mat-cell] {
+  button[mat-stroked-button] {
+    margin-right: 0.4rem;
+    margin-bottom: 0.2rem;
+  }
+}

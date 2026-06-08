@@ -1,0 +1,458 @@
+:host {
+  display: block;
+}
+
+.customize-dialog-content {
+  padding-top: 1rem;
+  max-height: calc(100vh - 190px);
+  overflow: auto;
+  background: #f8fafc;
+}
+
+.customize-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.dashboard-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.dashboard-toggle-btn {
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.exercises-toggle-btn {
+  color: #0f766e;
+  background: #ccfbf1;
+}
+
+.hero-user-form {
+  margin-top: 1rem;
+  max-width: 360px;
+}
+
+.customize-hero {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, #1050d6 10%, white), transparent 45%),
+    linear-gradient(180deg, #ffffff, #f8fafc);
+
+  h3,
+  p {
+    margin: 0;
+  }
+}
+
+.eyebrow {
+  margin-bottom: 0.35rem;
+  color: #1050d6;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.customize-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+:host ::ng-deep .customize-metrics .stat-card {
+  gap: 0.55rem;
+  grid-template-columns: 2.1rem 1fr;
+  padding: 0.6rem 0.7rem;
+  min-height: auto;
+}
+
+:host ::ng-deep .customize-metrics .stat-card__icon {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.7rem;
+}
+
+:host ::ng-deep .customize-metrics .stat-card__label {
+  font-size: 0.72rem;
+}
+
+:host ::ng-deep .customize-metrics .stat-card__value {
+  margin: 0.12rem 0;
+  font-size: 1.05rem;
+}
+
+:host ::ng-deep .customize-metrics .stat-card__trend {
+  font-size: 0.74rem;
+}
+
+.customize-grid {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.72fr) minmax(700px, 2.25fr) minmax(250px, 0.82fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.customize-grid.exercises-hidden {
+  grid-template-columns: minmax(220px, 0.55fr) minmax(0, 2.45fr);
+}
+
+.customize-config-panel,
+.customize-board-panel,
+.customize-exercises-panel {
+  padding: 1rem;
+  min-height: 0;
+}
+
+.agenda-heading-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+}
+
+.agenda-heading-row h3,
+.agenda-heading-row p {
+  margin: 0;
+}
+
+.agenda-description-single-row {
+  white-space: nowrap;
+}
+
+.selected-user-note {
+  margin-top: 0.8rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.8rem;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  display: grid;
+  gap: 0.2rem;
+
+  strong {
+    font-size: 0.82rem;
+    color: #1e3a8a;
+  }
+
+  span {
+    color: #1f2937;
+    font-size: 0.9rem;
+  }
+}
+
+.selected-user-note.pending {
+  border-color: #e2e8f0;
+  background: #f8fafc;
+
+  strong {
+    color: #475569;
+  }
+
+  span {
+    color: #64748b;
+  }
+}
+
+.subsection-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+
+  .full-span {
+    grid-column: 1 / -1;
+  }
+}
+
+.compact-config-grid {
+  margin-bottom: 0.65rem;
+}
+
+.compact-name {
+  max-width: 460px;
+}
+
+.exercise-select {
+  min-width: 220px;
+}
+
+.exercises-card-body {
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.muscle-group-filter {
+  min-width: 180px;
+}
+
+.agenda-weeks {
+  display: grid;
+  gap: 0.75rem;
+  max-height: 620px;
+  overflow-x: auto;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.agenda-week-row {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.agenda-week-label {
+  display: inline-flex;
+  width: fit-content;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #1e3a8a;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+}
+
+.agenda-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.agenda-day-column {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+
+  h4 {
+    margin: 0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #334155;
+  }
+}
+
+.agenda-day-dropzone {
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.8rem;
+  padding: 0.45rem;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+}
+
+.single-board-column {
+  width: 100%;
+}
+
+.single-board {
+  min-height: 260px;
+}
+
+.exercise-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.exercise-item {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.5rem 0.55rem;
+  border-radius: 0.7rem;
+  border: 1px solid #e2e8f0;
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  cursor: grab;
+
+  strong {
+    font-size: 0.78rem;
+    line-height: 1.2;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.7rem;
+    line-height: 1.25;
+    color: var(--app-text-soft, #64748b);
+  }
+}
+
+.exercise-item:active,
+.schedule-preview-item:active {
+  cursor: grabbing;
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
+  border-radius: 0.9rem;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.schedule-preview-list {
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+  width: 100%;
+}
+
+.schedule-preview-item {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, #1050d6 7%, white);
+
+  strong {
+    font-size: 0.82rem;
+    line-height: 1.2;
+  }
+
+  span {
+    color: var(--app-text-soft, #64748b);
+    font-size: 0.74rem;
+  }
+}
+
+.schedule-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.exercise-metrics {
+  margin-top: 0.35rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.exercise-metric-field {
+  display: grid;
+  gap: 0.15rem;
+
+  span {
+    font-size: 0.68rem;
+    color: #475569;
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    height: 1.65rem;
+    border-radius: 0.45rem;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    font-size: 0.75rem;
+    color: #0f172a;
+    padding: 0 0.4rem;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.18);
+  }
+}
+
+.remove-exercise-button {
+  --mdc-icon-button-state-layer-size: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-width: 1.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  line-height: 1;
+  color: #64748b;
+
+  .mat-icon {
+    display: block;
+    margin: 0;
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+  }
+}
+
+.empty-state.compact {
+  padding: 0.85rem;
+  border-radius: 0.85rem;
+  background: #f1f5f9;
+  color: var(--app-text-soft, #64748b);
+}
+
+:host ::ng-deep .customize-exercises-panel table {
+  margin-top: 0.75rem;
+}
+
+.subsection-actions {
+  margin: 0.4rem 0 0.8rem;
+}
+
+.dialog-title {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  background: var(--mat-sys-primary, #272727);
+  color: var(--mat-sys-on-primary, #ffffff);
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-primary, #272727) 80%, black);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  span {
+    font-weight: 600;
+  }
+
+  button {
+    color: var(--mat-sys-on-primary, #ffffff);
+  }
+}
+
+:host ::ng-deep mat-dialog-actions {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem 1rem;
+}
+
+@media (max-width: 1080px) {
+  .customize-metrics,
+  .subsection-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .customize-grid {
+    grid-template-columns: minmax(300px, 0.95fr) minmax(0, 1fr);
+  }
+
+  .customize-grid.exercises-hidden {
+    grid-template-columns: minmax(220px, 0.55fr) minmax(0, 2.45fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .customize-metrics,
+  .customize-grid,
+  .customize-grid.exercises-hidden,
+  .subsection-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exercise-list {
+    grid-template-columns: 1fr;
+  }
+}

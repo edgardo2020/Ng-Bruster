@@ -1,0 +1,50 @@
+
+@use 'node_modules/@angular/material/core' as mat-core;
+
+$black-primary: (
+  50: #e0e0e0,
+  100: #b3b3b3,
+  200: #808080,
+  300: #4d4d4d,
+  400: #262626,
+  500: #000000,
+  600: #000000,
+  700: #000000,
+  800: #000000,
+  900: #000000,
+  A100: #ffffff,
+  A200: #bdbdbd,
+  A400: #616161,
+  A700: #000000,
+  contrast: (
+    50: #000,
+    100: #000,
+    200: #fff,
+    300: #fff,
+    400: #fff,
+    500: #fff,
+    600: #fff,
+    700: #fff,
+    800: #fff,
+    900: #fff,
+    A100: #000,
+    A200: #000,
+    A400: #fff,
+    A700: #fff,
+  )
+);
+
+
+$custom-theme-primary: mat-core.define-palette($black-primary, 500);
+$custom-theme-accent: mat-core.define-palette(mat-core.$pink-palette, 200, 100, 400);
+$custom-theme-warn: mat-core.define-palette(mat-core.$red-palette);
+
+$custom-theme: mat-core.define-light-theme((
+  color: (
+    primary: $custom-theme-primary,
+    accent: $custom-theme-accent,
+    warn: $custom-theme-warn,
+  )
+));
+
+@include mat-core.all-component-themes($custom-theme);

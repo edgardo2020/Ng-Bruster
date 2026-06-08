@@ -1,0 +1,246 @@
+<h2 mat-dialog-title class="dialog-title">
+  <span>Generar rutina personalizada</span>
+  <button mat-icon-button type="button" aria-label="Cerrar dialogo" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content class="dialog-content customize-dialog-content">
+  <div class="customize-shell">
+    <br>
+    <div class="dashboard-toggle-row">
+      <button
+        mat-icon-button
+        class="dashboard-toggle-btn"
+        type="button"
+        [attr.aria-label]="showDashboardCard() ? 'Ocultar dashboard' : 'Mostrar dashboard'"
+        (click)="toggleDashboardCard()"
+      >
+        <mat-icon>{{ showDashboardCard() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        class="exercises-toggle-btn"
+        type="button"
+        [attr.aria-label]="showExercisesPanel() ? 'Ocultar panel de ejercicios' : 'Mostrar panel de ejercicios'"
+        (click)="toggleExercisesPanel()"
+      >
+        <mat-icon>{{ showExercisesPanel() ? 'inventory_2' : 'inventory' }}</mat-icon>
+      </button>
+    </div>
+
+    @if (showDashboardCard()) {
+    <section class="customize-hero card-surface">
+      <div>
+        <p class="eyebrow">Modo dashboard</p>
+        <h3>Configura la rutina del usuario</h3>
+        <p>Selecciona al usuario, define objetivos e intensidad, y agrega ejercicios para construir su rutina personalizada.</p>
+
+        <form class="hero-user-form" [formGroup]="form">
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Usuario</mat-label>
+            <mat-select formControlName="userId" (selectionChange)="applySuggestedName()">
+              @for (user of users; track user.id) {
+                <mat-option [value]="user.id">{{ user.nombre }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </form>
+
+        @if (getSelectedUser(); as user) {
+          <div class="selected-user-note">
+            <strong>Usuario seleccionado:</strong>
+            <span>{{ user.nombre }} · {{ user.Correo }} · {{ user.active ? 'Activo' : 'Inactivo' }}</span>
+          </div>
+        } @else {
+          <div class="selected-user-note pending">
+            <strong>Usuario seleccionado:</strong>
+            <span>Aun no has seleccionado un usuario.</span>
+          </div>
+        }
+      </div>
+
+      <div class="customize-metrics">
+        <app-stat-card label="Usuario" [value]="getMetricValue('user')" trend="Seleccion actual" icon="person" accent="#1050d6" />
+        <app-stat-card label="Estado" [value]="getMetricValue('status')" trend="Condicion del usuario" icon="verified_user" accent="#0f766e" />
+        <app-stat-card label="Objetivo" [value]="getMetricValue('focus')" trend="Enfoque de rutina" icon="flag" accent="#ff7a18" />
+        <app-stat-card label="Ejercicios" [value]="getMetricValue('exercises')" trend="Total agregado" icon="fitness_center" accent="#7c3aed" />
+      </div>
+    </section>
+    }
+
+    <form class="customize-grid" [class.exercises-hidden]="!showExercisesPanel()" [formGroup]="form">
+      <article class="card-surface customize-config-panel">
+        <div class="panel-header">
+          <div class="agenda-heading-row">
+            <h3>Configuracion de rutina</h3>
+          </div>
+        </div>
+
+        <div class="subsection-grid compact-config-grid">
+          <mat-form-field appearance="outline" class="full-span compact-name" [floatLabel]="'auto'">
+            <mat-label>Nombre de la rutina</mat-label>
+            <input matInput formControlName="routineName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Objetivo</mat-label>
+            <mat-select formControlName="focus">
+              @for (focus of focusOptions; track focus) {
+                <mat-option [value]="focus">{{ focus }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Intensidad</mat-label>
+            <mat-select formControlName="intensity">
+              @for (intensity of intensityOptions; track intensity) {
+                <mat-option [value]="intensity">{{ intensity }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-span" [floatLabel]="'auto'">
+            <mat-label>Notas para el entrenador</mat-label>
+            <textarea matInput rows="2" formControlName="notes"></textarea>
+          </mat-form-field>
+        </div>
+
+      </article>
+
+      <article class="card-surface customize-board-panel">
+        <div class="panel-header">
+          <div class="agenda-week-label">Tablero de rutina</div>
+        </div>
+
+        <div class="agenda-weeks">
+          <section class="agenda-week-row">
+           
+            <div class="agenda-board">
+              <section class="agenda-day-column single-board-column">
+                <h4>Rutina generica</h4>
+                <div
+                  class="agenda-day-dropzone single-board"
+                  cdkDropList
+                  id="routineBoardList"
+                  [cdkDropListData]="selectedExercises()"
+                  [cdkDropListConnectedTo]="['availableExercisesList']"
+                  (cdkDropListDropped)="dropExercise($event)"
+                >
+                  @if (selectedExercises().length) {
+                    <div class="schedule-preview-list">
+                      @for (exercise of selectedExercises(); track exercise.id; let index = $index) {
+                        <div class="schedule-preview-item" cdkDrag>
+                          <div class="schedule-preview-header">
+                            <strong>{{ exercise.exerciseName }}</strong>
+                            <button
+                              mat-icon-button
+                              type="button"
+                              class="remove-exercise-button"
+                              aria-label="Quitar ejercicio"
+                              (mousedown)="$event.stopPropagation()"
+                              (click)="removeExercise(index)"
+                            >
+                              <mat-icon>close</mat-icon>
+                            </button>
+                          </div>
+                          <span>{{ getExerciseDescription(exercise.exerciseId) }}</span>
+
+                          <div class="exercise-metrics" (mousedown)="$event.stopPropagation()">
+                            <label class="exercise-metric-field">
+                              <span>Series</span>
+                              <input
+                                type="number"
+                                min="1"
+                                [value]="exercise.sets"
+                                (click)="$event.stopPropagation()"
+                                (input)="updateExerciseSets(index, $any($event.target).value)"
+                              />
+                            </label>
+
+                            <label class="exercise-metric-field">
+                              <span>Reps</span>
+                              <input
+                                type="number"
+                                min="1"
+                                [value]="exercise.reps"
+                                (click)="$event.stopPropagation()"
+                                (input)="updateExerciseReps(index, $any($event.target).value)"
+                              />
+                            </label>
+
+                            <label class="exercise-metric-field">
+                              <span>Kg</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                [value]="exercise.weight"
+                                (click)="$event.stopPropagation()"
+                                (input)="updateExerciseWeight(index, $any($event.target).value)"
+                              />
+                            </label>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <div class="empty-state compact">Arrastra ejercicios aqui para construir la rutina.</div>
+                  }
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </article>
+
+      @if (showExercisesPanel()) {
+      <article class="card-surface customize-exercises-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Ejercicios disponibles</h3>
+            <p>Arrastra al tablero semanal.</p>
+          </div>
+
+          <mat-form-field appearance="outline" class="muscle-group-filter" [floatLabel]="'auto'">
+            <mat-label>Grupo muscular</mat-label>
+            <mat-select [value]="selectedMuscleGroup()" (valueChange)="setSelectedMuscleGroup($event)">
+              <mat-option value="all">Todos</mat-option>
+              @for (group of muscleGroupOptions(); track group) {
+                <mat-option [value]="group">{{ group }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div
+          class="exercises-card-body"
+          cdkDropList
+          id="availableExercisesList"
+          [cdkDropListData]="panelAvailableExercises()"
+          [cdkDropListConnectedTo]="['routineBoardList']"
+          (cdkDropListDropped)="dropExercise($event)"
+        >
+          <div class="exercise-list">
+            @for (exercise of panelAvailableExercises(); track exercise.exerciseId) {
+              <div class="exercise-item" cdkDrag [cdkDragData]="exercise">
+                <strong>{{ exercise.exerciseName }}</strong>
+                <p>{{ exercise.sets }}x{{ exercise.reps }} · {{ exercise.weight }}kg</p>
+              </div>
+            }
+          </div>
+        </div>
+      </article>
+      }
+    </form>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="close()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" [disabled]="!selectedExercises().length" (click)="save()">
+    Crear rutina personalizada
+  </button>
+</mat-dialog-actions>

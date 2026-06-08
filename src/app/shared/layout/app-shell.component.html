@@ -1,0 +1,98 @@
+@let isDesktop = !!(isDesktop$ | async);
+<mat-sidenav-container class="shell-container">
+  <mat-sidenav
+    class="shell-sidenav"
+    [mode]="isDesktop ? 'side' : 'over'"
+    [opened]="navOpen()"
+    (closedStart)="navOpen.set(false)"
+  >
+      <div class="shell-brand">
+          <img src="assets/icons/gym_icon.png" alt="Logo TEAM BRUSTER" width="150" height="150" />
+        <div>
+          <strong>TEAM BRUSTER</strong>
+          <p style="font-size: 0.5rem;">Plan de entrenamiento personalizado</p>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <mat-nav-list>
+        @for (item of navigation; track item.route) {
+          @if (canAccess(item.roles)) {
+            <a
+              mat-list-item
+              [routerLink]="item.route"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+              (click)="closeOnMobile(isDesktop)"
+            >
+              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+              <span matListItemTitle>{{ item.label }}</span>
+            </a>
+          }
+        }
+      </mat-nav-list>
+
+      <!--<section class="shell-cta card-surface">
+        <p class="shell-cta__eyebrow">Roadmap</p>
+        <h3>Preparado para QR y multi-sede</h3>
+        <p>La arquitectura deja features desacopladas para seguir creciendo sobre la API .NET.</p>
+      </section>-->
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="shell-toolbar">
+      <button mat-icon-button type="button" class="shell-toolbar__menu" (click)="toggleSidebar()">
+          <mat-icon>menu</mat-icon>
+        </button>
+
+        <div class="shell-toolbar__spacer"></div>
+
+        @if (authService.currentUser$ | async; as user) {
+          <button mat-button [matMenuTriggerFor]="userMenu" class="shell-user">
+            <span class="shell-user__content">
+              <span class="shell-user__meta">
+                <strong>{{ user.fullName }}</strong>
+                <small class="shell-user__roles">{{ user.roles.join(' / ') }}</small>
+              </span>
+              <span class="shell-user__avatar">{{ user.fullName.charAt(0) }}</span>
+            </span>
+          </button>
+        }
+      </mat-toolbar>
+
+      @if (loadingService.isLoading$ | async) {
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      }
+
+      <main class="shell-content">
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+
+  <mat-menu #userMenu="matMenu">
+    @if (authService.currentUser$ | async; as user) {
+      <div class="user-menu-card" (click)="$event.stopPropagation()">
+        <div class="user-menu-avatar">{{ user.fullName.charAt(0) }}</div>
+        <div class="user-menu-info">
+          <strong>{{ user.fullName }}</strong>
+          <span>{{ user.email }}</span>
+          <span class="user-menu-roles">{{ user.roles.join(' / ') }}</span>
+          @if (user.roles.includes('Trainee') && user.expiredTime) {
+            <span class="user-menu-expiry"
+              [class.user-menu-expiry--ok]="user.expiredTime && !isExpired(user.expiredTime)"
+              [class.user-menu-expiry--expired]="user.expiredTime && isExpired(user.expiredTime)">
+              <mat-icon style="font-size:0.85rem;width:0.85rem;height:0.85rem;line-height:1;">schedule</mat-icon>
+              Expira: {{ user.expiredTime | date:'dd/MM/yyyy' }}
+            </span>
+          }
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+    }
+    <button mat-menu-item type="button" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  </mat-menu>

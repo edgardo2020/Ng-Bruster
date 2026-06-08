@@ -1,0 +1,79 @@
+<section class="app-page">
+  <app-page-header
+    title="Reportes"
+    subtitle="Gráficas preparadas para asistencia, ingresos y distribución de membresías."
+    meta="Preparado para reemplazar por librería charting si lo necesitas"
+  />
+
+  @if (store.vm$ | async; as vm) {
+    <section class="section-grid">
+      <article class="card-surface chart-card">
+        <div class="panel-header">
+          <div>
+            <h2>Asistencia por día</h2>
+            <p>Serie rápida para seguimiento operativo.</p>
+          </div>
+        </div>
+
+        @if (vm.data.attendanceByDay.length) {
+          <div class="chart-bars">
+            @for (point of vm.data.attendanceByDay; track point.label) {
+              <div class="chart-bar">
+                <strong>{{ point.value | number }}</strong>
+                <div class="chart-bar__value" [style.height.%]="getBarHeight(point.value, vm.data.attendanceByDay)"></div>
+                <small>{{ point.label }}</small>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">Sin datos de asistencia todavía.</div>
+        }
+      </article>
+
+      <article class="card-surface chart-card">
+        <div class="panel-header">
+          <div>
+            <h2>Ingresos por mes</h2>
+            <p>Seguimiento financiero para dirección.</p>
+          </div>
+        </div>
+
+        @if (vm.data.revenueByMonth.length) {
+          <div class="chart-bars">
+            @for (point of vm.data.revenueByMonth; track point.label) {
+              <div class="chart-bar">
+                <strong>{{ point.value | currency:'USD':'symbol':'1.0-0' }}</strong>
+                <div class="chart-bar__value" [style.height.%]="getBarHeight(point.value, vm.data.revenueByMonth)"></div>
+                <small>{{ point.label }}</small>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">Sin datos financieros todavía.</div>
+        }
+      </article>
+
+      <article class="card-surface chart-card">
+        <div class="panel-header">
+          <div>
+            <h2>Membresías activas</h2>
+            <p>Distribución resumida para ventas y renovación.</p>
+          </div>
+        </div>
+
+        @if (vm.data.activeMemberships.length) {
+          <div class="summary-strip">
+            @for (point of vm.data.activeMemberships; track point.label) {
+              <article>
+                <strong>{{ point.label }}</strong>
+                <p>{{ point.value | number }} clientes</p>
+              </article>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">Sin distribución de membresías todavía.</div>
+        }
+      </article>
+    </section>
+  }
+</section>

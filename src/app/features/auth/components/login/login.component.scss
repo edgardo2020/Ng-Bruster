@@ -1,0 +1,176 @@
+// Fondo general con degradado y círculos luminosos
+.login-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f2027 0%, #2c5364 60%, #1a2980 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.decorative-circles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(32px);
+    opacity: 0.5;
+    &.circle1 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #00c6fb 0%, transparent 70%);
+      top: 10%; left: 10%;
+    }
+    &.circle2 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, #7f53ac 0%, transparent 70%);
+      bottom: 15%; right: 15%;
+    }
+    &.circle3 {
+      width: 150px; height: 150px;
+      background: radial-gradient(circle, #1a2980 0%, transparent 70%);
+      top: 60%; left: 70%;
+    }
+  }
+}
+
+// Contenedor glassmorphism
+.login-container {
+  position: relative;
+  z-index: 2;
+  background: rgba(20, 30, 50, 0.7);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(12px);
+  border-radius: 32px;
+  padding: 3rem 2.5rem 2.5rem 2.5rem;
+  min-width: 340px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1.5px solid rgba(255,255,255,0.12);
+}
+
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  .login-logo {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 16px #00c6fbcc);
+  }
+  .title {
+    color: #00c6fb;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 16px #00c6fb44;
+    margin: 0;
+  }
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,0.08);
+  border-radius: 18px;
+  box-shadow: 0 2px 8px 0 rgba(0,198,251,0.08);
+  padding: 0.5rem 1rem;
+  position: relative;
+  border: 1.5px solid transparent;
+  transition: border 0.2s, box-shadow 0.2s;
+  .input-icon {
+    color: #00c6fb;
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+  }
+  input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 1.1rem;
+    flex: 1;
+    padding: 0.7rem 0;
+    &::placeholder {
+      color: #b0c4de;
+      opacity: 0.8;
+    }
+  }
+  .toggle-password {
+    background: none;
+    border: none;
+    color: #7f53ac;
+    cursor: pointer;
+    font-size: 1.4rem;
+    margin-left: 0.5rem;
+    transition: color 0.2s;
+    &:hover {
+      color: #00c6fb;
+    }
+  }
+  &.invalid {
+    border: 1.5px solid #ff4b6e;
+    box-shadow: 0 0 0 2px #ff4b6e44;
+    animation: shake 0.2s linear 1;
+  }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+.login-btn {
+  width: 100%;
+  padding: 1rem 0;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(90deg, #00c6fb 0%, #7f53ac 100%);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  box-shadow: 0 4px 16px 0 #00c6fb33;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.2s, box-shadow 0.2s, filter 0.2s;
+  filter: brightness(1);
+  &:hover, &:focus {
+    background: linear-gradient(90deg, #00e1ff 0%, #a084ee 100%);
+    box-shadow: 0 6px 24px 0 #00c6fb55;
+    filter: brightness(1.1);
+  }
+}
+
+// Animaciones sutiles
+.input-group input:focus {
+  border: none;
+  outline: none;
+}
+
+// Responsive
+@media (max-width: 500px) {
+  .login-container {
+    padding: 2rem 1rem;
+    min-width: unset;
+  }
+}

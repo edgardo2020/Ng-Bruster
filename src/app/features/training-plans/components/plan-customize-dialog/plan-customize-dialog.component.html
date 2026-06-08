@@ -1,0 +1,161 @@
+<h2 mat-dialog-title class="dialog-title">
+  <span>Personalizar plan para usuarios</span>
+  <button mat-icon-button type="button" aria-label="Cerrar dialogo" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content class="dialog-content customize-dialog-content">
+  <div class="customize-shell">
+    <section class="customize-hero card-surface">
+      <div>
+        <p class="eyebrow">Modo dashboard</p>
+        <h3>Selecciona el usuario y organiza la agenda semanal</h3>
+        <p>
+          Selecciona el usuario al inicio del flujo y despues arma la agenda semanal arrastrando ejercicios al tablero.
+        </p>
+
+        <form class="hero-user-form" [formGroup]="form">
+          <mat-form-field appearance="outline" [floatLabel]="'auto'">
+            <mat-label>Usuario</mat-label>
+            <mat-select formControlName="userId">
+              @for (user of usersRole2; track user.id) {
+                <mat-option [value]="user.id">{{ user.nombre }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </form>
+
+        @if (getSelectedUser(); as user) {
+          <div class="selected-user-note">
+            <strong>Usuario seleccionado:</strong>
+            <span>{{ user.nombre }} · {{ user.Correo }} · {{ getUserStatusLabel() }}</span>
+          </div>
+        } @else {
+          <div class="selected-user-note pending">
+            <strong>Usuario seleccionado:</strong>
+            <span>Aun no has seleccionado un usuario.</span>
+          </div>
+        }
+      </div>
+
+      <div class="customize-metrics">
+        <app-stat-card
+          label="Usuario"
+          [value]="getMetricValue('user')"
+          trend="Seleccion actual"
+          icon="person"
+          accent="#1050d6"
+        />
+        <app-stat-card
+          label="Estado"
+          [value]="getMetricValue('status')"
+          trend="Condicion del usuario"
+          icon="verified_user"
+          accent="#0f766e"
+        />
+        <app-stat-card
+          label="Dias activos"
+          [value]="getMetricValue('days')"
+          trend="Columnas con ejercicios"
+          icon="calendar_month"
+          accent="#ff7a18"
+        />
+        <app-stat-card
+          label="Ejercicios"
+          [value]="getMetricValue('sessions')"
+          trend="Total asignado"
+          icon="fitness_center"
+          accent="#7c3aed"
+        />
+      </div>
+    </section>
+
+    <section class="customize-grid">
+      <article class="card-surface customize-agenda-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Agenda sugerida</h3>
+            <p>Tablero semanal: arrastra ejercicios por dia para construir la rutina.</p>
+          </div>
+        </div>
+
+        <div class="agenda-board">
+          @for (day of days; track day) {
+            <section class="agenda-day-column">
+              <h4>{{ day }}</h4>
+              <div
+                class="agenda-day-dropzone"
+                cdkDropList
+                [id]="getDayDropListId(day)"
+                [cdkDropListData]="getExercisesForDay(day)"
+                [cdkDropListConnectedTo]="getConnectedDropLists(day)"
+                (cdkDropListDropped)="dropExercise($event, day)"
+              >
+                @if (getExercisesForDay(day).length) {
+                  <div class="schedule-preview-list">
+                    @for (exercise of getExercisesForDay(day); track exercise.id) {
+                      <div class="schedule-preview-item" cdkDrag>
+                        <strong>{{ exercise.name }}</strong>
+                        <span>{{ exercise.description }}</span>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="empty-state compact">Suelta ejercicios aqui.</div>
+                }
+              </div>
+            </section>
+          }
+        </div>
+      </article>
+
+      <article class="card-surface customize-exercises-panel">
+        <div class="panel-header">
+          <div>
+            <h3>Ejercicios disponibles</h3>
+          </div>
+
+          <mat-form-field appearance="outline" class="muscle-group-filter" [floatLabel]="'auto'">
+            <mat-label>Grupo muscular</mat-label>
+            <mat-select [value]="selectedMuscleGroupId()" (valueChange)="setSelectedMuscleGroup($event)">
+              <mat-option value="all">Todos</mat-option>
+              @for (muscleGroup of muscleGroupOptions(); track muscleGroup) {
+                <mat-option [value]="muscleGroup.id">{{ muscleGroup.description }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div
+          class="exercises-card-body"
+          cdkDropList
+          id="availableExercisesList"
+          [cdkDropListData]="getAvailableExercises()"
+          [cdkDropListConnectedTo]="getAllDayDropListIds()"
+          (cdkDropListDropped)="dropExercise($event)"
+        >
+          @if (getAvailableExercises().length) {
+            <div class="exercise-list">
+              @for (exercise of getAvailableExercises(); track exercise.id) {
+                <div class="exercise-item" cdkDrag [cdkDragData]="exercise">
+                  <strong>{{ exercise.name }}</strong>
+                  <p>{{ exercise.description }}</p>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-state compact">Selecciona un plan para visualizar sus ejercicios disponibles.</div>
+          }
+        </div>
+      </article>
+    </section>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="close()">Cancelar</button>
+  <button mat-flat-button color="primary" type="button" (click)="save()">
+    Guardar personalizacion
+  </button>
+</mat-dialog-actions>

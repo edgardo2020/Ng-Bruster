@@ -1,0 +1,168 @@
+<h2 mat-dialog-title class="dialog-title">
+  <span>Plan alimentacion · {{ data.userName }}</span>
+  <button mat-icon-button mat-dialog-close type="button" aria-label="Cerrar dialogo">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content class="dialog-content nutrition-content">
+  <section class="card-surface form-card">
+    <h3>{{ editingPlanId() ? 'Editar plan' : 'Nuevo plan de alimentacion' }}</h3>
+
+    <form [formGroup]="planForm" class="plan-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Nombre del plan</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Objective</mat-label>
+        <input matInput formControlName="objective" placeholder="Objective" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Inicio</mat-label>
+        <input matInput type="date" formControlName="startDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Fin</mat-label>
+        <input matInput type="date" formControlName="endDate" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Calorias objetivo</mat-label>
+        <input matInput type="number" min="1" formControlName="targetCalories" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-span">
+        <mat-label>Notas</mat-label>
+        <input matInput formControlName="notes" />
+      </mat-form-field>
+    </form>
+
+    <div class="meal-builder" [formGroup]="mealForm">
+      <h4>Agregar alimento al plan</h4>
+
+      <div class="meal-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Comida</mat-label>
+          <mat-select formControlName="mealType">
+            @for (mealType of mealTypeOptions; track mealType) {
+              <mat-option [value]="mealType">{{ mealType }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Alimento</mat-label>
+          <mat-select formControlName="foodId">
+            @for (food of foods(); track food.id) {
+              <mat-option [value]="food.id">{{ food.name }} · {{ food.serving }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Cantidad</mat-label>
+          <input matInput type="number" min="0.1" step="0.1" formControlName="quantity" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Notas</mat-label>
+          <input matInput formControlName="notes" />
+        </mat-form-field>
+      </div>
+
+      <div class="meal-actions">
+        <button mat-stroked-button type="button" (click)="addMealItem()">Agregar alimento</button>
+      </div>
+    </div>
+
+    <div class="totals-row">
+      <span>Kcal: <strong>{{ totals().calories | number:'1.0-1' }}</strong></span>
+      <span>P: <strong>{{ totals().protein | number:'1.0-1' }}</strong></span>
+      <span>C: <strong>{{ totals().carbs | number:'1.0-1' }}</strong></span>
+      <span>G: <strong>{{ totals().fats | number:'1.0-1' }}</strong></span>
+    </div>
+
+    <div class="table-scroll">
+      <table mat-table [dataSource]="selectedItems()" class="mat-elevation-z0">
+        <ng-container matColumnDef="mealType">
+          <th mat-header-cell *matHeaderCellDef>Comida</th>
+          <td mat-cell *matCellDef="let item">{{ item.mealType }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="foodName">
+          <th mat-header-cell *matHeaderCellDef>Alimento</th>
+          <td mat-cell *matCellDef="let item">{{ item.foodName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef>Cant.</th>
+          <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="kcal">
+          <th mat-header-cell *matHeaderCellDef>Kcal</th>
+          <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="macros">
+          <th mat-header-cell *matHeaderCellDef>Macros</th>
+          <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let item">
+            <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="mealColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: mealColumns"></tr>
+      </table>
+    </div>
+
+    <div class="plan-actions">
+      <button mat-stroked-button type="button" (click)="resetForms()">Limpiar</button>
+      <button mat-flat-button color="primary" type="button" (click)="savePlan()">
+        {{ editingPlanId() ? 'Actualizar plan' : 'Guardar plan' }}
+      </button>
+    </div>
+  </section>
+
+  <section class="card-surface plans-card">
+    <h3>Planes del usuario</h3>
+
+    <div class="plan-list">
+      @for (plan of userPlans(); track plan.id) {
+        <article class="plan-item">
+          <div>
+            <strong>{{ plan.name }}</strong>
+            <p>{{ plan.objective }} · {{ plan.targetCalories }} kcal</p>
+          </div>
+          <div class="plan-item-actions">
+            <button mat-icon-button type="button" (click)="editPlan(plan)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="removePlan(plan)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </article>
+      }
+
+      @if (!userPlans().length) {
+        <div class="empty-state compact">Este usuario aun no tiene planes de alimentacion.</div>
+      }
+    </div>
+  </section>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close type="button">Cerrar</button>
+</mat-dialog-actions>

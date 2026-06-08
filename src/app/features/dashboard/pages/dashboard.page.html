@@ -1,0 +1,102 @@
+<section class="app-page">
+  <app-page-header
+    title="Dashboard"
+    subtitle="Visión general de usuarios activos, ingresos y asistencia del gimnasio."
+    meta="Dashboard"
+  />
+
+  @if (store.vm$ | async; as vm) {
+    <section class="hero-banner">
+      <div class="panel-header">
+        <div>
+          <h2>Operación diaria bajo control</h2>
+          <p>Resumen táctico para dirección, recepción y entrenamiento.</p>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <app-stat-card
+          label="Usuarios activos"
+          [value]="(vm.data.activeUsers | number) ?? '0'"
+          trend="Clientes con membresía vigente"
+          icon="groups"
+          accent="#1050d6"
+        />
+        <app-stat-card
+          label="Ingresos del mes"
+          [value]="(vm.data.monthlyRevenue | currency:'USD':'symbol':'1.0-0') ?? '$0'"
+          trend="Facturación acumulada"
+          icon="payments"
+          accent="#0d9488"
+        />
+        <app-stat-card
+          label="Asistencia"
+          [value]="((vm.data.attendanceRate / 100) | percent:'1.0-0') ?? '0%'"
+          trend="Promedio sobre visitas esperadas"
+          icon="how_to_reg"
+          accent="#ff7a18"
+        />
+        <app-stat-card
+          label="Crecimiento"
+          [value]="((vm.data.monthlyGrowth / 100) | percent:'1.0-0') ?? '0%'"
+          trend="Comparado con el mes anterior"
+          icon="trending_up"
+          accent="#7c3aed"
+        />
+      </div>
+    </section>
+
+    <section class="section-grid">
+      <article class="card-surface chart-card">
+        <div class="panel-header">
+          <div>
+            <h3>Ingresos por periodo</h3>
+            <p>Serie preparada para sustituirse por datos reales de la API.</p>
+          </div>
+        </div>
+
+        @if (vm.data.revenueSeries.length) {
+          <div class="chart-bars">
+            @for (point of vm.data.revenueSeries; track point.label) {
+              <div class="chart-bar">
+                <strong>{{ point.value | currency:'USD':'symbol':'1.0-0' }}</strong>
+                <div class="chart-bar__value" [style.height.%]="getBarHeight(point.value, vm.data.revenueSeries)"></div>
+                <small>{{ point.label }}</small>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">Conecta el endpoint del dashboard para visualizar métricas.</div>
+        }
+      </article>
+
+      <article class="card-surface chart-card">
+        <div class="panel-header">
+          <div>
+            <h3>Últimos check-ins</h3>
+            <p>Registro de acceso preparado para integrarse con QR.</p>
+          </div>
+        </div>
+
+        @if (vm.data.recentCheckins.length) {
+          <div class="checkins-list">
+            @for (checkin of vm.data.recentCheckins; track checkin.id) {
+              <div class="checkin-card">
+                <div class="checkin-avatar">
+                  <span>{{ checkin.userName[0] }}</span>
+                </div>
+                <div class="checkin-info">
+                  <div class="checkin-user">{{ checkin.userName }}</div>
+                  <div class="checkin-membership">{{ checkin.membershipName }}</div>
+                  <div class="checkin-date">{{ checkin.checkInAt | date:'short' }}</div>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state">Todavía no hay check-ins recientes.</div>
+        }
+      </article>
+    </section>
+  }
+</section>

@@ -1,0 +1,103 @@
+:host {
+  display: block;
+}
+
+.dialog-title {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  background: var(--mat-sys-primary, #272727);
+  color: var(--mat-sys-on-primary, #ffffff);
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-primary, #272727) 80%, black);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  span {
+    font-weight: 600;
+  }
+
+  button {
+    color: var(--mat-sys-on-primary, #ffffff);
+  }
+}
+
+.dialog-content {
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.routines-dialog-content {
+  background: #f8fafc;
+}
+
+.routines-dialog-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.routine-detail-card {
+  border: 1px solid #dbeafe;
+  border-radius: 0.9rem;
+  padding: 0.85rem;
+  background:
+    linear-gradient(145deg, color-mix(in srgb, #1050d6 8%, white), transparent 40%),
+    #ffffff;
+}
+
+.routine-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0.2rem 0 0;
+    color: #475569;
+    font-size: 0.86rem;
+  }
+}
+
+.routine-badge {
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  border-radius: 999px;
+  padding: 0.25rem 0.55rem;
+}
+
+.routine-exercise-list {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.routine-exercise-item {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.7rem;
+  background: #f8fafc;
+
+  strong {
+    font-size: 0.86rem;
+    line-height: 1.2;
+  }
+
+  span {
+    color: #64748b;
+    font-size: 0.76rem;
+  }
+}
+
+.empty-state.compact {
+  margin-top: 0.55rem;
+}

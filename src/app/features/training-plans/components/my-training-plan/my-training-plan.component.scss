@@ -1,0 +1,611 @@
+.stat-icon--routines {
+  color: #2563eb !important;
+}
+.stat-label--routines {
+  color: #2563eb;
+}
+.stat-value--routines {
+  color: #6366f1;
+}
+
+.stat-icon--exercises {
+  color: #0ea5e9 !important;
+}
+.stat-label--exercises {
+  color: #0ea5e9;
+}
+.stat-value--exercises {
+  color: #38bdf8;
+}
+
+.stat-icon--days {
+  color: #7c3aed !important;
+}
+.stat-label--days {
+  color: #7c3aed;
+}
+.stat-value--days {
+  color: #a78bfa;
+}
+.general-stats-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1em;
+  color: #1e293b;
+  font-size: 1.08em;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 500;
+  color: #2563eb;
+}
+
+.stat-label {
+  color: #1e293b;
+  font-weight: 700;
+  margin-right: 0.2em;
+  letter-spacing: 0.2px;
+}
+
+.stat-value {
+  color: #6366f1;
+  font-weight: bold;
+}
+
+.stat-icon {
+  color: #2563eb !important;
+  font-size: 1.25em;
+  filter: drop-shadow(0 1px 2px #38bdf855);
+}
+// Mejora visual para el card de avance
+.plan-progress-card {
+  background: linear-gradient(120deg, #e0e7ff 0%, #f0f9ff 40%, #ede9fe 100%) !important;
+  border: 2px solid #6366f1;
+  box-shadow: 0 4px 24px #6366f133;
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-progress-title {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.25em;
+  letter-spacing: 0.5px;
+  color: #2563eb;
+}
+
+.plan-progress-icon {
+  animation: plan-progress-bounce 1.2s infinite alternate;
+}
+
+@keyframes plan-progress-bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+.splash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(200, 255, 200, 0.85);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: splash-fade-in 0.5s;
+}
+
+.splash-content {
+  background: #e8fff3;
+  border: 2px solid #34d399;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px #34d39933;
+  padding: 2.5em 3em;
+  text-align: center;
+  position: relative;
+  min-width: 320px;
+}
+
+.splash-emoji {
+  font-size: 3.5em;
+  margin-bottom: 0.2em;
+  animation: splash-pop 0.7s;
+  filter: drop-shadow(0 0 8px #34d39988);
+}
+
+.splash-fireworks {
+  position: absolute;
+  left: 50%;
+  top: 0.5em;
+  width: 0;
+  height: 0;
+}
+.fw {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.fw1 {
+  background: radial-gradient(circle, #34d399 60%, transparent 70%);
+  left: -60px;
+  top: -30px;
+  animation: fw-burst 1.2s 0.1s both;
+}
+.fw2 {
+  background: radial-gradient(circle, #6ee7b7 60%, transparent 70%);
+  left: 0px;
+  top: -70px;
+  animation: fw-burst 1.2s 0.3s both;
+}
+.fw3 {
+  background: radial-gradient(circle, #059669 60%, transparent 70%);
+  left: 60px;
+  top: -30px;
+  animation: fw-burst 1.2s 0.5s both;
+}
+
+@keyframes splash-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes splash-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes fw-burst {
+  0% { transform: scale(0.2); opacity: 0.2; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 0; }
+}
+.enhanced-stats-card {
+  background: linear-gradient(90deg, #e0f2fe 0%, #e0e7ff 100%) !important;
+  border: 2px solid #38bdf8;
+  box-shadow: 0 2px 12px 0 #38bdf822;
+}
+
+.general-stats-flex {
+  display: flex;
+  align-items: center;
+  gap: 2.5em;
+  flex-wrap: wrap;
+}
+
+.progress-graphic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  margin-right: 1em;
+}
+
+.progress-label {
+  margin-top: 0.5em;
+  font-size: 1em;
+  color: #b45309;
+  font-weight: 500;
+}
+
+.general-stats-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 1.1em;
+}
+
+.stat-label {
+  color: #b45309;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #92400e;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.stat-icon {
+  font-size: 1.3em !important;
+  color: #facc15 !important;
+}
+.agenda-card--finished {
+  border: 2px solid #facc15;
+   background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%) !important;
+  box-shadow: 0 2px 12px 0 #facc1522;
+  transition: background 0.3s, border 0.3s;
+}
+
+
+.metric-badge--finished-badge {
+  color: #b45309;
+  background: #fef08a !important;
+  border-color: #fde047 !important;
+  margin-left: 1em;
+  border-radius: 4px !important;
+  padding: 0 0.35em !important;
+  font-size: 0.78em !important;
+  line-height: 1 !important;
+  height: 1.3em !important;
+  min-height: 0 !important;
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-spacer {
+  flex: 1 1 auto;
+}
+
+.agenda-card--collapsed {
+  opacity: 0.7;
+  max-height: 60px;
+  overflow: hidden;
+  transition: max-height 0.3s, opacity 0.3s;
+}
+:host {
+  display: block;
+}
+
+.my-training-plan {
+  display: grid;
+  gap: 1rem;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.panel-header p {
+  margin: 0.3rem 0 0;
+  color: #64748b;
+}
+
+.plan-summary,
+.agenda-card {
+  border-radius: 14px;
+  border: 1px solid #dbe3f0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+:host ::ng-deep .plan-summary .mdc-evolution-chip-set__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.plan-notes {
+  margin: 0.75rem 0 0;
+  color: #334155;
+}
+
+.agenda-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.85rem;
+}
+
+.exercise-list {
+  list-style: none;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.exercise-list li {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 0.55rem 0.65rem;
+  background: #ffffff;
+}
+
+.exercise-list li.exercise-item--finished {
+  border-color: #86efac;
+  background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.exercise-list li.exercise-item--finished .exercise-main strong {
+  color: #166534;
+}
+
+.exercise-list li.exercise-item--finished .exercise-main p {
+  color: #166534;
+}
+
+.exercise-list li.exercise-item--finished .metric-badge:not(.metric-badge--success) {
+  color: #166534;
+  background: #ecfdf3;
+  border-color: #bbf7d0;
+}
+
+.exercise-main {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.exercise-main p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.84rem;
+  line-height: 1.3;
+}
+
+.exercise-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.metric-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #0b3b73;
+  background: #e8f1ff;
+  border: 1px solid #c6dbff;
+}
+
+.metric-badge--success {
+  color: #166534;
+  background: #e8f8ec;
+  border-color: #b9e4c3;
+}
+
+.exercise-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.finish-button {
+  color: #15803d;
+  background: #eaf8ee;
+  border: 1px solid #b7e3c2;
+}
+
+.finish-button[disabled] {
+  color: #166534;
+  background: #dcfce7;
+  border-color: #bbf7d0;
+}
+
+.empty-state {
+  border-radius: 14px;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  padding: 1.2rem;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 1.9rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  color: #64748b;
+}
+
+.empty-state h3 {
+  margin: 0.5rem 0 0.3rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #64748b;
+}
+
+@media (max-width: 960px) {
+  .my-training-plan {
+    gap: 0.85rem;
+  }
+
+  .panel-header h2 {
+    font-size: 1.2rem;
+  }
+
+  :host ::ng-deep .plan-summary .mat-mdc-card-header,
+  :host ::ng-deep .agenda-card .mat-mdc-card-header {
+    padding: 0.75rem 0.85rem 0.55rem;
+  }
+
+  :host ::ng-deep .plan-summary .mat-mdc-card-content,
+  :host ::ng-deep .agenda-card .mat-mdc-card-content {
+    padding: 0.35rem 0.85rem 0.85rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .panel-header p {
+    font-size: 0.9rem;
+  }
+
+  .agenda-grid {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .exercise-list {
+    margin-top: 0.65rem;
+  }
+
+  .exercise-list li {
+    padding: 0.5rem 0.55rem;
+  }
+
+  .exercise-main strong {
+    font-size: 0.95rem;
+  }
+
+  .exercise-main p {
+    font-size: 0.8rem;
+  }
+
+  .empty-state {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  :host ::ng-deep .plan-summary .mat-mdc-card-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  :host ::ng-deep .plan-summary .mat-mdc-card-title,
+  :host ::ng-deep .agenda-card .mat-mdc-card-title {
+    font-size: 0.98rem;
+    line-height: 1.25;
+  }
+
+  :host ::ng-deep .plan-summary .mat-mdc-card-subtitle,
+  :host ::ng-deep .agenda-card .mat-mdc-card-subtitle {
+    font-size: 0.82rem;
+  }
+
+  :host ::ng-deep .plan-summary .mdc-evolution-chip {
+    min-height: 26px;
+  }
+
+  :host ::ng-deep .plan-summary .mdc-evolution-chip__text-label {
+    font-size: 0.78rem;
+  }
+
+  :host ::ng-deep .plan-summary mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.plan-summary mat-chip-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  max-width: 100%;
+}
+
+.plan-summary mat-chip {
+  max-width: 120px;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+
+.plan-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  margin-bottom: 1em;
+}
+
+.plan-badge {
+  display: flex;
+  align-items: center;
+  background: #f3f4f6;
+  border-radius: 16px;
+  padding: 0.3em 0.9em 0.3em 0.5em;
+  font-size: 1em;
+  color: #374151;
+  box-shadow: 0 1px 3px #0001;
+  max-width: 100%;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
+.plan-badge mat-icon {
+  margin-right: 0.5em;
+  font-size: 1.1em;
+  color: #059669;
+}
+
+.plan-badge--focus mat-icon {
+  color: #f59e42;
+}
+
+.plan-badge--intensity mat-icon {
+  color: #f87171;
+}
+
+.plan-badge span {
+  flex: 1;
+}
+
+
+.plan-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  margin-bottom: 1em;
+}
+
+.exercise-help-btn {
+  flex-shrink: 0;
+  color: #1976d2;
+}
+
+.exercise-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.image-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.image-preview-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+}
+
+.image-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem 0.75rem 1.25rem;
+  border-bottom: 1px solid #e6edf7;
+}
+
+.image-preview-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.image-preview-img {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  background: #f1f5f9;
+}

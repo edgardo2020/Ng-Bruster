@@ -1,0 +1,43 @@
+<h2 mat-dialog-title class="dialog-title">
+  <span>Rutinas de {{ data.userName }}</span>
+  <button mat-icon-button mat-dialog-close type="button" aria-label="Cerrar dialogo">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content class="dialog-content routines-dialog-content">
+  <section class="routines-dialog-grid">
+    @for (routine of data.routines; track routine.id) {
+      <article class="routine-detail-card">
+        <header class="routine-detail-header">
+          <div>
+            <h3>{{ routine.name }}</h3>
+            <p>{{ routine.description }}</p>
+          </div>
+          <span class="routine-badge">{{ routine.exercises.length }} ejercicios</span>
+        </header>
+
+        @if (routine.exercises.length > 0) {
+          <div class="routine-exercise-list">
+            @for (exercise of routine.exercises; track exercise.id) {
+              <div class="routine-exercise-item">
+                <strong>{{ exercise.exerciseName }}</strong>
+                <span>{{ exercise.sets }} series · {{ exercise.reps }} reps · {{ exercise.weight }} kg</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state compact">Esta rutina no tiene ejercicios registrados.</div>
+        }
+      </article>
+    }
+  </section>
+
+  @if (!data.routines.length) {
+    <div class="empty-state">Este usuario no tiene rutinas registradas.</div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close type="button">Cerrar</button>
+</mat-dialog-actions>

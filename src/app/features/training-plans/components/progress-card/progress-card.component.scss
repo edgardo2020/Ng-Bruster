@@ -1,0 +1,457 @@
+.progress-icon {
+  font-size: 3em !important;
+  width: 60px !important;
+  height: 32px !important;
+  background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px #38bdf833);
+  margin-left: 10px;
+}
+
+.plan-badge--focus {
+  background: linear-gradient(90deg, #fefce8 0%, #fef9c3 100%);
+  color: #000000;
+  font-weight: 100;
+  border-radius: 4px;
+  padding: 2px 2px;
+  margin-right: 0px;
+  font-size: .7em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0px;
+  box-shadow: 0 2px 8px #facc1522;
+  text-align: justify;
+}
+.plan-badge--focus span {
+  text-align: justify;
+  width: 80px;
+}
+.plan-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.plan-name {
+  font-size: .8em;
+  font-weight: 600;
+  color: #000000;
+  margin-right: 8px;
+}
+
+.plan-badge {
+  font-size: 0.9em;
+  font-weight: 500;
+  background: #fcfcfc;
+  border-radius: 8px;
+  padding: 2px 8px;
+  //margin-right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.plan-date {
+  font-size: 0.7em;
+  color: #181818;
+  //margin-right: 0px;
+}
+
+/* Segundo row: puedes ajustar según tu estructura */
+.plan-row-2 span {
+  font-size: 0.95em;
+  color: #444;
+  margin-right: 8px;
+}
+.info button {
+  background: linear-gradient(90deg, #bde4cb 0%, #c3f3ed 100%) !important;
+  color: #615c5c !important;
+  border: none;
+  font-weight: 700;
+  box-shadow: 0 2px 8px #38bdf822;
+}
+.info strong {
+  font-size: 2.2em;
+  color: #2563eb;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.badge {
+  display: inline-block;
+  background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
+  color: #fff !important;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 2px 12px;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px #38bdf822;
+}
+
+::ng-deep .progress-card {
+  border-radius: 16px;
+  padding: 8px 24px 16px 24px;
+  background: linear-gradient(135deg, #e0f2fe 0%, #bccef0 100%);
+  box-shadow: 0 4px 24px 0 #38bdf833;
+  color: #222;
+  max-width: 350px;
+  margin: 2px auto;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  border: none;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.header h2 {
+  margin: 0 0 2px 0;
+  font-weight: 600;
+}
+
+.header span {
+  font-size: 13px;
+  color: gray;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 0;
+  gap: 16px;
+}
+
+.progress-circle {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.progress-circle svg {
+  width: 150px;
+  height: 150px;
+  display: block;
+}
+
+.progress-circle .bg {
+  fill: none;
+  stroke: #e0e0e0;
+  stroke-width: 4;
+}
+
+.progress-circle .progress {
+  fill: none;
+  stroke-width: 4;
+  stroke-linecap: round;
+  /* El color del trazo se define dinámicamente por Angular con stroke='url(#progress-gradient-...)' */
+}
+
+.progress-circle text {
+  fill: #27292e;
+  font-size: 0.5em;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.info {
+  text-align: right;
+}
+
+.info p {
+  margin-bottom: 10px;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 5px;
+
+  .stat {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column; // 👈 esto los pone en vertical
+    align-items: center; // 👈 centra horizontalmente
+    //justify-content: center;
+    text-align: center;
+    gap: 2px; // espacio entre elemento
+    text-align: center;
+   
+    background: linear-gradient(135deg, rgba(96, 144, 247, 0.12), rgba(13, 148, 136, 0.08));
+
+    mat-icon {
+      background: linear-gradient(135deg, #3b82f6, #14b8a6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      
+      .stats {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 5px;
+        gap: 12px;
+      }
+
+      .stat {
+        width: 90px;
+        height: 90px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2px;
+        background: linear-gradient(135deg, rgba(96, 144, 247, 0.12), rgba(13, 148, 136, 0.08));
+        border-radius: 16px;
+        padding: 8px 0;
+      }
+
+      .stat mat-icon {
+        background: linear-gradient(135deg, #3b82f6, #14b8a6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+
+      .stat p {
+        font-size: 8px;
+        opacity: 0.7;
+        margin: 0;
+      }
+
+      .stat span {
+        font-size: 10px;
+        font-weight: bold;
+      }
+
+      @media (max-width: 600px) {
+        ::ng-deep .progress-card {
+          max-width: 100%;
+          padding: 16px 4px 12px 4px;
+        }
+
+        .content {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 12px;
+        }
+
+        .stats {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 8px;
+        }
+
+        .stat {
+          width: 100%;
+          height: auto;
+          min-height: 70px;
+        }
+      }
+
+      span {
+        font-size: 10px;
+        color: #630000;
+        font-weight: 500;
+      }
+    }
+
+    .content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 18px 0 10px 0;
+    }
+
+    .progress-circle {
+      width: 140px;
+      height: 140px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 12px #38bdf822;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+
+      svg {
+        width: 100px;
+        height: 100px;
+        transform: rotate(-90deg);
+      }
+
+      .bg {
+        fill: none;
+        stroke: #e0e7ef;
+        stroke-width: 6;
+      }
+
+      .progress {
+        fill: none;
+        stroke: url(#progress-gradient);
+        stroke-width: 2;
+        stroke-linecap: round;
+        transition: stroke-dasharray 0.5s;
+      }
+
+      text {
+        fill: #2563eb;
+        font-size: 1.5em;
+        font-weight: 700;
+        text-anchor: middle;
+        transform: rotate(90deg);
+        dominant-baseline: middle;
+      }
+    }
+
+    .info {
+      text-align: left;
+      flex: 1;
+
+      p {
+        margin: 0 0 18px 0;
+        font-size: 1.1em;
+        color: #222;
+        font-weight: 500;
+      }
+
+      strong {
+        font-size: 1.2em;
+        color: #2563eb;
+      }
+
+      button {
+        width: 100%;
+        border-radius: 32px;
+        font-size: 1.1em;
+        font-weight: 600;
+        padding: 12px 0;
+        background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
+        color: #fff;
+        box-shadow: 0 2px 8px #38bdf822;
+        margin-top: 8px;
+      }
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      gap: 10px;
+
+      .stat {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px #38bdf822;
+        padding: 10px 12px 6px 12px;
+        min-width: 80px;
+        text-align: center;
+
+        mat-icon {
+          font-size: 1.5em;
+          color: #38bdf8;
+          margin-bottom: 2px;
+        }
+
+        span {
+          display: block;
+          font-weight: 700;
+          color: #2563eb;
+          font-size: 1.1em;
+        }
+
+        p {
+          font-size: 0.95em;
+          color: #64748b;
+          margin: 0;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    gap: 10px;
+
+    .stat {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px #38bdf822;
+      padding: 10px 12px 6px 12px;
+      min-width: 80px;
+      text-align: center;
+
+      mat-icon {
+        font-size: 1.5em;
+        color: #38bdf8;
+        margin-bottom: 2px;
+      }
+
+      span {
+        display: block;
+        font-weight: 700;
+        color: #2563eb;
+        font-size: 1.1em;
+      }
+
+      p {
+        font-size: 0.95em;
+        color: #64748b;
+        margin: 0;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  gap: 10px;
+
+  .stat {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px #38bdf822;
+    padding: 10px 12px 6px 12px;
+    min-width: 80px;
+    text-align: center;
+
+    mat-icon {
+      font-size: 1.5em;
+      color: #38bdf8;
+      margin-bottom: 2px;
+    }
+
+    span {
+      display: block;
+      font-weight: 700;
+      color: #000000;
+      font-size: 0.8em;
+    }
+
+    p {
+      font-size: 0.7em;
+      color: #797979;
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+}
