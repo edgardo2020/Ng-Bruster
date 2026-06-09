@@ -123,12 +123,31 @@ export class ExercisesPageComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = () => {
-      const result = reader.result as string;
-      const base64 = result.split(',')[1] ?? result;
-      this.selectedImageBase64.set(base64);
-      this.selectedImageName.set(file.name);
+      const img = new Image();
+      img.onload = () => {
+        const MAX_SIZE = 800;
+        let { width, height } = img;
+        if (width > MAX_SIZE || height > MAX_SIZE) {
+          const ratio = Math.min(MAX_SIZE / width, MAX_SIZE / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressed = canvas.toDataURL('image/jpeg', 0.7);
+        const base64 = compressed.split(',')[1] ?? compressed;
+        this.selectedImageBase64.set(base64);
+        this.selectedImageName.set(file.name);
+      };
+      img.src = reader.result as string;
     };
     reader.readAsDataURL(file);
   }
