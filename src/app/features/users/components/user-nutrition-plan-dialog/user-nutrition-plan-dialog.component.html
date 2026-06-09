@@ -86,7 +86,7 @@
       <span>G: <strong>{{ totals().fats | number:'1.0-1' }}</strong></span>
     </div>
 
-    <div class="table-scroll">
+    <div class="table-scroll desktop-table-view">
       <table mat-table [dataSource]="selectedItems()" class="mat-elevation-z0">
         <ng-container matColumnDef="mealType">
           <th mat-header-cell *matHeaderCellDef>Comida</th>
@@ -125,6 +125,49 @@
         <tr mat-header-row *matHeaderRowDef="mealColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: mealColumns"></tr>
       </table>
+    </div>
+
+    <div class="mobile-card-view">
+      @for (item of paginatedItems(); track item.id) {
+        <div class="food-card">
+          <div class="food-card-header">
+            <span class="food-card-meal">{{ item.mealType }}</span>
+            <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+          <div class="food-card-body">
+            <div class="food-card-row">
+              <span class="food-card-label">Alimento</span>
+              <span class="food-card-value">{{ item.foodName }}</span>
+            </div>
+            <div class="food-card-row">
+              <span class="food-card-label">Cantidad</span>
+              <span class="food-card-value">{{ item.quantity }} x {{ item.serving }}</span>
+            </div>
+            <div class="food-card-row">
+              <span class="food-card-label">Kcal</span>
+              <span class="food-card-value">{{ item.calories }}</span>
+            </div>
+            <div class="food-card-row">
+              <span class="food-card-label">Macros</span>
+              <span class="food-card-value">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</span>
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (selectedItems().length > pageSize) {
+        <div class="mobile-pagination">
+          <button mat-icon-button type="button" [disabled]="currentPage() <= 1" (click)="changePage(-1)">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+          <span class="page-info">{{ currentPage() }} / {{ totalPages() }}</span>
+          <button mat-icon-button type="button" [disabled]="currentPage() >= totalPages()" (click)="changePage(1)">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+      }
     </div>
 
     <div class="plan-actions">

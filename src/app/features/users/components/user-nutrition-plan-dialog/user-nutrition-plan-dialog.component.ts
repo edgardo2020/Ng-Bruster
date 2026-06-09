@@ -58,6 +58,20 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   readonly mealTypeOptions: Meals[] = [];
 
   readonly mealColumns = ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'actions'];
+  readonly pageSize = 4;
+  readonly currentPage = signal(1);
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.selectedItems().length / this.pageSize)));
+  readonly paginatedItems = computed(() => {
+    const start = (this.currentPage() - 1) * this.pageSize;
+    return this.selectedItems().slice(start, start + this.pageSize);
+  });
+
+  changePage(delta: 1 | -1): void {
+    const next = this.currentPage() + delta;
+    if (next >= 1 && next <= this.totalPages()) {
+      this.currentPage.set(next);
+    }
+  }
 
   readonly totals = computed(() => {
     const items = this.selectedItems();
@@ -125,6 +139,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       }
     ]);
 
+    this.currentPage.set(1);
+
     this.mealForm.patchValue({
       mealType: raw.mealType,
       foodId: 0,
@@ -154,6 +170,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
         }
 
         this.selectedItems.update((current) => current.filter((entry) => entry.id !== itemId));
+        this.currentPage.set(1);
         this.toastr.success('Alimento removido del plan.');
       });
   }
@@ -242,6 +259,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   resetForms(): void {
     this.editingPlanId.set(null);
     this.selectedItems.set([]);
+    this.currentPage.set(1);
     this.planForm.reset({
       name: '',
       objective: '',

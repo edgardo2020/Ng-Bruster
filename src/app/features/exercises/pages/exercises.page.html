@@ -12,67 +12,74 @@
           <div>
             <h2>Grupos musculares</h2>
           </div>
-          <button mat-flat-button color="primary" type="button" (click)="startCreateMuscleGroup()">
-            <mat-icon>add</mat-icon> Nuevo
-          </button>
+          <div class="panel-header-actions">
+            <button mat-icon-button type="button" (click)="toggleMuscleGroups()" [attr.aria-label]="muscleGroupsCollapsed() ? 'Expandir' : 'Colapsar'">
+              <mat-icon class="collapse-icon" [class.collapse-icon--rotated]="!muscleGroupsCollapsed()">keyboard_arrow_down</mat-icon>
+            </button>
+            <button mat-flat-button color="primary" type="button" (click)="startCreateMuscleGroup()">
+              <mat-icon>add</mat-icon> Nuevo
+            </button>
+          </div>
         </div>
 
-        <table mat-table [dataSource]="getMuscleGroupSummary(vm.data)" class="mat-elevation-z0">
-          <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef>Descripcion</th>
-            <td mat-cell *matCellDef="let item">
-              <button
-                mat-stroked-button
-                type="button"
-                class="filter-chip"
-                [class.filter-chip--active]="selectedMuscleGroupId() === item.id"
-                (click)="selectMuscleGroup(item.id)"
-              >
-                {{ item.description }}
-              </button>
-            </td>
-          </ng-container>
+        @if (!muscleGroupsCollapsed()) {
+          <table mat-table [dataSource]="getMuscleGroupSummary(vm.data)" class="mat-elevation-z0">
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Descripcion</th>
+              <td mat-cell *matCellDef="let item">
+                <button
+                  mat-stroked-button
+                  type="button"
+                  class="filter-chip"
+                  [class.filter-chip--active]="selectedMuscleGroupId() === item.id"
+                  (click)="selectMuscleGroup(item.id)"
+                >
+                  {{ item.description }}
+                </button>
+              </td>
+            </ng-container>
 
-          <ng-container matColumnDef="count">
-            <th mat-header-cell *matHeaderCellDef>Ejercicios</th>
-            <td mat-cell *matCellDef="let item">{{ item.count }}</td>
-          </ng-container>
+            <ng-container matColumnDef="count">
+              <th mat-header-cell *matHeaderCellDef>Ejercicios</th>
+              <td mat-cell *matCellDef="let item">{{ item.count }}</td>
+            </ng-container>
 
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Acciones</th>
-            <td mat-cell *matCellDef="let item">
-              <button mat-icon-button type="button" (click)="editMuscleGroup(item)">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button type="button" (click)="removeMuscleGroup(item)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </td>
-          </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Acciones</th>
+              <td mat-cell *matCellDef="let item">
+                <button mat-icon-button type="button" (click)="editMuscleGroup(item)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button type="button" (click)="removeMuscleGroup(item)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="muscleGroupDisplayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: muscleGroupDisplayedColumns"></tr>
-        </table>
+            <tr mat-header-row *matHeaderRowDef="muscleGroupDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: muscleGroupDisplayedColumns"></tr>
+          </table>
 
-        <button
-          mat-stroked-button
-          type="button"
-          class="filter-chip all-chip"
-          [class.filter-chip--active]="selectedMuscleGroupId() === 0"
-          (click)="selectMuscleGroup(0)"
-        >
-          Mostrar todos los Ejercicios <span>{{ getFilteredExercises(vm.data).length }}</span>
-        </button>
+          <button
+            mat-stroked-button
+            type="button"
+            class="filter-chip all-chip"
+            [class.filter-chip--active]="selectedMuscleGroupId() === 0"
+            (click)="selectMuscleGroup(0)"
+          >
+            Mostrar todos los Ejercicios <span>{{ getFilteredExercises(vm.data).length }}</span>
+          </button>
 
-        @if (!muscleGroupCatalog().length) {
-          <div class="empty-state compact">No hay grupos musculares disponibles.</div>
+          @if (!muscleGroupCatalog().length) {
+            <div class="empty-state compact">No hay grupos musculares disponibles.</div>
+          }
         }
       </article>
 
       <article class="card-surface exercises-card">
         <div class="panel-header">
           <div>
-            <h2>Catalogo de ejercicios</h2>
+            <h2>{{ selectedGroupTitle() }}</h2>
           </div>
           <button mat-flat-button color="primary" type="button" (click)="openDialog()">
             <mat-icon>add</mat-icon> Nuevo ejercicio

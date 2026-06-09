@@ -13,6 +13,20 @@
   order: 1;
 }
 
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.collapse-icon {
+  transition: transform 0.2s ease;
+}
+
+.collapse-icon--rotated {
+  transform: rotate(180deg);
+}
+
 .exercises-card {
   min-width: 0;
   order: 2;

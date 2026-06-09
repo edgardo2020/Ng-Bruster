@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -92,6 +92,17 @@ export class ExercisesPageComponent implements OnInit {
   readonly displayedColumns = ['name', 'muscleGroup', 'actions'];
   readonly muscleGroupDisplayedColumns = ['description', 'count', 'actions'];
   readonly muscleGroupCatalog = signal<MuscleGroupCatalogItem[]>([]);
+  readonly muscleGroupsCollapsed = signal(false);
+  readonly selectedGroupTitle = computed(() => {
+    const id = this.selectedMuscleGroupId();
+    if (!id) return 'Catalogo de ejercicios';
+    const group = this.muscleGroupCatalog().find((g) => g.id === id);
+    return group ? `Ejercicios de ${group.description}` : 'Catalogo de ejercicios';
+  });
+
+  toggleMuscleGroups(): void {
+    this.muscleGroupsCollapsed.update((v) => !v);
+  }
 
   readonly form = this.formBuilder.nonNullable.group({
     name: ['', Validators.required],
@@ -137,6 +148,9 @@ export class ExercisesPageComponent implements OnInit {
   }
 
   openDialog(): void {
+    if (!this.editingId() && this.selectedMuscleGroupId()) {
+      this.form.patchValue({ muscleGroupId: this.selectedMuscleGroupId() });
+    }
     this.dialogRef = this.dialog.open(this.formDialogRef, { width: '720px', maxWidth: '92vw' });
     this.dialogRef.afterClosed().pipe(take(1)).subscribe(() => this.resetForm());
   }
