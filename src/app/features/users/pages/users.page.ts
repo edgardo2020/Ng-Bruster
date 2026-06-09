@@ -2,7 +2,7 @@ import { environment } from '../../../../environments/environment';
 // ...existing code...
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Component, DestroyRef, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, startWith, take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -60,7 +60,8 @@ import { ToastrService } from 'ngx-toastr';
     MatDatepickerModule,
     MatNativeDateModule,
     PageHeaderComponent,
-    UserHistoryDialogComponent
+    UserHistoryDialogComponent,
+    UserNutritionPlanDialogComponent
   ],
   templateUrl: './users.page.html',
   styleUrl: './users.page.scss'
@@ -82,6 +83,25 @@ export class UsersPageComponent implements OnInit {
   private dialogRef: MatDialogRef<unknown> | null = null;
   public userHistories = new Map<string, UserHistoryRecord[]>();
   public selectedUserForHistory: UserRecord | null = null;
+  readonly selectedUserForNutrition = signal<UserRecord | null>(null);
+
+  readonly pageTitle = computed(() => {
+    const nut = this.selectedUserForNutrition();
+    if (nut) return `Plan alimentacion · ${nut.nombre}`;
+    return 'Gesti\u00f3n de usuarios';
+  });
+
+  readonly pageSubtitle = computed(() => {
+    const nut = this.selectedUserForNutrition();
+    if (nut) return 'Administra los planes nutricionales del usuario';
+    return 'Clientes y operadores con filtros, roles y estado de membres\u00eda.';
+  });
+
+  readonly pageMeta = computed(() => {
+    const nut = this.selectedUserForNutrition();
+    if (nut) return nut.nombre;
+    return 'Usuarios';
+  });
   readonly store = inject(UsersStore);
   readonly editingId = signal<string | null>(null);
   readonly editingUser = signal<UserRecord | null>(null);
@@ -293,18 +313,26 @@ export class UsersPageComponent implements OnInit {
   }
 
   openUserNutritionPlans(user: UserRecord): void {
-    this.dialog.open<UserNutritionPlanDialogComponent, UserNutritionPlanDialogData>(
-      UserNutritionPlanDialogComponent,
-      {
-        width: '1240px',
-        maxWidth: '98vw',
-        maxHeight: '94vh',
-        data: {
-          userId: user.id,
-          userName: user.nombre
+    if (window.innerWidth <= 768) {
+      this.selectedUserForNutrition.set(user);
+    } else {
+      this.dialog.open<UserNutritionPlanDialogComponent, UserNutritionPlanDialogData>(
+        UserNutritionPlanDialogComponent,
+        {
+          width: '1240px',
+          maxWidth: '98vw',
+          maxHeight: '94vh',
+          data: {
+            userId: user.id,
+            userName: user.nombre
+          }
         }
-      }
-    );
+      );
+    }
+  }
+
+  closeUserNutrition(): void {
+    this.selectedUserForNutrition.set(null);
   }
 
   save(): void {
@@ -412,6 +440,7 @@ export class UsersPageComponent implements OnInit {
   }
 
   public showHistory(user: UserRecord): void {
+    this.selectedUserForNutrition.set(null);
     this.selectedUserForHistory = user;
   }
 

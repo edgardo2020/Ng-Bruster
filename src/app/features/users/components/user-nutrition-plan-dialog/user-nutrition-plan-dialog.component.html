@@ -1,14 +1,24 @@
-<h2 mat-dialog-title class="dialog-title">
-  <span>Plan alimentacion · {{ data.userName }}</span>
-  <button mat-icon-button mat-dialog-close type="button" aria-label="Cerrar dialogo">
-    <mat-icon>close</mat-icon>
-  </button>
-</h2>
+@if (isDialog()) {
+  <h2 mat-dialog-title class="dialog-title">
+    <span>Plan alimentacion · {{ effectiveUserName() }}</span>
+    <button mat-icon-button mat-dialog-close type="button" aria-label="Cerrar dialogo">
+      <mat-icon>close</mat-icon>
+    </button>
+  </h2>
+}
 
 <mat-dialog-content class="dialog-content nutrition-content">
-  <section class="card-surface plans-card">
-    <h3>Planes del usuario</h3>
+  @if (isMobile) {
+    <button mat-icon-button type="button" (click)="handleBack()" aria-label="Volver" class="mobile-back-btn">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  }
 
+  @if (!isMobile || mobileViewPlansOnly()) {
+  <section class="card-surface plans-card">
+    @if (!isMobile) {
+      <h3>Planes del usuario</h3>
+    }
     <div class="plan-list">
       @for (plan of userPlans(); track plan.id) {
         <article class="plan-item">
@@ -31,10 +41,17 @@
         <div class="empty-state compact">Este usuario aun no tiene planes de alimentacion.</div>
       }
     </div>
+    @if (isMobile) {
+      <button mat-stroked-button type="button" (click)="mobileViewPlansOnly.set(false)" class="mobile-add-plan-btn">Nuevo plan</button>
+    }
   </section>
+  }
 
+  @if (!isMobile || !mobileViewPlansOnly()) {
   <section class="card-surface form-card">
-    <h3>{{ editingPlanId() ? 'Editar plan' : 'Nuevo plan de alimentacion' }}</h3>
+    @if (!isMobile) {
+      <h3>{{ editingPlanId() ? 'Editar plan' : 'Nuevo plan de alimentacion' }}</h3>
+    }
 
     <form [formGroup]="planForm" class="plan-grid">
       <mat-form-field appearance="outline">
@@ -209,8 +226,11 @@
       </button>
     </div>
   </section>
+  }
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close type="button">Cerrar</button>
-</mat-dialog-actions>
+@if (isDialog()) {
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">Cerrar</button>
+  </mat-dialog-actions>
+}

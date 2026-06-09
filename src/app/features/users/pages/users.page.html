@@ -1,13 +1,22 @@
 <section class="app-page">
   <app-page-header
-    title="Gestión de usuarios"
-    subtitle="Clientes y operadores con filtros, roles y estado de membresía."
-    meta="Usuarios"
+    [title]="pageTitle()"
+    [subtitle]="pageSubtitle()"
+    [meta]="pageMeta()"
   />
 
   <section class="entity-layout">
     <article class="card-surface" style="grid-column: 1 / -1">
-      @if (selectedUserForHistory) {
+      @if (selectedUserForNutrition(); as nutUser) {
+        <div class="user-nutrition-page">
+          <app-user-nutrition-plan-dialog
+            [userName]="nutUser.nombre"
+            [userId]="nutUser.id"
+            (back)="closeUserNutrition()"
+          ></app-user-nutrition-plan-dialog>
+        </div>
+      }
+      @else if (selectedUserForHistory) {
         <div class="user-history-page">
           <button mat-icon-button (click)="closeUserHistory()" matTooltip="Volver" class="btn-back">
             <mat-icon>arrow_back</mat-icon>

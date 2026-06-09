@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -47,14 +47,24 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   private readonly foodsApiService = inject(FoodsApiService);
   private readonly mealsApiService = inject(MealsApiService);
   private readonly plansApiService = inject(UserNutritionPlansApiService);
+  private readonly authService = inject(AuthService);
 
-  readonly data = inject<UserNutritionPlanDialogData>(MAT_DIALOG_DATA);
+  @Input() userId = '';
+  @Input() userName = '';
+  @Output() back = new EventEmitter<void>();
+
+  private readonly dialogData = inject<UserNutritionPlanDialogData | null>(MAT_DIALOG_DATA, { optional: true });
+
+  readonly isDialog = computed(() => this.dialogData != null);
+  readonly effectiveUserId = computed(() => this.userId || this.dialogData?.userId || '');
+  readonly effectiveUserName = computed(() => this.userName || this.dialogData?.userName || '');
 
   readonly foods = signal<FoodCatalogItem[]>([]);
   readonly userPlans = signal<UserNutritionPlan[]>([]);
   readonly selectedItems = signal<UserNutritionPlanMealItem[]>([]);
   readonly editingPlanId = signal<string | null>(null);
-  private readonly authService = inject(AuthService);
+  readonly mobileViewPlansOnly = signal(true);
+  readonly isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   readonly mealTypeOptions: Meals[] = [];
 
   readonly mealColumns = ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'actions'];
@@ -186,7 +196,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
 
     const raw = this.planForm.getRawValue();
     const payload: Omit<UserNutritionPlan, 'id'> = {
-      userId: this.data.userId,
+      userId: this.effectiveUserId(),
       name: raw.name,
       objective: raw.objective,
       startDate: raw.startDate,
@@ -224,6 +234,18 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       notes: plan.notes ?? ''
     });
     this.selectedItems.set([...plan.items]);
+    if (this.isMobile) {
+      this.mobileViewPlansOnly.set(false);
+    }
+  }
+
+  handleBack(): void {
+    if (this.mobileViewPlansOnly()) {
+      this.back.emit();
+    } else {
+      this.mobileViewPlansOnly.set(true);
+      this.resetForms();
+    }
   }
 
   removePlan(plan: UserNutritionPlan): void {
@@ -297,6 +319,9 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.editingPlanId.set(null);
     this.selectedItems.set([]);
     this.currentPage.set(1);
+    if (this.isMobile) {
+      this.mobileViewPlansOnly.set(true);
+    }
     this.planForm.reset({
       name: '',
       objective: '',
@@ -335,7 +360,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   }
 
   private loadPlans(options?: { resetIfEmpty?: boolean }): void {
-    this.plansApiService.getByUser(this.data.userId).pipe(take(1)).subscribe({
+    this.plansApiService.getByUser(this.effectiveUserId()).pipe(take(1)).subscribe({
       next: (plans) => {
         this.userPlans.set(plans);
         console.log('Loaded user plans:', plans);

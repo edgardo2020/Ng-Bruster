@@ -16,9 +16,30 @@
   }
 }
 
+.inline-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+
+  h2, h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
 .dialog-content {
   max-height: 78vh;
   overflow: auto;
+}
+
+.mobile-back-btn {
+  margin-bottom: 0.5rem;
+}
+
+.mobile-add-plan-btn {
+  margin-top: 0.75rem;
+  width: 100%;
 }
 
 .nutrition-content {
