@@ -158,7 +158,7 @@ export class AssignmentsPageComponent implements OnInit {
       .subscribe((exercises) => this.exercises.set(exercises));
 
     this.muscleGroupsApiService
-      .getAll()
+      .getAll(companyId!!)
       .pipe(take(1))
       .subscribe((muscleGroups) => this.muscleGroups.set(muscleGroups));
   }

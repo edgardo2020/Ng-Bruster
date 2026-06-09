@@ -387,7 +387,7 @@ export class ExercisesPageComponent implements OnInit {
     const companyId = this.authService.snapshot?.user.idEmpresa;
 
     this.muscleGroupsApiService
-      .getAll(companyId)
+      .getAll(companyId!!)
       .pipe(take(1))
       .subscribe({
         next: (groups) => this.muscleGroupCatalog.set([...groups].sort((left, right) => left.id - right.id)),

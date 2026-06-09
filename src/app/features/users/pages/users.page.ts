@@ -224,6 +224,7 @@ export class UsersPageComponent implements OnInit {
   }
 
   openUserAssignments(user: UserRecord): void {
+      const companyId = this.authService.snapshot?.user.idEmpresa;
     this.assignmentsApiService
       .getDetailByUser(user.id)
       .pipe(take(1))
@@ -238,7 +239,7 @@ export class UsersPageComponent implements OnInit {
           forkJoin({
             plans: this.trainingPlansApiService.getAll(),
             exercises: this.exercisesApiService.getAll(),
-            muscleGroups: this.muscleGroupsApiService.getAll()
+            muscleGroups: this.muscleGroupsApiService.getAll(companyId!!)
           })
             .pipe(take(1))
             .subscribe({

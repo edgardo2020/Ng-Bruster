@@ -26,7 +26,7 @@ export class MuscleGroupsApiService {
     { id: 8, description: 'Cardio' }
   ];
 
-  getAll(idEmpresa?: number): Observable<MuscleGroupCatalogItem[]> {
+  getAll(idEmpresa: number): Observable<MuscleGroupCatalogItem[]> {
     if (this.mockEnabled) {
       return of([...this.mockGroups]).pipe(delay(220));
     }

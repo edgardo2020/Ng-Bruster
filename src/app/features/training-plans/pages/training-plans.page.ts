@@ -121,6 +121,7 @@ export class TrainingPlansPageComponent implements OnInit {
 
   ngOnInit(): void {
     const sessionUser = this.authService.snapshot?.user;
+    const companyId = this.authService.snapshot?.user.idEmpresa;
     this.userRoleId.set(this.resolveRoleId(sessionUser));
 
     if (this.isRole2() && sessionUser?.id) {
@@ -150,7 +151,7 @@ export class TrainingPlansPageComponent implements OnInit {
       .subscribe((exercises) => this.exercises.set(exercises));
 
     this.muscleGroupsApiService
-      .getAll()
+      .getAll(companyId!!)
       .pipe(take(1))
       .subscribe((muscleGroups) => this.muscleGroups.set(muscleGroups));
 

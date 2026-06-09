@@ -160,7 +160,7 @@ export class RoutinesPageComponent implements OnInit {
       .subscribe((catalog) => this.exerciseCatalog.set(catalog));
 
     this.muscleGroupsApiService
-      .getAll()
+      .getAll(companyId!!)
       .pipe(take(1))
       .subscribe((groups) => this.muscleGroupCatalog.set(groups));
   }
