@@ -21,6 +21,7 @@
                 <div>
                   <h3>{{ plan.name }}</h3>
                   <p>{{ plan.objective }} · {{ plan.targetCalories }} kcal</p>
+                  <p>{{plan.notes}}</p>
                 </div>
               </div>
 
@@ -58,8 +59,13 @@
                     <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
                   </ng-container>
 
-                  <tr mat-header-row *matHeaderRowDef="['mealType', 'foodName', 'quantity', 'kcal', 'macros']"></tr>
-                  <tr mat-row *matRowDef="let row; columns: ['mealType', 'foodName', 'quantity', 'kcal', 'macros']"></tr>
+                   <ng-container matColumnDef="notes">
+                    <th mat-header-cell *matHeaderCellDef>Notas</th>
+                    <td mat-cell *matCellDef="let item">{{ item.notes }}</td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes']"></tr>
+                  <tr mat-row *matRowDef="let row; columns: ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes']"></tr>
                 </table>
 
                 <div class="mobile-cards">

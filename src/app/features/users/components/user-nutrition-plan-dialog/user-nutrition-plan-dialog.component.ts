@@ -82,7 +82,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   });
 
   readonly mealForm = this.fb.nonNullable.group({
-    mealType: ['Desayuno' as Meals, Validators.required],
+    mealType: [{ id: 0, nombre: ''} , Validators.required],
     foodId: [0, Validators.required],
     quantity: [1, [Validators.required, Validators.min(0.1)]],
     notes: ['']
@@ -111,8 +111,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.selectedItems.update((current) => [
       ...current,
       {
-        id: crypto.randomUUID(),
-        mealType: raw.mealType,
+        id: "",
+        mealType: raw.mealType.nombre,
         foodId: food.id,
         foodName: food.name,
         quantity: qty,
@@ -178,6 +178,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       notes: raw.notes,
       items: [...this.selectedItems()]
     };
+    //return
 
     const request$ = this.editingPlanId()
       ? this.plansApiService.update({ id: this.editingPlanId() as string, ...payload })
@@ -250,7 +251,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       notes: ''
     });
     this.mealForm.reset({
-      mealType: { id: 1, nombre: 'Desayuno' },
+      mealType: { id: 0, nombre: ''},
       foodId: 0,
       quantity: 1,
       notes: ''
@@ -271,7 +272,6 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.mealsApiService.getByEmpresa(companyId).pipe(take(1)).subscribe({
       next: (meals) => {
         this.mealTypeOptions.push(...meals);
-        console.log('Meals loaded:', meals);
       },
       error: (error: unknown) => {
         this.toastr.error(this.getErrorMessage(error, 'No se pudieron cargar las comidas predefinidas.'));
@@ -283,6 +283,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.plansApiService.getByUser(this.data.userId).pipe(take(1)).subscribe({
       next: (plans) => {
         this.userPlans.set(plans);
+        console.log('Loaded user plans:', plans);
         if (options?.resetIfEmpty && plans.length === 0) {
           this.resetForms();
         }

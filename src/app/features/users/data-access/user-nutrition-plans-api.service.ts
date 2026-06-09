@@ -17,6 +17,7 @@ type ApiUserNutritionPlanItem = {
   carbs?: string | number;
   fats?: string | number;
   notes?: string;
+  name?: string; // Para mapear foodName desde el API si viene con ese nombre
 };
 
 type ApiUserNutritionPlan = {
@@ -57,6 +58,7 @@ export class UserNutritionPlansApiService {
   }
 
   update(payload: UserNutritionPlan): Observable<UserNutritionPlan> {
+    console.log('Updating plan with payload:', payload);
     return this.http.put<ApiResponse<unknown>>(`${environment.apiBaseUrl}/UserNutritionPlan/Actualizar?id=${encodeURIComponent(payload.id)}`, this.toApi(payload)).pipe(
       map((response) => {
         const data = this.getRequiredResponseData(response);
@@ -129,7 +131,7 @@ export class UserNutritionPlansApiService {
     if (dto.id == null || dto.userId == null) {
       throw new Error('UserNutritionPlan DTO invalido: id o userId faltante.');
     }
-
+    //console.log('Mapping UserNutritionPlan DTO:', dto);
     return {
       id: String(dto.id),
       userId: String(dto.userId),
@@ -144,6 +146,7 @@ export class UserNutritionPlansApiService {
   }
 
   private mapItems(payload: unknown): UserNutritionPlanMealItem[] {
+    console.log('Mapping items payload:', payload);
     if (!Array.isArray(payload)) {
       const single = this.mapItem(payload);
       return single ? [single] : [];
@@ -154,7 +157,7 @@ export class UserNutritionPlansApiService {
       .filter((item): item is UserNutritionPlanMealItem => item !== null);
   }
 
-  private mapItem(payload: unknown): UserNutritionPlanMealItem | null {
+  private mapItem(payload: any): UserNutritionPlanMealItem | null {
     if (!payload || typeof payload !== 'object') {
       return null;
     }
@@ -167,9 +170,10 @@ export class UserNutritionPlansApiService {
 
     return {
       id: dto.id != null ? String(dto.id) : crypto.randomUUID(),
-    //  mealType: this.toMealType(dto.mealType),
+      mealType: dto.mealType ?? '',
+      //name: dto.foodName ?? '',
       foodId: this.toNumber(dto.foodId),
-      foodName: dto.foodName ?? '',
+      foodName: payload.food.name ?? dto.foodName ?? '',
       quantity: this.toNumber(dto.quantity, 1),
       serving: dto.serving ?? '',
       calories: this.toNumber(dto.calories),
@@ -197,7 +201,7 @@ export class UserNutritionPlansApiService {
   private toApiItem(item: UserNutritionPlanMealItem): ApiUserNutritionPlanItem {
     return {
       id: item.id,
-      //mealType: item.mealType,
+      mealType: item.mealType,
       foodId: item.foodId,
       foodName: item.foodName,
       quantity: item.quantity,

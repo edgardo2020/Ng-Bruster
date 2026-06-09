@@ -198,7 +198,7 @@ export type Meals = {
 
 export interface UserNutritionPlanMealItem {
   id: string;
-  mealType?: Meals;
+  mealType: string;
   foodId: number;
   foodName: string;
   quantity: number;

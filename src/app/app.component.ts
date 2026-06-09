@@ -71,7 +71,7 @@ export class AppComponent implements OnInit {
           this.toastr.error('Tu sesión ha sido cerrada porque tu cuenta ya no está activa.', 'Acceso denegado', { positionClass: 'toast-top-right' });
           this.authService.logout();
         }
-      console.log('Refreshed user data:', usuario);
+      //console.log('Refreshed user data:', usuario);
     })
   }
  

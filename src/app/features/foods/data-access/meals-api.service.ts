@@ -132,7 +132,6 @@ export class MealsApiService {
   }
 
   private toApi(food: Omit<Meals, 'id'> | Meals): Meals {
-    console.log('Converting to API format:', food);
     const apiItem: Meals = {
       id: 'id' in food ? food.id : undefined,
       nombre: food.nombre,
