@@ -208,6 +208,7 @@ export interface UserNutritionPlanMealItem {
   carbs: number;
   fats: number;
   notes?: string;
+  completed?: boolean;
 }
 
 export interface UserNutritionPlan {

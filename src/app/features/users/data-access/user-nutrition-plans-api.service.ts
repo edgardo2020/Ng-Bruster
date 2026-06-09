@@ -17,6 +17,7 @@ type ApiUserNutritionPlanItem = {
   carbs?: string | number;
   fats?: string | number;
   notes?: string;
+  completed?: boolean;
   name?: string; // Para mapear foodName desde el API si viene con ese nombre
 };
 
@@ -180,7 +181,8 @@ export class UserNutritionPlansApiService {
       protein: this.toNumber(dto.protein),
       carbs: this.toNumber(dto.carbs),
       fats: this.toNumber(dto.fats),
-      notes: dto.notes ?? ''
+      notes: dto.notes ?? '',
+      completed: dto.completed ?? false
     };
   }
 
@@ -210,7 +212,8 @@ export class UserNutritionPlansApiService {
       protein: item.protein,
       carbs: item.carbs,
       fats: item.fats,
-      notes: item.notes ?? ''
+      notes: item.notes ?? '',
+      completed: item.completed ?? false
     };
   }
 

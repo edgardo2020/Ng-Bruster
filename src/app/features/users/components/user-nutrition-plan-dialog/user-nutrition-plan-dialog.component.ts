@@ -256,6 +256,43 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       });
   }
 
+  resetCompleted(): void {
+    this.dialog
+      .open(AskDialogComponent, {
+        data: {
+          title: 'Reiniciar estado',
+          message: '¿Seguro que quieres reiniciar todos los alimentos completados?'
+        }
+      })
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((confirmed: boolean) => {
+        if (!confirmed) return;
+
+        const planId = this.editingPlanId();
+        if (!planId) return;
+
+        const plan = this.userPlans().find((p) => p.id === planId);
+        if (!plan) return;
+
+        const updatedItems = plan.items.map((item) => ({ ...item, completed: false }));
+        this.selectedItems.set(updatedItems);
+
+        this.plansApiService
+          .update({ ...plan, items: updatedItems })
+          .pipe(take(1))
+          .subscribe({
+            next: () => {
+              this.loadPlans();
+              setTimeout(() => this.toastr.success('Estado de alimentos reiniciado.', '', { timeOut: 5000 }), 300);
+            },
+            error: (error: unknown) => {
+              this.toastr.error(this.getErrorMessage(error, 'No se pudo reiniciar el estado.'));
+            }
+          });
+      });
+  }
+
   resetForms(): void {
     this.editingPlanId.set(null);
     this.selectedItems.set([]);

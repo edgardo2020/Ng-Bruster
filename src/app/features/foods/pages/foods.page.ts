@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
@@ -10,7 +11,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 
-import { FoodCatalogItem, UserNutritionPlan } from '../../../core/models/gym.models';
+import { FoodCatalogItem, UserNutritionPlan, UserNutritionPlanMealItem } from '../../../core/models/gym.models';
 import { AuthService } from '../../../core/services/auth.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { AskDialogComponent } from '../../../shared/ui/ask-dialog.component';
@@ -21,6 +22,7 @@ import { UserNutritionPlansApiService } from '../../users/data-access/user-nutri
   selector: 'app-foods-page',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,
@@ -54,6 +56,23 @@ export class FoodsPageComponent implements OnInit {
   readonly userPlans = signal<UserNutritionPlan[]>([]);
   readonly userRoleId = signal<number | null>(null);
   readonly editingId = signal<number | null>(null);
+  readonly collapsedPlans = signal<Set<string>>(new Set());
+
+  isCollapsed(planId: string): boolean {
+    return this.collapsedPlans().has(planId);
+  }
+
+  toggleCollapse(planId: string): void {
+    this.collapsedPlans.update((set) => {
+      const next = new Set(set);
+      if (next.has(planId)) {
+        next.delete(planId);
+      } else {
+        next.add(planId);
+      }
+      return next;
+    });
+  }
   readonly displayedColumns = ['name', 'category', 'serving', 'calories', 'macros', 'active', 'actions'];
 
   readonly form = this.fb.nonNullable.group({
@@ -85,6 +104,55 @@ export class FoodsPageComponent implements OnInit {
 
   isRole2(): boolean {
     return this.userRoleId() === 2;
+  }
+
+  toggleItemStatus(plan: UserNutritionPlan, item: UserNutritionPlanMealItem): void {
+    item.completed = !item.completed;
+    this.userNutritionPlansApiService.update(plan).pipe(take(1)).subscribe({
+      error: () => {
+        item.completed = !item.completed;
+        this.toastr.error('No se pudo actualizar el estado del alimento.');
+      }
+    });
+  }
+
+  private scrollToFirstIncomplete(): void {
+    const items = Array.from(document.querySelectorAll('[data-completed="false"]'));
+    for (const el of items) {
+      if (el instanceof HTMLElement && el.offsetParent !== null) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        break;
+      }
+    }
+  }
+
+  getPlanTotals(plan: UserNutritionPlan): { protein: number; carbs: number; fats: number } {
+    return plan.items.reduce(
+      (acc, item) => ({
+        protein: acc.protein + (item.protein ?? 0),
+        carbs: acc.carbs + (item.carbs ?? 0),
+        fats: acc.fats + (item.fats ?? 0),
+      }),
+      { protein: 0, carbs: 0, fats: 0 }
+    );
+  }
+
+  getCompletedTotals(plan: UserNutritionPlan): { protein: number; carbs: number; fats: number; pct: number } {
+    const total = this.getPlanTotals(plan);
+    const completed = plan.items
+      .filter((item) => item.completed)
+      .reduce(
+        (acc, item) => ({
+          protein: acc.protein + (item.protein ?? 0),
+          carbs: acc.carbs + (item.carbs ?? 0),
+          fats: acc.fats + (item.fats ?? 0),
+        }),
+        { protein: 0, carbs: 0, fats: 0 }
+      );
+    const totalKcal = total.protein * 4 + total.carbs * 4 + total.fats * 9;
+    const completedKcal = completed.protein * 4 + completed.carbs * 4 + completed.fats * 9;
+    const pct = totalKcal > 0 ? Math.round((completedKcal / totalKcal) * 100) : 0;
+    return { ...completed, pct };
   }
 
   formatFriendlyDate(value?: string): string {
@@ -203,7 +271,17 @@ export class FoodsPageComponent implements OnInit {
 
   private loadUserPlans(userId: string): void {
     this.userNutritionPlansApiService.getByUser(userId).pipe(take(1)).subscribe({
-      next: (plans) => this.userPlans.set(plans),
+      next: (plans) => {
+        this.userPlans.set(plans);
+        const collapsed = new Set<string>();
+        for (const plan of plans) {
+          if (this.getCompletedTotals(plan).pct === 100) {
+            collapsed.add(plan.id);
+          }
+        }
+        this.collapsedPlans.set(collapsed);
+        setTimeout(() => this.scrollToFirstIncomplete(), 100);
+      },
       error: (error: unknown) => {
         this.toastr.error(this.getErrorMessage(error, 'No se pudieron cargar tus planes de alimentacion.'));
       }

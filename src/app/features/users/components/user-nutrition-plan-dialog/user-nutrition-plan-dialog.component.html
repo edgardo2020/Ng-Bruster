@@ -6,6 +6,33 @@
 </h2>
 
 <mat-dialog-content class="dialog-content nutrition-content">
+  <section class="card-surface plans-card">
+    <h3>Planes del usuario</h3>
+
+    <div class="plan-list">
+      @for (plan of userPlans(); track plan.id) {
+        <article class="plan-item">
+          <div>
+            <strong>{{ plan.name }}</strong>
+            <p>{{ plan.objective }} · {{ plan.targetCalories }} kcal</p>
+          </div>
+          <div class="plan-item-actions">
+            <button mat-icon-button type="button" (click)="editPlan(plan)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button type="button" (click)="removePlan(plan)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </article>
+      }
+
+      @if (!userPlans().length) {
+        <div class="empty-state compact">Este usuario aun no tiene planes de alimentacion.</div>
+      }
+    </div>
+  </section>
+
   <section class="card-surface form-card">
     <h3>{{ editingPlanId() ? 'Editar plan' : 'Nuevo plan de alimentacion' }}</h3>
 
@@ -123,13 +150,13 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="mealColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: mealColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: mealColumns" [class.completed]="row.completed" [attr.data-completed]="row.completed"></tr>
       </table>
     </div>
 
     <div class="mobile-card-view">
       @for (item of paginatedItems(); track item.id) {
-        <div class="food-card">
+        <div class="food-card" [class.completed]="item.completed" [attr.data-completed]="item.completed">
           <div class="food-card-header">
             <span class="food-card-meal">{{ item.mealType }}</span>
             <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
@@ -171,37 +198,15 @@
     </div>
 
     <div class="plan-actions">
-      <button mat-stroked-button type="button" (click)="resetForms()">Limpiar</button>
+      <div class="plan-actions__secondary">
+        @if (editingPlanId()) {
+          <button mat-stroked-button color="warn" type="button" (click)="resetCompleted()">Reiniciar</button>
+        }
+        <button mat-stroked-button type="button" (click)="resetForms()">Limpiar</button>
+      </div>
       <button mat-flat-button color="primary" type="button" (click)="savePlan()">
         {{ editingPlanId() ? 'Actualizar plan' : 'Guardar plan' }}
       </button>
-    </div>
-  </section>
-
-  <section class="card-surface plans-card">
-    <h3>Planes del usuario</h3>
-
-    <div class="plan-list">
-      @for (plan of userPlans(); track plan.id) {
-        <article class="plan-item">
-          <div>
-            <strong>{{ plan.name }}</strong>
-            <p>{{ plan.objective }} · {{ plan.targetCalories }} kcal</p>
-          </div>
-          <div class="plan-item-actions">
-            <button mat-icon-button type="button" (click)="editPlan(plan)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button type="button" (click)="removePlan(plan)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-        </article>
-      }
-
-      @if (!userPlans().length) {
-        <div class="empty-state compact">Este usuario aun no tiene planes de alimentacion.</div>
-      }
     </div>
   </section>
 </mat-dialog-content>
