@@ -231,4 +231,8 @@
   .shell-content {
     padding: 1rem;
   }
+
+  .mat-mdc-list-item-interactive::before {
+    opacity: 0 !important;
+  }
 }
