@@ -1,6 +1,6 @@
 <section class="my-routines-panel">
   @if (routines.length > 0) {
-    <div class="routines-grid">
+    <div class="routines-grid" #carousel (scroll)="onCarouselScroll()">
       @for (routine of routines; track routine.id) {
         <mat-card class="routine-card" appearance="outlined">
           <mat-card-header>
@@ -43,6 +43,12 @@
           </mat-card-content>
         </mat-card>
       }
+    </div>
+    <div class="carousel-indicators">
+      @for (routine of routines; track routine.id; let i = $index) {
+        <span class="carousel-dot" [class.carousel-dot--active]="carouselIndex() === i"></span>
+      }
+      <span class="carousel-count">{{ carouselIndex() + 1 }}/{{ routines.length }}</span>
     </div>
   } @else {
     <article class="empty-state">

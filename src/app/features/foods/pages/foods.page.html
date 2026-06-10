@@ -8,133 +8,144 @@
   <section class="entity-layout">
     <article class="card-surface">
       @if (isRole2()) {
-        <div class="plan-list">
-          @for (plan of userPlans(); track plan.id) {
-            <article class="plan-item" [class.plan-item--complete]="getCompletedTotals(plan).pct === 100">
-              <div class="plan-item__header">
-                  <div>
-                    <h3>
-                      {{ plan.name }}
-                      <span class="plan-item__totals">
-                        <span><mat-icon>fitness_center</mat-icon> {{ getPlanTotals(plan).protein | number:'1.1-1' }}g</span>
-                        <span><mat-icon>grain</mat-icon> {{ getPlanTotals(plan).carbs | number:'1.1-1' }}g</span>
-                        <span><mat-icon>opacity</mat-icon> {{ getPlanTotals(plan).fats | number:'1.1-1' }}g</span>
-                      </span>
-                    </h3>
-                    <div class="label-row">
-                      <button type="button" class="field-label field-label--obj" (click)="openDetailDialog(plan, 'objective')">Objetivo</button>
-                      @if (plan.notes) {
-                        <button type="button" class="field-label field-label--notes" (click)="openDetailDialog(plan, 'notes')">Notas</button>
-                      }
+        <div class="plans-wrapper">
+          <div class="plan-list" #plansCarousel (scroll)="onPlansScroll()">
+            @for (plan of userPlans(); track plan.id) {
+              <article class="plan-item" [class.plan-item--complete]="getCompletedTotals(plan).pct === 100">
+                <div class="plan-item__header">
+                    <div>
+                      <h3>
+                        {{ plan.name }}
+                        <span class="plan-item__totals">
+                          <span><mat-icon>fitness_center</mat-icon> {{ getPlanTotals(plan).protein | number:'1.1-1' }}g</span>
+                          <span><mat-icon>grain</mat-icon> {{ getPlanTotals(plan).carbs | number:'1.1-1' }}g</span>
+                          <span><mat-icon>opacity</mat-icon> {{ getPlanTotals(plan).fats | number:'1.1-1' }}g</span>
+                        </span>
+                      </h3>
+                      <div class="label-row">
+                        <button type="button" class="field-label field-label--obj" (click)="openDetailDialog(plan, 'objective')">Objetivo</button>
+                        @if (plan.notes) {
+                          <button type="button" class="field-label field-label--notes" (click)="openDetailDialog(plan, 'notes')">Notas</button>
+                        }
+                      </div>
+                      <span class="cal-badge">{{ plan.targetCalories }} kcal</span>
                     </div>
-                    <span class="cal-badge">{{ plan.targetCalories }} kcal</span>
-                  </div>
-                  <button mat-icon-button type="button" (click)="toggleCollapse(plan.id)">
-                    <mat-icon>{{ isCollapsed(plan.id) ? 'expand_more' : 'expand_less' }}</mat-icon>
-                  </button>
-              </div>
+                    <button mat-icon-button type="button" (click)="toggleCollapse(plan.id)">
+                      <mat-icon>{{ isCollapsed(plan.id) ? 'expand_more' : 'expand_less' }}</mat-icon>
+                    </button>
+                </div>
 
-              @if (!isCollapsed(plan.id)) {
-              <div class="plan-item__meta">
-                <span>Inicio: {{ formatFriendlyDate(plan.startDate) }}</span>
-                @if (plan.endDate) {
-                  <span>Fin: {{ formatFriendlyDate(plan.endDate) }}</span>
-                }
-              </div>
+                @if (!isCollapsed(plan.id)) {
+                <div class="plan-item__meta">
+                  <span>Inicio: {{ formatFriendlyDate(plan.startDate) }}</span>
+                  @if (plan.endDate) {
+                    <span>Fin: {{ formatFriendlyDate(plan.endDate) }}</span>
+                  }
+                </div>
 
-              <div class="table-scroll compact-scroll">
-                <table mat-table [dataSource]="plan.items" class="mat-elevation-z0 desktop-table">
-                  <ng-container matColumnDef="mealType">
-                    <th mat-header-cell *matHeaderCellDef>Comida</th>
-                    <td mat-cell *matCellDef="let item">{{ item.mealType }}</td>
-                  </ng-container>
+                <div class="table-scroll compact-scroll">
+                  <table mat-table [dataSource]="plan.items" class="mat-elevation-z0 desktop-table">
+                    <ng-container matColumnDef="mealType">
+                      <th mat-header-cell *matHeaderCellDef>Comida</th>
+                      <td mat-cell *matCellDef="let item">{{ item.mealType }}</td>
+                    </ng-container>
 
-                  <ng-container matColumnDef="foodName">
-                    <th mat-header-cell *matHeaderCellDef>Alimento</th>
-                    <td mat-cell *matCellDef="let item">{{ item.foodName }}</td>
-                  </ng-container>
+                    <ng-container matColumnDef="foodName">
+                      <th mat-header-cell *matHeaderCellDef>Alimento</th>
+                      <td mat-cell *matCellDef="let item">{{ item.foodName }}</td>
+                    </ng-container>
 
-                  <ng-container matColumnDef="quantity">
-                    <th mat-header-cell *matHeaderCellDef>Cant.</th>
-                    <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
-                  </ng-container>
+                    <ng-container matColumnDef="quantity">
+                      <th mat-header-cell *matHeaderCellDef>Cant.</th>
+                      <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
+                    </ng-container>
 
-                  <ng-container matColumnDef="kcal">
-                    <th mat-header-cell *matHeaderCellDef>Kcal</th>
-                    <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
-                  </ng-container>
+                    <ng-container matColumnDef="kcal">
+                      <th mat-header-cell *matHeaderCellDef>Kcal</th>
+                      <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
+                    </ng-container>
 
-                  <ng-container matColumnDef="macros">
-                    <th mat-header-cell *matHeaderCellDef>Macros</th>
-                    <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
-                  </ng-container>
+                    <ng-container matColumnDef="macros">
+                      <th mat-header-cell *matHeaderCellDef>Macros</th>
+                      <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
+                    </ng-container>
 
-                   <ng-container matColumnDef="notes">
-                    <th mat-header-cell *matHeaderCellDef>Notas</th>
-                    <td mat-cell *matCellDef="let item">{{ item.notes }}</td>
-                  </ng-container>
+                     <ng-container matColumnDef="notes">
+                      <th mat-header-cell *matHeaderCellDef>Notas</th>
+                      <td mat-cell *matCellDef="let item">{{ item.notes }}</td>
+                    </ng-container>
 
-                  <ng-container matColumnDef="done">
-                    <th mat-header-cell *matHeaderCellDef></th>
-                    <td mat-cell *matCellDef="let item">
-                      <button mat-icon-button type="button" (click)="toggleItemStatus(plan, item)" [disabled]="getCompletedTotals(plan).pct === 100">
-                        <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-                      </button>
-                    </td>
-                  </ng-container>
-
-                  <tr mat-header-row *matHeaderRowDef="['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes', 'done']"></tr>
-                  <tr mat-row *matRowDef="let row; columns: ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes', 'done']" [class.completed]="row.completed" [attr.data-completed]="row.completed"></tr>
-                </table>
-
-                <div class="mobile-cards">
-                  @for (item of plan.items; track item.id) {
-                    <article class="mobile-card" [class.completed]="item.completed" [attr.data-completed]="item.completed">
-                      <div class="mobile-card__row">
-                        <span class="mobile-card__label">Comida</span>
-                        <span class="mobile-card__value">{{ item.mealType }}</span>
-                      </div>
-                      <div class="mobile-card__row">
-                        <span class="mobile-card__label">Alimento</span>
-                        <span class="mobile-card__value">{{ item.foodName }}</span>
-                      </div>
-                      <div class="mobile-card__row">
-                        <span class="mobile-card__label">Cantidad</span>
-                        <span class="mobile-card__value">{{ item.quantity }} x {{ item.serving }}</span>
-                      </div>
-                      <div class="mobile-card__row">
-                        <span class="mobile-card__label">Kcal</span>
-                        <span class="mobile-card__value">{{ item.calories }}</span>
-                      </div>
-                      <div class="mobile-card__row">
-                        <span class="mobile-card__label">Macros</span>
-                        <span class="mobile-card__value">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</span>
-                      </div>
-                      <div class="mobile-card__actions">
+                    <ng-container matColumnDef="done">
+                      <th mat-header-cell *matHeaderCellDef></th>
+                      <td mat-cell *matCellDef="let item">
                         <button mat-icon-button type="button" (click)="toggleItemStatus(plan, item)" [disabled]="getCompletedTotals(plan).pct === 100">
                           <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
                         </button>
-                      </div>
-                    </article>
-                  }
-                </div>
-              </div>
+                      </td>
+                    </ng-container>
 
-              @let comp = getCompletedTotals(plan);
-              @if (comp.pct > 0) {
-                <div class="plan-item__progress">
-                  <span><mat-icon>fitness_center</mat-icon> {{ comp.protein | number:'1.1-1' }}g</span>
-                  <span><mat-icon>grain</mat-icon> {{ comp.carbs | number:'1.1-1' }}g</span>
-                  <span><mat-icon>opacity</mat-icon> {{ comp.fats | number:'1.1-1' }}g</span>
-                  <span class="plan-item__progress-pct">{{ comp.pct }}% completado</span>
+                    <tr mat-header-row *matHeaderRowDef="['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes', 'done']"></tr>
+                    <tr mat-row *matRowDef="let row; columns: ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes', 'done']" [class.completed]="row.completed" [attr.data-completed]="row.completed"></tr>
+                  </table>
+
+                  <div class="mobile-cards">
+                    @for (item of plan.items; track item.id) {
+                      <article class="mobile-card" [class.completed]="item.completed" [attr.data-completed]="item.completed">
+                        <div class="mobile-card__row">
+                          <span class="mobile-card__label">Comida</span>
+                          <span class="mobile-card__value">{{ item.mealType }}</span>
+                        </div>
+                        <div class="mobile-card__row">
+                          <span class="mobile-card__label">Alimento</span>
+                          <span class="mobile-card__value">{{ item.foodName }}</span>
+                        </div>
+                        <div class="mobile-card__row">
+                          <span class="mobile-card__label">Cantidad</span>
+                          <span class="mobile-card__value">{{ item.quantity }} x {{ item.serving }}</span>
+                        </div>
+                        <div class="mobile-card__row">
+                          <span class="mobile-card__label">Kcal</span>
+                          <span class="mobile-card__value">{{ item.calories }}</span>
+                        </div>
+                        <div class="mobile-card__row">
+                          <span class="mobile-card__label">Macros</span>
+                          <span class="mobile-card__value">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</span>
+                        </div>
+                        <div class="mobile-card__actions">
+                          <button mat-icon-button type="button" (click)="toggleItemStatus(plan, item)" [disabled]="getCompletedTotals(plan).pct === 100">
+                            <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                          </button>
+                        </div>
+                      </article>
+                    }
+                  </div>
                 </div>
-              }
-              }
-            </article>
-          }
+
+                @let comp = getCompletedTotals(plan);
+                @if (comp.pct > 0) {
+                  <div class="plan-item__progress">
+                    <span><mat-icon>fitness_center</mat-icon> {{ comp.protein | number:'1.1-1' }}g</span>
+                    <span><mat-icon>grain</mat-icon> {{ comp.carbs | number:'1.1-1' }}g</span>
+                    <span><mat-icon>opacity</mat-icon> {{ comp.fats | number:'1.1-1' }}g</span>
+                    <span class="plan-item__progress-pct">{{ comp.pct }}% completado</span>
+                  </div>
+                }
+                }
+              </article>
+            }
+          </div>
 
           @if (!userPlans().length) {
             <div class="empty-state compact">Aun no tienes planes de alimentacion asignados.</div>
+          }
+
+          @if (userPlans().length > 0) {
+            <div class="plans-indicators">
+              @for (plan of userPlans(); track plan.id; let i = $index) {
+                <span class="carousel-dot" [class.carousel-dot--active]="plansCarouselIndex() === i"></span>
+              }
+              <span class="carousel-count">{{ plansCarouselIndex() + 1 }}/{{ userPlans().length }}</span>
+            </div>
           }
         </div>
       }

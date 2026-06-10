@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, signal } from '@angular/core';
+import { Component, Input, signal, viewChild, ElementRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +18,17 @@ export class MyRoutinesPanelComponent {
 
   readonly previewExercise = signal<RoutineExercise | null>(null);
   readonly descriptionDialog = signal<RoutineExercise | null>(null);
+  readonly carouselIndex = signal(0);
+  readonly carouselEl = viewChild<ElementRef<HTMLElement>>('carousel');
+
+  onCarouselScroll(): void {
+    const el = this.carouselEl()?.nativeElement;
+    if (!el) return;
+    const cardWidth = el.querySelector('.routine-card')?.clientWidth ?? 1;
+    if (!cardWidth) return;
+    const idx = Math.round(el.scrollLeft / cardWidth);
+    this.carouselIndex.set(idx);
+  }
 
   showImagePreview(exercise: RoutineExercise): void {
     this.previewExercise.set(exercise);

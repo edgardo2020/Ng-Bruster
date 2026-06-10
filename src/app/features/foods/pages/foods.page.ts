@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -40,6 +40,29 @@ export class FoodsPageComponent implements OnInit {
   @ViewChild('formDialog') private formDialogRef!: TemplateRef<unknown>;
 
   readonly detailDialog = signal<{ plan: UserNutritionPlan; field: 'objective' | 'notes'; label: string } | null>(null);
+  readonly plansCarouselIndex = signal(0);
+
+  onPlansScroll(): void {
+    const el = this.plansCarouselRef()?.nativeElement;
+    if (!el) return;
+    const cardWidth = el.querySelector('.plan-item')?.clientWidth ?? 1;
+    if (!cardWidth) return;
+    const idx = Math.round(el.scrollLeft / cardWidth);
+    const prev = this.plansCarouselIndex();
+    this.plansCarouselIndex.set(idx);
+    if (idx !== prev) {
+      const plan = this.userPlans()[idx];
+      if (plan) {
+        this.collapsedPlans.update(s => {
+          const next = new Set(s);
+          next.delete(plan.id);
+          return next;
+        });
+      }
+    }
+  }
+
+  private readonly plansCarouselRef = viewChild<ElementRef<HTMLElement>>('plansCarousel');
 
   openDetailDialog(plan: UserNutritionPlan, field: 'objective' | 'notes'): void {
     const label = field === 'objective' ? 'Objetivo' : 'Notas';
