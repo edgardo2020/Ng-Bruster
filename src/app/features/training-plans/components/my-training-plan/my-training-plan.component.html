@@ -182,7 +182,15 @@
                         }
                       </div>
                       @if (exercise.description) {
-                        <p>{{ exercise.description }}</p>
+                        @let desc = exercise.description;
+                        @let isLong = desc.length > 50;
+                        @let expanded = isDescriptionExpanded(exercise.id!);
+                        <p>{{ isLong && !expanded ? (desc | slice:0:50) + '...' : desc }}</p>
+                        @if (isLong) {
+                          <button type="button" class="desc-toggle" (click)="toggleDescription(exercise.id!)">
+                            {{ expanded ? 'ver menos' : 'ver más' }}
+                          </button>
+                        }
                       }
                       <div class="exercise-badges">
                         <span class="metric-badge">Series: {{ exercise.sets }}</span>

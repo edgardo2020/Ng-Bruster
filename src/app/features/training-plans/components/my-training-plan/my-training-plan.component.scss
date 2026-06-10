@@ -558,6 +558,23 @@
   margin-bottom: 1em;
 }
 
+.desc-toggle {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 0.15rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.desc-toggle:hover {
+  color: #1d4ed8;
+}
+
 .exercise-help-btn {
   flex-shrink: 0;
   color: #1976d2;

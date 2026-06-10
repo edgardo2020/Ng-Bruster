@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, SlicePipe } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -34,6 +34,7 @@ import { ProgressCardComponent } from '../progress-card/progress-card.component'
   imports: [
     CommonModule,
     DatePipe,
+    SlicePipe,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
@@ -50,6 +51,19 @@ export class MyTrainingPlanComponent {
   public readonly collapsedCards = signal<Record<string, boolean>>({});
 
   readonly previewExercise = signal<AssignmentDetailExercise | null>(null);
+  readonly expandedDescriptions = signal<Set<string>>(new Set());
+
+  toggleDescription(exerciseId: string): void {
+    this.expandedDescriptions.update(s => {
+      const next = new Set(s);
+      if (next.has(exerciseId)) next.delete(exerciseId); else next.add(exerciseId);
+      return next;
+    });
+  }
+
+  isDescriptionExpanded(exerciseId: string): boolean {
+    return this.expandedDescriptions().has(exerciseId);
+  }
 
   showImagePreview(exercise: AssignmentDetailExercise): void {
     this.previewExercise.set(exercise);
@@ -497,19 +511,28 @@ export class MyTrainingPlanComponent {
 
   /**
    * Detecta si el usuario ha completado todas las rutinas y muestra el splash
+   * solo una vez (lo persiste en localStorage por plan).
    */
   private checkIfPlanCompleted() {
     const detail = this.latestDetail;
     if (!detail) return;
+
+    const SPLASH_KEY = `splash_shown_${detail.id}`;
     const agenda = this.getAgendaWithExercises(detail);
     const total = agenda.length;
     const finished = agenda.filter(item => (item.exercises ?? []).every(ex => !!ex.isFinished)).length;
-    if (total > 0 && finished === total) {
-      if (!this.showCongratsSplash()) {
-        this.showCongratsSplash.set(true);
-        setTimeout(() => this.showCongratsSplash.set(false), 5000); // Oculta tras 5s
-      }
+    const isComplete = total > 0 && finished === total;
+
+    if (!isComplete) {
+      localStorage.removeItem(SPLASH_KEY);
+      return;
     }
+
+    if (localStorage.getItem(SPLASH_KEY)) return;
+
+    this.showCongratsSplash.set(true);
+    localStorage.setItem(SPLASH_KEY, '1');
+    setTimeout(() => this.showCongratsSplash.set(false), 5000);
   }
 
     /**
