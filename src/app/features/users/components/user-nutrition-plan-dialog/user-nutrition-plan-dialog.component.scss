@@ -213,6 +213,10 @@ tr.completed {
   gap: 0.55rem;
 }
 
+.plans-indicators {
+  display: none;
+}
+
 .plan-item {
   display: flex;
   align-items: center;
@@ -311,14 +315,60 @@ tr.completed {
     }
   }
 
+  .plan-list {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+    min-width: 0;
+  }
+
+  .plan-list::-webkit-scrollbar {
+    display: none;
+  }
+
   .plan-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.4rem;
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-width: 0;
   }
 
   .plan-item-actions {
     align-self: flex-end;
+  }
+
+  .plans-indicators {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0 0;
+  }
+
+  .carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    transition: background 0.2s;
+  }
+
+  .carousel-dot--active {
+    background: #2563eb;
+  }
+
+  .carousel-count {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
   }
 }
 

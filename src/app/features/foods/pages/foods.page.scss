@@ -382,6 +382,7 @@ tr.completed {
     -webkit-overflow-scrolling: touch;
     padding-bottom: 0.5rem;
     scrollbar-width: none;
+    min-width: 0;
   }
 
   .plan-list::-webkit-scrollbar {
@@ -395,7 +396,7 @@ tr.completed {
   .plan-item {
     flex: 0 0 100%;
     scroll-snap-align: start;
-    min-width: 260px;
+    min-width: 0;
   }
 
   .plans-indicators {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -69,6 +69,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   readonly editingPlanId = signal<string | null>(null);
   readonly mobileViewPlansOnly = signal(true);
   readonly isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+  readonly plansCarouselIndex = signal(0);
+  private readonly plansCarouselRef = viewChild<ElementRef<HTMLElement>>('plansCarousel');
   readonly mealTypeOptions: Meals[] = [];
 
   readonly mealColumns = ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'actions'];
@@ -85,6 +87,15 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     if (next >= 1 && next <= this.totalPages()) {
       this.currentPage.set(next);
     }
+  }
+
+  onPlansScroll(): void {
+    const el = this.plansCarouselRef()?.nativeElement;
+    if (!el) return;
+    const cardWidth = el.querySelector('.plan-item')?.clientWidth ?? 1;
+    if (!cardWidth) return;
+    const idx = Math.round(el.scrollLeft / cardWidth);
+    this.plansCarouselIndex.set(idx);
   }
 
   readonly totals = computed(() => {

@@ -19,7 +19,7 @@
     @if (!isMobile) {
       <h3>Planes del usuario</h3>
     }
-    <div class="plan-list">
+    <div class="plan-list" #plansCarousel (scroll)="onPlansScroll()">
       @for (plan of userPlans(); track plan.id) {
         <article class="plan-item">
           <div>
@@ -41,8 +41,18 @@
         <div class="empty-state compact">Este usuario aun no tiene planes de alimentacion.</div>
       }
     </div>
+
+    @if (userPlans().length > 0) {
+      <div class="plans-indicators">
+        @for (plan of userPlans(); track plan.id; let i = $index) {
+          <span class="carousel-dot" [class.carousel-dot--active]="plansCarouselIndex() === i"></span>
+        }
+        <span class="carousel-count">{{ plansCarouselIndex() + 1 }}/{{ userPlans().length }}</span>
+      </div>
+    }
+
     @if (isMobile) {
-      <button mat-stroked-button type="button" (click)="mobileViewPlansOnly.set(false)" class="mobile-add-plan-btn">Nuevo plan</button>
+      <button mat-stroked-button type="button" (click)="mobileViewPlansOnly.set(false)" class="mobile-add-plan-btn">Nuevo plan </button>
     }
   </section>
   }

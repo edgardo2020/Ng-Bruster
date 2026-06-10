@@ -139,6 +139,7 @@
     -webkit-overflow-scrolling: touch;
     padding-bottom: 0.5rem;
     scrollbar-width: none;
+    min-width: 0;
   }
 
   .routines-grid::-webkit-scrollbar {
@@ -148,7 +149,7 @@
   .routine-card {
     flex: 0 0 100%;
     scroll-snap-align: start;
-    min-width: 260px;
+    min-width: 0;
   }
 
   .carousel-indicators {
