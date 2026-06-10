@@ -4,6 +4,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -31,6 +33,8 @@ export interface UserNutritionPlanDialogData {
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
@@ -99,8 +103,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   readonly planForm = this.fb.nonNullable.group({
     name: ['', Validators.required],
     objective: ['', Validators.required],
-    startDate: ['', Validators.required],
-    endDate: [''],
+    startDate: [null as Date | null, Validators.required],
+    endDate: [null as Date | null],
     targetCalories: [2200, [Validators.required, Validators.min(1)]],
     notes: ['']
   });
@@ -195,12 +199,14 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     }
 
     const raw = this.planForm.getRawValue();
+    const toDateStr = (d: Date | null | string): string | undefined =>
+      d ? (typeof d === 'string' ? d : d.toISOString().split('T')[0]) : undefined;
     const payload: Omit<UserNutritionPlan, 'id'> = {
       userId: this.effectiveUserId(),
       name: raw.name,
       objective: raw.objective,
-      startDate: raw.startDate,
-      endDate: raw.endDate || undefined,
+      startDate: toDateStr(raw.startDate) ?? '',
+      endDate: toDateStr(raw.endDate),
       targetCalories: Number(raw.targetCalories),
       notes: raw.notes,
       items: [...this.selectedItems()]
@@ -228,8 +234,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.planForm.patchValue({
       name: plan.name,
       objective: plan.objective,
-      startDate: this.toDateInputValue(plan.startDate),
-      endDate: this.toDateInputValue(plan.endDate || ''),
+      startDate: plan.startDate ? new Date(plan.startDate) : null,
+      endDate: plan.endDate ? new Date(plan.endDate) : null,
       targetCalories: plan.targetCalories,
       notes: plan.notes ?? ''
     });
@@ -325,8 +331,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.planForm.reset({
       name: '',
       objective: '',
-      startDate: '',
-      endDate: '',
+      startDate: null,
+      endDate: null,
       targetCalories: 2200,
       notes: ''
     });
@@ -372,11 +378,6 @@ export class UserNutritionPlanDialogComponent implements OnInit {
         this.toastr.error(this.getErrorMessage(error, 'No se pudieron cargar los planes de alimentacion.'));
       }
     });
-  }
-
-  private toDateInputValue(value: string): string {
-    const raw = (value || '').trim();
-    return raw.match(/^\d{4}-\d{2}-\d{2}/)?.[0] ?? '';
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {

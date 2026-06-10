@@ -6,7 +6,7 @@
   />
 
   <section class="entity-layout">
-    <article class="card-surface" style="grid-column: 1 / -1">
+    <article class="card-surface">
       @if (isRole2()) {
         <div class="plan-list">
           @for (plan of userPlans(); track plan.id) {
@@ -21,10 +21,25 @@
                         <span><mat-icon>opacity</mat-icon> {{ getPlanTotals(plan).fats | number:'1.1-1' }}g</span>
                       </span>
                     </h3>
-                    <p>{{ plan.objective }} · {{ plan.targetCalories }} kcal</p>
+                    <p>
+                      @let isObjLong = plan.objective.length > 50;
+                      <span class="field-label">Objetivo</span>
+                      {{ isObjLong ? (plan.objective | slice:0:50) + '...' : plan.objective }}
+                      @if (isObjLong) {
+                        <button type="button" class="notes-toggle" (click)="openDetailDialog(plan, 'objective')">ver más</button>
+                      }
+                    </p>
                     @if (plan.notes) {
-                      <p>{{plan.notes}}</p>
+                      @let isNotesLong = plan.notes.length > 50;
+                      <p>
+                        <span class="field-label">Notas</span>
+                        {{ isNotesLong ? (plan.notes | slice:0:50) + '...' : plan.notes }}
+                        @if (isNotesLong) {
+                          <button type="button" class="notes-toggle" (click)="openDetailDialog(plan, 'notes')">ver más</button>
+                        }
+                      </p>
                     }
+                    <span class="cal-badge">{{ plan.targetCalories }} kcal</span>
                   </div>
                   <button mat-icon-button type="button" (click)="toggleCollapse(plan.id)">
                     <mat-icon>{{ isCollapsed(plan.id) ? 'expand_more' : 'expand_less' }}</mat-icon>
@@ -300,3 +315,19 @@
     </mat-dialog-actions>
   </ng-template>
 </section>
+
+@if (detailDialog(); as data) {
+  <div class="notes-overlay" (click)="closeDetailDialog()">
+    <div class="notes-card" (click)="$event.stopPropagation()">
+      <div class="notes-card__header">
+        <span class="notes-card__title">{{ data.plan.name }} — {{ data.label }}</span>
+        <button mat-icon-button type="button" (click)="closeDetailDialog()" aria-label="Cerrar">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="notes-card__body">
+        {{ data.field === 'objective' ? data.plan.objective : data.plan.notes }}
+      </div>
+    </div>
+  </div>
+}

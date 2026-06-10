@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, SlicePipe } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
@@ -23,6 +23,7 @@ import { UserNutritionPlansApiService } from '../../users/data-access/user-nutri
   standalone: true,
   imports: [
     CommonModule,
+    SlicePipe,
     ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,
@@ -38,6 +39,17 @@ import { UserNutritionPlansApiService } from '../../users/data-access/user-nutri
 })
 export class FoodsPageComponent implements OnInit {
   @ViewChild('formDialog') private formDialogRef!: TemplateRef<unknown>;
+
+  readonly detailDialog = signal<{ plan: UserNutritionPlan; field: 'objective' | 'notes'; label: string } | null>(null);
+
+  openDetailDialog(plan: UserNutritionPlan, field: 'objective' | 'notes'): void {
+    const label = field === 'objective' ? 'Objetivo' : 'Notas';
+    this.detailDialog.set({ plan, field, label });
+  }
+
+  closeDetailDialog(): void {
+    this.detailDialog.set(null);
+  }
 
   private readonly fb = inject(FormBuilder);
   private readonly dialog = inject(MatDialog);
