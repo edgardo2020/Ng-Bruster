@@ -242,6 +242,43 @@ tr.completed {
   line-height: 1.5;
 }
 
+.label-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+}
+
+.field-label--notes {
+  background: #ecfdf5;
+  font-family: inherit;
+  cursor: pointer;
+  color: #059669;
+  border-color: #059669;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #059669;
+    color: #fff;
+    border-color: #059669;
+  }
+}
+
+.field-label--obj {
+  background: #eff6ff;
+  font-family: inherit;
+  cursor: pointer;
+  color: #2563eb;
+  border-color: #2563eb;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+  }
+}
+
 .field-label {
   display: inline-block;
   font-size: 0.7rem;

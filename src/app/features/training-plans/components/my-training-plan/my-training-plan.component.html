@@ -182,15 +182,7 @@
                         }
                       </div>
                       @if (exercise.description) {
-                        @let desc = exercise.description;
-                        @let isLong = desc.length > 50;
-                        @let expanded = isDescriptionExpanded(exercise.id!);
-                        <p>{{ isLong && !expanded ? (desc | slice:0:50) + '...' : desc }}</p>
-                        @if (isLong) {
-                          <button type="button" class="desc-toggle" (click)="toggleDescription(exercise.id!)">
-                            {{ expanded ? 'ver menos' : 'ver más' }}
-                          </button>
-                        }
+                        <button type="button" class="metric-badge desc-label-btn" (click)="openDescriptionDialog(exercise)">Descripción</button>
                       }
                       <div class="exercise-badges">
                         <span class="metric-badge">Series: {{ exercise.sets }}</span>
@@ -247,6 +239,20 @@
         </button>
       </div>
       <img class="image-preview-img" [src]="'data:image/*;base64,' + previewExercise()!.ImageBase64" [alt]="previewExercise()!.name" />
+    </div>
+  </div>
+}
+
+@if (descriptionDialog(); as ex) {
+  <div class="desc-overlay" (click)="closeDescriptionDialog()">
+    <div class="desc-card" (click)="$event.stopPropagation()">
+      <div class="desc-card__header">
+        <span class="desc-card__title">{{ ex.name }}</span>
+        <button mat-icon-button type="button" (click)="closeDescriptionDialog()" aria-label="Cerrar">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="desc-card__body">{{ ex.description }}</div>
     </div>
   </div>
 }

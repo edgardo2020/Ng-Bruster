@@ -1,4 +1,4 @@
-import { CommonModule, SlicePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
@@ -23,7 +23,6 @@ import { UserNutritionPlansApiService } from '../../users/data-access/user-nutri
   standalone: true,
   imports: [
     CommonModule,
-    SlicePipe,
     ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,

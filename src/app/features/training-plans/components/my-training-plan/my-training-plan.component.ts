@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe, SlicePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -34,7 +34,6 @@ import { ProgressCardComponent } from '../progress-card/progress-card.component'
   imports: [
     CommonModule,
     DatePipe,
-    SlicePipe,
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
@@ -51,18 +50,14 @@ export class MyTrainingPlanComponent {
   public readonly collapsedCards = signal<Record<string, boolean>>({});
 
   readonly previewExercise = signal<AssignmentDetailExercise | null>(null);
-  readonly expandedDescriptions = signal<Set<string>>(new Set());
+  readonly descriptionDialog = signal<AssignmentDetailExercise | null>(null);
 
-  toggleDescription(exerciseId: string): void {
-    this.expandedDescriptions.update(s => {
-      const next = new Set(s);
-      if (next.has(exerciseId)) next.delete(exerciseId); else next.add(exerciseId);
-      return next;
-    });
+  openDescriptionDialog(exercise: AssignmentDetailExercise): void {
+    this.descriptionDialog.set(exercise);
   }
 
-  isDescriptionExpanded(exerciseId: string): boolean {
-    return this.expandedDescriptions().has(exerciseId);
+  closeDescriptionDialog(): void {
+    this.descriptionDialog.set(null);
   }
 
   showImagePreview(exercise: AssignmentDetailExercise): void {

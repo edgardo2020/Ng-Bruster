@@ -558,21 +558,65 @@
   margin-bottom: 1em;
 }
 
-.desc-toggle {
-  background: none;
-  border: none;
-  color: #2563eb;
-  font-size: 0.78rem;
-  font-weight: 600;
+.desc-label-btn {
+  justify-self: start;
   cursor: pointer;
-  padding: 0;
-  margin-top: 0.15rem;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  background: #ede9fe !important;
+  border-color: #c4b5fd !important;
+  color: #5b21b6 !important;
+  transition: background 0.15s;
 }
 
-.desc-toggle:hover {
-  color: #1d4ed8;
+.desc-label-btn:hover {
+  background: #c4b5fd !important;
+  border-color: #a78bfa !important;
+}
+
+.desc-label-btn:hover {
+  background: #f59e0b;
+  color: #fff;
+  border-color: #f59e0b;
+}
+
+.desc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.desc-card {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+}
+
+.desc-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem 0.75rem 1.25rem;
+  border-bottom: 1px solid #e6edf7;
+}
+
+.desc-card__title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.desc-card__body {
+  padding: 1.25rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #1e293b;
+  white-space: pre-wrap;
 }
 
 .exercise-help-btn {

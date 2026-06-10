@@ -21,24 +21,12 @@
                         <span><mat-icon>opacity</mat-icon> {{ getPlanTotals(plan).fats | number:'1.1-1' }}g</span>
                       </span>
                     </h3>
-                    <p>
-                      @let isObjLong = plan.objective.length > 50;
-                      <span class="field-label">Objetivo</span>
-                      {{ isObjLong ? (plan.objective | slice:0:50) + '...' : plan.objective }}
-                      @if (isObjLong) {
-                        <button type="button" class="notes-toggle" (click)="openDetailDialog(plan, 'objective')">ver más</button>
+                    <div class="label-row">
+                      <button type="button" class="field-label field-label--obj" (click)="openDetailDialog(plan, 'objective')">Objetivo</button>
+                      @if (plan.notes) {
+                        <button type="button" class="field-label field-label--notes" (click)="openDetailDialog(plan, 'notes')">Notas</button>
                       }
-                    </p>
-                    @if (plan.notes) {
-                      @let isNotesLong = plan.notes.length > 50;
-                      <p>
-                        <span class="field-label">Notas</span>
-                        {{ isNotesLong ? (plan.notes | slice:0:50) + '...' : plan.notes }}
-                        @if (isNotesLong) {
-                          <button type="button" class="notes-toggle" (click)="openDetailDialog(plan, 'notes')">ver más</button>
-                        }
-                      </p>
-                    }
+                    </div>
                     <span class="cal-badge">{{ plan.targetCalories }} kcal</span>
                   </div>
                   <button mat-icon-button type="button" (click)="toggleCollapse(plan.id)">
