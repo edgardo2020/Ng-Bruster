@@ -2,8 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 
 import { Routine, RoutineExercise } from '../../../../core/models/gym.models';
@@ -11,7 +9,7 @@ import { Routine, RoutineExercise } from '../../../../core/models/gym.models';
 @Component({
   selector: 'app-my-routines-panel',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatChipsModule, MatDividerModule, MatIconModule, MatButtonModule],
+  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule],
   templateUrl: './my-routines-panel.component.html',
   styleUrl: './my-routines-panel.component.scss'
 })
@@ -19,14 +17,22 @@ export class MyRoutinesPanelComponent {
   @Input({ required: true }) routines: Routine[] = [];
 
   readonly previewExercise = signal<RoutineExercise | null>(null);
+  readonly descriptionDialog = signal<RoutineExercise | null>(null);
 
   showImagePreview(exercise: RoutineExercise): void {
-    //console.log('Mostrando imagen para ejercicio:', exercise);
     this.previewExercise.set(exercise);
   }
 
   closeImagePreview(): void {
     this.previewExercise.set(null);
+  }
+
+  openDescriptionDialog(exercise: RoutineExercise): void {
+    this.descriptionDialog.set(exercise);
+  }
+
+  closeDescriptionDialog(): void {
+    this.descriptionDialog.set(null);
   }
 
   getTotalSets(routine: Routine): number {
