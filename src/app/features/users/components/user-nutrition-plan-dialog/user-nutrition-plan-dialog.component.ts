@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, computed, inject, signal, viewChild } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -10,6 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { ToastrService } from 'ngx-toastr';
 
@@ -20,17 +22,13 @@ import { UserNutritionPlansApiService } from '../../data-access/user-nutrition-p
 import { MealsApiService } from '../../../foods/data-access/meals-api.service';
 import { AuthService } from '../../../../core/services/auth.service';
 
-export interface UserNutritionPlanDialogData {
-  userId: string;
-  userName: string;
-}
-
 @Component({
   selector: 'app-user-nutrition-plan-dialog',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatButtonModule,
     MatDatepickerModule,
@@ -39,6 +37,8 @@ export interface UserNutritionPlanDialogData {
     MatIconModule,
     MatInputModule,
     MatSelectModule,
+    MatAutocompleteModule,
+    MatTabsModule,
     MatTableModule
   ],
   templateUrl: './user-nutrition-plan-dialog.component.html',
@@ -57,29 +57,70 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   @Input() userName = '';
   @Output() back = new EventEmitter<void>();
 
-  private readonly dialogData = inject<UserNutritionPlanDialogData | null>(MAT_DIALOG_DATA, { optional: true });
-
-  readonly isDialog = computed(() => this.dialogData != null);
-  readonly effectiveUserId = computed(() => this.userId || this.dialogData?.userId || '');
-  readonly effectiveUserName = computed(() => this.userName || this.dialogData?.userName || '');
-
   readonly foods = signal<FoodCatalogItem[]>([]);
+  readonly foodSearchText = signal('');
+  readonly filteredFoods = computed(() => {
+    const search = this.foodSearchText().toLowerCase().trim();
+    if (!search) return this.foods();
+    return this.foods().filter((f) => f.name.toLowerCase().includes(search));
+  });
   readonly userPlans = signal<UserNutritionPlan[]>([]);
   readonly selectedItems = signal<UserNutritionPlanMealItem[]>([]);
   readonly editingPlanId = signal<string | null>(null);
   readonly mobileViewPlansOnly = signal(true);
+  readonly showFullForm = signal(false);
   readonly isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
   readonly plansCarouselIndex = signal(0);
   private readonly plansCarouselRef = viewChild<ElementRef<HTMLElement>>('plansCarousel');
   readonly mealTypeOptions: Meals[] = [];
 
   readonly mealColumns = ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'actions'];
+  readonly dayLabels = ['Todos', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  readonly selectedDayFilter = signal('');
+
+  readonly filteredByDay = computed(() => {
+    const day = this.selectedDayFilter();
+    if (!day) return this.selectedItems();
+    return this.selectedItems().filter((item) => item.day === day);
+  });
+
+  readonly availableDays = computed(() => {
+    const days = new Set(this.selectedItems().map((item) => item.day || ''));
+    return ['', ...this.dayLabels.slice(1)].filter((d) => days.has(d));
+  });
+
+  readonly dayItemsMap = computed(() => {
+    const map = new Map<string, UserNutritionPlanMealItem[]>();
+    const days = this.availableDays();
+    for (const day of days) {
+      map.set(day, this.selectedItems().filter((item) => (item.day || '') === day));
+    }
+    return map;
+  });
+
+  readonly dayCarouselIndex = signal(0);
+  private readonly dayCarouselRef = viewChild<ElementRef<HTMLElement>>('dayCarousel');
+
+  onDayCarouselScroll(): void {
+    const el = this.dayCarouselRef()?.nativeElement;
+    if (!el) return;
+    const cardWidth = el.querySelector('.day-slide')?.clientWidth ?? 1;
+    if (!cardWidth) return;
+    const idx = Math.round(el.scrollLeft / cardWidth);
+    this.dayCarouselIndex.set(idx);
+  }
+
+  selectDayTab(day: string): void {
+    this.selectedDayFilter.set(day);
+  }
+
   readonly pageSize = 4;
   readonly currentPage = signal(1);
-  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.selectedItems().length / this.pageSize)));
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.filteredByDay().length / this.pageSize)));
   readonly paginatedItems = computed(() => {
+    const items = this.filteredByDay();
     const start = (this.currentPage() - 1) * this.pageSize;
-    return this.selectedItems().slice(start, start + this.pageSize);
+    return items.slice(start, start + this.pageSize);
   });
 
   changePage(delta: 1 | -1): void {
@@ -120,10 +161,13 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     notes: ['']
   });
 
+  readonly daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
   readonly mealForm = this.fb.nonNullable.group({
     mealType: [{ id: 0, nombre: ''} , Validators.required],
     foodId: [0, Validators.required],
     quantity: [1, [Validators.required, Validators.min(0.1)]],
+    day: [''],
     notes: ['']
   });
 
@@ -131,6 +175,11 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.loadFoods();
     this.loadPlans();
     this.loadMeals();
+  }
+
+  onFoodSelected(event: { option: { value: number } }): void {
+    this.mealForm.controls.foodId.setValue(event.option.value);
+    this.foodSearchText.set('');
   }
 
   addMealItem(): void {
@@ -147,22 +196,21 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     }
 
     const qty = Number(raw.quantity) || 1;
-    this.selectedItems.update((current) => [
-      ...current,
-      {
-        id: "",
-        mealType: raw.mealType.nombre,
-        foodId: food.id,
-        foodName: food.name,
-        quantity: qty,
-        serving: food.serving,
-        calories: Number((food.calories * qty).toFixed(1)),
-        protein: Number((food.protein * qty).toFixed(1)),
-        carbs: Number((food.carbs * qty).toFixed(1)),
-        fats: Number((food.fats * qty).toFixed(1)),
-        notes: raw.notes
-      }
-    ]);
+    const newItem: UserNutritionPlanMealItem = {
+      id: "",
+      mealType: raw.mealType.nombre,
+      foodId: food.id,
+      foodName: food.name,
+      quantity: qty,
+      serving: food.serving,
+      calories: Number((food.calories * qty).toFixed(1)),
+      protein: Number((food.protein * qty).toFixed(1)),
+      carbs: Number((food.carbs * qty).toFixed(1)),
+      fats: Number((food.fats * qty).toFixed(1)),
+      day: raw.day || '',
+      notes: raw.notes
+    };
+    this.selectedItems.update((current) => [...current, newItem]);
 
     this.currentPage.set(1);
 
@@ -172,8 +220,38 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       quantity: 1,
       notes: ''
     });
+    this.foodSearchText.set('');
 
-    this.toastr.success('Alimento agregado al plan.');
+    const toDateStr = (d: Date | null | string): string | undefined =>
+      d ? (typeof d === 'string' ? d : d.toISOString().split('T')[0]) : undefined;
+    const planRaw = this.planForm.getRawValue();
+    const payload: Omit<UserNutritionPlan, 'id'> = {
+      userId: this.userId,
+      name: planRaw.name || 'Plan de alimentacion',
+      objective: planRaw.objective || '',
+      startDate: toDateStr(planRaw.startDate) ?? new Date().toISOString().split('T')[0],
+      endDate: toDateStr(planRaw.endDate),
+      targetCalories: Number(planRaw.targetCalories) || 2200,
+      notes: planRaw.notes || '',
+      items: [...this.selectedItems()]
+    };
+
+    const request$ = this.editingPlanId()
+      ? this.plansApiService.update({ id: this.editingPlanId() as string, ...payload })
+      : this.plansApiService.create(payload);
+
+    request$.pipe(take(1)).subscribe({
+      next: (saved) => {
+        if (!this.editingPlanId()) {
+          this.editingPlanId.set(saved.id);
+        }
+        this.loadPlans();
+        this.toastr.success('Alimento agregado al plan.');
+      },
+      error: (error: unknown) => {
+        this.toastr.error(this.getErrorMessage(error, 'No se pudo guardar el alimento.'));
+      }
+    });
   }
 
   removeMealItem(itemId: string): void {
@@ -213,7 +291,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     const toDateStr = (d: Date | null | string): string | undefined =>
       d ? (typeof d === 'string' ? d : d.toISOString().split('T')[0]) : undefined;
     const payload: Omit<UserNutritionPlan, 'id'> = {
-      userId: this.effectiveUserId(),
+      userId: this.userId,
       name: raw.name,
       objective: raw.objective,
       startDate: toDateStr(raw.startDate) ?? '',
@@ -230,8 +308,26 @@ export class UserNutritionPlanDialogComponent implements OnInit {
 
     request$.pipe(take(1)).subscribe({
       next: () => {
-        this.loadPlans();
-        this.resetForms();
+        this.plansApiService.getByUser(this.userId).pipe(take(1)).subscribe((plans) => {
+          this.userPlans.set(plans);
+          const saved = this.editingPlanId()
+            ? plans.find((p) => p.id === this.editingPlanId())
+            : plans.at(-1);
+          if (saved) {
+            this.editingPlanId.set(saved.id);
+            this.planForm.patchValue({
+              name: saved.name,
+              objective: saved.objective,
+              startDate: saved.startDate ? new Date(saved.startDate) : null,
+              endDate: saved.endDate ? new Date(saved.endDate) : null,
+              targetCalories: saved.targetCalories,
+              notes: saved.notes ?? ''
+            });
+            this.selectedItems.set([...saved.items]);
+          }
+          this.mobileViewPlansOnly.set(false);
+          this.showFullForm.set(false);
+        });
         this.toastr.success(this.editingPlanId() ? 'Plan actualizado.' : 'Plan guardado.');
       },
       error: (error: unknown) => {
@@ -251,17 +347,16 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       notes: plan.notes ?? ''
     });
     this.selectedItems.set([...plan.items]);
-    if (this.isMobile) {
-      this.mobileViewPlansOnly.set(false);
-    }
+    this.mobileViewPlansOnly.set(false);
+    this.showFullForm.set(false);
   }
 
   handleBack(): void {
-    if (this.mobileViewPlansOnly()) {
-      this.back.emit();
-    } else {
+    if (this.isMobile && !this.mobileViewPlansOnly()) {
       this.mobileViewPlansOnly.set(true);
       this.resetForms();
+    } else {
+      this.back.emit();
     }
   }
 
@@ -336,9 +431,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.editingPlanId.set(null);
     this.selectedItems.set([]);
     this.currentPage.set(1);
-    if (this.isMobile) {
-      this.mobileViewPlansOnly.set(true);
-    }
+    this.mobileViewPlansOnly.set(true);
+    this.showFullForm.set(false);
     this.planForm.reset({
       name: '',
       objective: '',
@@ -351,8 +445,19 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       mealType: { id: 0, nombre: ''},
       foodId: 0,
       quantity: 1,
+      day: '',
       notes: ''
     });
+    this.foodSearchText.set('');
+  }
+
+  newPlan(): void {
+    this.mobileViewPlansOnly.set(false);
+    this.showFullForm.set(true);
+  }
+
+  expandForm(): void {
+    this.showFullForm.set(true);
   }
 
   private loadFoods(): void {
@@ -377,7 +482,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   }
 
   private loadPlans(options?: { resetIfEmpty?: boolean }): void {
-    this.plansApiService.getByUser(this.effectiveUserId()).pipe(take(1)).subscribe({
+    this.plansApiService.getByUser(this.userId).pipe(take(1)).subscribe({
       next: (plans) => {
         this.userPlans.set(plans);
         console.log('Loaded user plans:', plans);

@@ -32,10 +32,7 @@ import {
   UserRoutinesDetailDialogData
 } from '../components/user-routines-detail-dialog/user-routines-detail-dialog.component';
 import { FoodsCatalogDialogComponent } from '../components/foods-catalog-dialog/foods-catalog-dialog.component';
-import {
-  UserNutritionPlanDialogComponent,
-  UserNutritionPlanDialogData
-} from '../components/user-nutrition-plan-dialog/user-nutrition-plan-dialog.component';
+import { UserNutritionPlanDialogComponent } from '../components/user-nutrition-plan-dialog/user-nutrition-plan-dialog.component';
 import { RoutinesApiService } from '../../routines/data-access/routines-api.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
@@ -314,22 +311,7 @@ export class UsersPageComponent implements OnInit {
   }
 
   openUserNutritionPlans(user: UserRecord): void {
-    if (window.innerWidth <= 768) {
-      this.selectedUserForNutrition.set(user);
-    } else {
-      this.dialog.open<UserNutritionPlanDialogComponent, UserNutritionPlanDialogData>(
-        UserNutritionPlanDialogComponent,
-        {
-          width: '1240px',
-          maxWidth: '98vw',
-          maxHeight: '94vh',
-          data: {
-            userId: user.id,
-            userName: user.nombre
-          }
-        }
-      );
-    }
+    this.selectedUserForNutrition.set(user);
   }
 
   closeUserNutrition(): void {

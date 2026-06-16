@@ -1,24 +1,13 @@
-@if (isDialog()) {
-  <h2 mat-dialog-title class="dialog-title">
-    <span>Plan alimentacion · {{ effectiveUserName() }}</span>
-    <button mat-icon-button mat-dialog-close type="button" aria-label="Cerrar dialogo">
-      <mat-icon>close</mat-icon>
-    </button>
-  </h2>
-}
-
-<mat-dialog-content class="dialog-content nutrition-content">
-  @if (isMobile) {
-    <button mat-icon-button type="button" (click)="handleBack()" aria-label="Volver" class="mobile-back-btn">
+<div class="nutrition-content">
+  <div class="panel-header">
+    <button mat-icon-button type="button" (click)="handleBack()" aria-label="Volver" class="back-btn">
       <mat-icon>arrow_back</mat-icon>
     </button>
-  }
+  </div>
 
-  @if (!isMobile || mobileViewPlansOnly()) {
+  @if (mobileViewPlansOnly()) {
   <section class="card-surface plans-card">
-    @if (!isMobile) {
-      <h3>Planes del usuario</h3>
-    }
+    <h3>Planes del usuario</h3>
     <div class="plan-list" #plansCarousel (scroll)="onPlansScroll()">
       @for (plan of userPlans(); track plan.id) {
         <article class="plan-item">
@@ -51,52 +40,70 @@
       </div>
     }
 
-    @if (isMobile) {
-      <button mat-stroked-button type="button" (click)="mobileViewPlansOnly.set(false)" class="mobile-add-plan-btn">Nuevo plan </button>
-    }
+    <button mat-stroked-button type="button" (click)="newPlan()" class="add-plan-btn">Nuevo plan</button>
   </section>
   }
 
-  @if (!isMobile || !mobileViewPlansOnly()) {
+  @if (!mobileViewPlansOnly()) {
   <section class="card-surface form-card">
-    @if (!isMobile) {
-      <h3>{{ editingPlanId() ? 'Editar plan' : 'Nuevo plan de alimentacion' }}</h3>
-    }
+    <h3>{{ editingPlanId() ? 'Editar plan' : 'Nuevo plan de alimentacion' }}</h3>
 
     <form [formGroup]="planForm" class="plan-grid">
-      <mat-form-field appearance="outline">
-        <mat-label>Nombre del plan</mat-label>
-        <input matInput formControlName="name" />
-      </mat-form-field>
+      @if (showFullForm() || !editingPlanId()) {
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre del plan</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="mobile-textarea">
-        <mat-label>Objective</mat-label>
-        <textarea matInput formControlName="objective" placeholder="Objective" rows="2"></textarea>
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Inicio</mat-label>
+          <input matInput [matDatepicker]="startPicker" formControlName="startDate" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker touchUi></mat-datepicker>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Inicio</mat-label>
-        <input matInput [matDatepicker]="startPicker" formControlName="startDate" readonly />
-        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
-        <mat-datepicker #startPicker touchUi></mat-datepicker>
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Fin</mat-label>
+          <input matInput [matDatepicker]="endPicker" formControlName="endDate" readonly />
+          <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker touchUi></mat-datepicker>
+        </mat-form-field>
+      } @else {
+        <div class="field-display">
+          <span class="field-label">Nombre del plan</span>
+          <span class="field-value">{{ planForm.getRawValue().name }}</span>
+        </div>
+        <div class="field-display">
+          <span class="field-label">Inicio</span>
+          <span class="field-value">{{ planForm.getRawValue().startDate | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="field-display">
+          <span class="field-label">Fin</span>
+          <span class="field-value">{{ planForm.getRawValue().endDate ? (planForm.getRawValue().endDate | date:'dd/MM/yyyy') : 'Sin fecha' }}</span>
+        </div>
+        <div class="full-span form-inline-actions">
+          <button mat-stroked-button type="button" (click)="expandForm()">Editar mas campos</button>
+          <button mat-flat-button color="primary" type="button" (click)="savePlan()">Guardar</button>
+        </div>
+      }
 
-      <mat-form-field appearance="outline">
-        <mat-label>Fin</mat-label>
-        <input matInput [matDatepicker]="endPicker" formControlName="endDate" readonly />
-        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
-        <mat-datepicker #endPicker touchUi></mat-datepicker>
-      </mat-form-field>
+      @if (showFullForm()) {
+        <mat-form-field appearance="outline" class="mobile-textarea">
+          <mat-label>Objective</mat-label>
+          <textarea matInput formControlName="objective" placeholder="Objective" rows="2"></textarea>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Calorias objetivo</mat-label>
-        <input matInput type="number" min="1" formControlName="targetCalories" />
-      </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Calorias objetivo</mat-label>
+          <input matInput type="number" min="1" formControlName="targetCalories" />
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-span mobile-textarea">
-        <mat-label>Notas</mat-label>
-        <textarea matInput formControlName="notes" rows="3"></textarea>
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="full-span mobile-textarea">
+          <mat-label>Notas</mat-label>
+          <textarea matInput formControlName="notes" rows="3"></textarea>
+        </mat-form-field>
+         <button mat-flat-button color="primary" type="button" (click)="savePlan()">Guardar</button>
+      }
     </form>
 
     <div class="meal-builder" [formGroup]="mealForm">
@@ -114,16 +121,27 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Alimento</mat-label>
-          <mat-select formControlName="foodId">
-            @for (food of foods(); track food.id) {
+          <input matInput [matAutocomplete]="foodAuto" [value]="foodSearchText()" (input)="foodSearchText.set($any($event.target).value)" />
+          <mat-autocomplete #foodAuto="matAutocomplete" (optionSelected)="onFoodSelected($event)">
+            @for (food of filteredFoods(); track food.id) {
               <mat-option [value]="food.id">{{ food.name }} · {{ food.serving }}</mat-option>
             }
-          </mat-select>
+          </mat-autocomplete>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Cantidad</mat-label>
           <input matInput type="number" min="0.1" step="0.1" formControlName="quantity" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Dia</mat-label>
+          <mat-select formControlName="day">
+            <mat-option value="">Todos</mat-option>
+            @for (day of daysOfWeek; track day) {
+              <mat-option [value]="day">{{ day }}</mat-option>
+            }
+          </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -144,88 +162,170 @@
       <span>G: <strong>{{ totals().fats | number:'1.0-1' }}</strong></span>
     </div>
 
-    <div class="table-scroll desktop-table-view">
-      <table mat-table [dataSource]="selectedItems()" class="mat-elevation-z0">
-        <ng-container matColumnDef="mealType">
-          <th mat-header-cell *matHeaderCellDef>Comida</th>
-          <td mat-cell *matCellDef="let item">{{ item.mealType }}</td>
-        </ng-container>
+    <div class="day-filter">
+      <div class="desktop-tabs-view">
+        <mat-tab-group (selectedTabChange)="selectDayTab(availableDays()[$event.index] || '')">
+          <mat-tab label="Todos">
+            <ng-template matTabContent>
+              <div class="table-scroll">
+                <table mat-table [dataSource]="selectedItems()" class="mat-elevation-z0">
+                  <ng-container matColumnDef="mealType">
+                    <th mat-header-cell *matHeaderCellDef>Comida</th>
+                    <td mat-cell *matCellDef="let item">{{ item.mealType }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="foodName">
+                    <th mat-header-cell *matHeaderCellDef>Alimento</th>
+                    <td mat-cell *matCellDef="let item">{{ item.foodName }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="quantity">
+                    <th mat-header-cell *matHeaderCellDef>Cant.</th>
+                    <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="kcal">
+                    <th mat-header-cell *matHeaderCellDef>Kcal</th>
+                    <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="macros">
+                    <th mat-header-cell *matHeaderCellDef>Macros</th>
+                    <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                    <td mat-cell *matCellDef="let item">
+                      <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="mealColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: mealColumns" [class.completed]="row.completed" [attr.data-completed]="row.completed"></tr>
+                </table>
+              </div>
+            </ng-template>
+          </mat-tab>
+          @for (day of availableDays(); track day) {
+            @if (day) {
+              <mat-tab [label]="day">
+                <ng-template matTabContent>
+                  <div class="table-scroll">
+                    <table mat-table [dataSource]="dayItemsMap().get(day) || []" class="mat-elevation-z0">
+                      <ng-container matColumnDef="mealType">
+                        <th mat-header-cell *matHeaderCellDef>Comida</th>
+                        <td mat-cell *matCellDef="let item">{{ item.mealType }}</td>
+                      </ng-container>
+                      <ng-container matColumnDef="foodName">
+                        <th mat-header-cell *matHeaderCellDef>Alimento</th>
+                        <td mat-cell *matCellDef="let item">{{ item.foodName }}</td>
+                      </ng-container>
+                      <ng-container matColumnDef="quantity">
+                        <th mat-header-cell *matHeaderCellDef>Cant.</th>
+                        <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
+                      </ng-container>
+                      <ng-container matColumnDef="kcal">
+                        <th mat-header-cell *matHeaderCellDef>Kcal</th>
+                        <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
+                      </ng-container>
+                      <ng-container matColumnDef="macros">
+                        <th mat-header-cell *matHeaderCellDef>Macros</th>
+                        <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
+                      </ng-container>
+                      <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                        <td mat-cell *matCellDef="let item">
+                          <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="mealColumns"></tr>
+                      <tr mat-row *matRowDef="let row; columns: mealColumns" [class.completed]="row.completed" [attr.data-completed]="row.completed"></tr>
+                    </table>
+                  </div>
+                </ng-template>
+              </mat-tab>
+            }
+          }
+        </mat-tab-group>
+      </div>
 
-        <ng-container matColumnDef="foodName">
-          <th mat-header-cell *matHeaderCellDef>Alimento</th>
-          <td mat-cell *matCellDef="let item">{{ item.foodName }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="quantity">
-          <th mat-header-cell *matHeaderCellDef>Cant.</th>
-          <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="kcal">
-          <th mat-header-cell *matHeaderCellDef>Kcal</th>
-          <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="macros">
-          <th mat-header-cell *matHeaderCellDef>Macros</th>
-          <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let item">
-            <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="mealColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: mealColumns" [class.completed]="row.completed" [attr.data-completed]="row.completed"></tr>
-      </table>
-    </div>
-
-    <div class="mobile-card-view">
-      @for (item of paginatedItems(); track item.id) {
-        <div class="food-card" [class.completed]="item.completed" [attr.data-completed]="item.completed">
-          <div class="food-card-header">
-            <span class="food-card-meal">{{ item.mealType }}</span>
-            <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
+      <div class="mobile-carousel-view">
+        <div class="day-carousel" #dayCarousel (scroll)="onDayCarouselScroll()">
+          <div class="day-slide">
+            <div class="day-slide-title">Todos</div>
+            @for (item of selectedItems(); track item.id) {
+              <div class="food-card" [class.completed]="item.completed" [attr.data-completed]="item.completed">
+                <div class="food-card-header">
+                  <span class="food-card-meal">{{ item.mealType }}</span>
+                  <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                <div class="food-card-body">
+                  <div class="food-card-row">
+                    <span class="food-card-label">Alimento</span>
+                    <span class="food-card-value">{{ item.foodName }}</span>
+                  </div>
+                  <div class="food-card-row">
+                    <span class="food-card-label">Cantidad</span>
+                    <span class="food-card-value">{{ item.quantity }} x {{ item.serving }}</span>
+                  </div>
+                  <div class="food-card-row">
+                    <span class="food-card-label">Kcal</span>
+                    <span class="food-card-value">{{ item.calories }}</span>
+                  </div>
+                  <div class="food-card-row">
+                    <span class="food-card-label">Macros</span>
+                    <span class="food-card-value">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</span>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
-          <div class="food-card-body">
-            <div class="food-card-row">
-              <span class="food-card-label">Alimento</span>
-              <span class="food-card-value">{{ item.foodName }}</span>
-            </div>
-            <div class="food-card-row">
-              <span class="food-card-label">Cantidad</span>
-              <span class="food-card-value">{{ item.quantity }} x {{ item.serving }}</span>
-            </div>
-            <div class="food-card-row">
-              <span class="food-card-label">Kcal</span>
-              <span class="food-card-value">{{ item.calories }}</span>
-            </div>
-            <div class="food-card-row">
-              <span class="food-card-label">Macros</span>
-              <span class="food-card-value">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</span>
-            </div>
-          </div>
+          @for (day of availableDays(); track day) {
+            @if (day) {
+              <div class="day-slide">
+                <div class="day-slide-title">{{ day }}</div>
+                @for (item of dayItemsMap().get(day) || []; track item.id) {
+                  <div class="food-card" [class.completed]="item.completed" [attr.data-completed]="item.completed">
+                    <div class="food-card-header">
+                      <span class="food-card-meal">{{ item.mealType }}</span>
+                      <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                    <div class="food-card-body">
+                      <div class="food-card-row">
+                        <span class="food-card-label">Alimento</span>
+                        <span class="food-card-value">{{ item.foodName }}</span>
+                      </div>
+                      <div class="food-card-row">
+                        <span class="food-card-label">Cantidad</span>
+                        <span class="food-card-value">{{ item.quantity }} x {{ item.serving }}</span>
+                      </div>
+                      <div class="food-card-row">
+                        <span class="food-card-label">Kcal</span>
+                        <span class="food-card-value">{{ item.calories }}</span>
+                      </div>
+                      <div class="food-card-row">
+                        <span class="food-card-label">Macros</span>
+                        <span class="food-card-value">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          }
         </div>
-      }
 
-      @if (selectedItems().length > pageSize) {
-        <div class="mobile-pagination">
-          <button mat-icon-button type="button" [disabled]="currentPage() <= 1" (click)="changePage(-1)">
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <span class="page-info">{{ currentPage() }} / {{ totalPages() }}</span>
-          <button mat-icon-button type="button" [disabled]="currentPage() >= totalPages()" (click)="changePage(1)">
-            <mat-icon>chevron_right</mat-icon>
-          </button>
-        </div>
-      }
+        @if (availableDays().length > 0) {
+          <div class="carousel-indicators">
+            @for (day of availableDays(); track day; let i = $index) {
+              <span class="carousel-dot" [class.carousel-dot--active]="dayCarouselIndex() === i"></span>
+            }
+          </div>
+        }
+      </div>
     </div>
 
     <div class="plan-actions">
@@ -241,10 +341,4 @@
     </div>
   </section>
   }
-</mat-dialog-content>
-
-@if (isDialog()) {
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close type="button">Cerrar</button>
-  </mat-dialog-actions>
-}
+</div>
