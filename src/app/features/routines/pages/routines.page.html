@@ -9,9 +9,6 @@
     @if (isRole1()) {
       <article class="card-surface" style="grid-column: 1 / -1">
         <div class="panel-header">
-          <div>
-            <h2>Biblioteca de rutinas</h2>
-          </div>
           <div class="panel-actions">
             <button mat-stroked-button color="primary" type="button" (click)="openCustomizedRoutineDialog()">
               <mat-icon>auto_awesome</mat-icon> Generar rutina personalizada
@@ -53,10 +50,13 @@
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Acciones</th>
                 <td mat-cell *matCellDef="let routine">
-                  <button mat-icon-button type="button" (click)="edit(routine)">
+                  <button mat-icon-button type="button" (click)="edit(routine)" matTooltip="Editar">
                     <mat-icon>edit</mat-icon>
                   </button>
-                  <button mat-icon-button type="button" (click)="remove(routine)">
+                  <button mat-icon-button type="button" (click)="assignUser(routine)" matTooltip="Asignar a usuario">
+                    <mat-icon>person_add</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" (click)="remove(routine)" matTooltip="Eliminar">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </td>
@@ -84,6 +84,9 @@
                 <div class="routine-card-actions">
                   <button mat-icon-button type="button" (click)="edit(routine)">
                     <mat-icon>edit</mat-icon>
+                  </button>
+                  <button mat-icon-button type="button" (click)="assignUser(routine)">
+                    <mat-icon>person_add</mat-icon>
                   </button>
                   <button mat-icon-button type="button" (click)="remove(routine)">
                     <mat-icon>delete</mat-icon>
@@ -143,11 +146,28 @@
 
             <mat-form-field appearance="outline" class="exercise-select" [floatLabel]="'auto'">
               <mat-label>Ejercicio</mat-label>
-              <mat-select formControlName="exerciseId">
+              <input
+                matInput
+                type="text"
+                placeholder="Buscar ejercicio..."
+                [matAutocomplete]="exerciseAuto"
+                [formControl]="exerciseSearchControl"
+              />
+              <mat-autocomplete
+                #exerciseAuto="matAutocomplete"
+                class="exercise-autocomplete-panel"
+                [displayWith]="displayExerciseName"
+                (optionSelected)="onExerciseSelected($event)"
+              >
                 @for (exercise of filteredExerciseCatalog(); track exercise.id) {
-                  <mat-option [value]="exercise.id">{{ exercise.name }}</mat-option>
+                  <mat-option [value]="exercise">{{ exercise.name }}</mat-option>
                 }
-              </mat-select>
+              </mat-autocomplete>
+              @if (exerciseSearchControl.value) {
+                <button matSuffix mat-icon-button type="button" (click)="clearExerciseSearch()" aria-label="Limpiar">
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
             </mat-form-field>
           </div>
 
@@ -175,39 +195,73 @@
 
         <div class="full-span card-surface form-subsection routine-selected-exercises-card">
           <h3>Ejercicios agregados</h3>
-          <table mat-table [dataSource]="selectedExercises()" class="mat-elevation-z0">
-            <ng-container matColumnDef="exerciseName">
-              <th mat-header-cell *matHeaderCellDef>Ejercicio</th>
-              <td mat-cell *matCellDef="let exercise">{{ exercise.exerciseName }}</td>
-            </ng-container>
 
-            <ng-container matColumnDef="sets">
-              <th mat-header-cell *matHeaderCellDef>Series</th>
-              <td mat-cell *matCellDef="let exercise">{{ exercise.sets }}</td>
-            </ng-container>
+          @if (selectedExercises().length === 0) {
+            <p class="empty-exercises-msg">Aún no has agregado ejercicios a esta rutina.</p>
+          }
 
-            <ng-container matColumnDef="reps">
-              <th mat-header-cell *matHeaderCellDef>Reps</th>
-              <td mat-cell *matCellDef="let exercise">{{ exercise.reps }}</td>
-            </ng-container>
+          <div class="desktop-only">
+            <table mat-table [dataSource]="selectedExercises()" class="mat-elevation-z0">
+              <ng-container matColumnDef="exerciseName">
+                <th mat-header-cell *matHeaderCellDef>Ejercicio</th>
+                <td mat-cell *matCellDef="let exercise">{{ exercise.exerciseName }}</td>
+              </ng-container>
 
-            <ng-container matColumnDef="weight">
-              <th mat-header-cell *matHeaderCellDef>Peso</th>
-              <td mat-cell *matCellDef="let exercise">{{ exercise.weight }} kg</td>
-            </ng-container>
+              <ng-container matColumnDef="sets">
+                <th mat-header-cell *matHeaderCellDef>Series</th>
+                <td mat-cell *matCellDef="let exercise">{{ exercise.sets }}</td>
+              </ng-container>
 
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>Acciones</th>
-              <td mat-cell *matCellDef="let exercise">
-                <button mat-icon-button type="button" (click)="removeExerciseFromRoutine(exercise.id)">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </td>
-            </ng-container>
+              <ng-container matColumnDef="reps">
+                <th mat-header-cell *matHeaderCellDef>Reps</th>
+                <td mat-cell *matCellDef="let exercise">{{ exercise.reps }}</td>
+              </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="exerciseColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: exerciseColumns"></tr>
-          </table>
+              <ng-container matColumnDef="weight">
+                <th mat-header-cell *matHeaderCellDef>Peso</th>
+                <td mat-cell *matCellDef="let exercise">{{ exercise.weight }} kg</td>
+              </ng-container>
+
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                <td mat-cell *matCellDef="let exercise">
+                  <button mat-icon-button type="button" (click)="removeExerciseFromRoutine(exercise.id)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="exerciseColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: exerciseColumns"></tr>
+            </table>
+          </div>
+
+          <div class="mobile-only exercise-cards-mobile">
+            @for (exercise of selectedExercises(); track exercise.id) {
+              <div class="exercise-card-item">
+                <div class="exercise-card-top">
+                  <span class="exercise-card-name">{{ exercise.exerciseName }}</span>
+                  <button mat-icon-button type="button" (click)="removeExerciseFromRoutine(exercise.id)" class="exercise-card-delete">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                <div class="exercise-card-metrics">
+                  <div class="metric-badge">
+                    <span class="metric-label">Series</span>
+                    <span class="metric-value">{{ exercise.sets }}</span>
+                  </div>
+                  <div class="metric-badge">
+                    <span class="metric-label">Reps</span>
+                    <span class="metric-value">{{ exercise.reps }}</span>
+                  </div>
+                  <div class="metric-badge">
+                    <span class="metric-label">Peso</span>
+                    <span class="metric-value">{{ exercise.weight }} kg</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
         </div>
       </form>
     </mat-dialog-content>
@@ -216,6 +270,34 @@
       <button mat-button mat-dialog-close type="button">Cancelar</button>
       <button mat-flat-button color="primary" type="button" (click)="save()">
         {{ editingId() ? 'Guardar cambios' : 'Crear rutina' }}
+      </button>
+    </mat-dialog-actions>
+  </ng-template>
+
+  <ng-template #assignUserDialog>
+    <h2 mat-dialog-title class="dialog-title">
+      <span>Asignar rutina</span>
+      <button mat-icon-button mat-dialog-close type="button" aria-label="Cerrar">
+        <mat-icon>close</mat-icon>
+      </button>
+    </h2>
+    <mat-dialog-content>
+      <p style="margin: 0.5rem 0 1rem;">
+        Usuario para la rutina <strong>{{ assignTargetRoutine()?.name }}</strong>:
+      </p>
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Selecciona un usuario</mat-label>
+        <mat-select [(value)]="selectedAssignUserId">
+          @for (user of users(); track user.id) {
+            <mat-option [value]="user.id">{{ user.nombre }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close type="button">Cancelar</button>
+      <button mat-flat-button color="primary" type="button" [mat-dialog-close]="selectedAssignUserId()" [disabled]="!selectedAssignUserId()">
+        Asignar
       </button>
     </mat-dialog-actions>
   </ng-template>

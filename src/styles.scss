@@ -52,6 +52,8 @@
   }
 }
 
+
+
 :root {
 	--display-font: 'Sora', sans-serif;
 	--body-font: 'Manrope', sans-serif;
@@ -258,7 +260,30 @@ body {
 }
 
 .info-snackbar {
-	--mdc-snackbar-container-color: #1d4ed8;
+  --mdc-snackbar-container-color: #1d4ed8;
+}
+
+.warning-snackbar {
+  --mdc-snackbar-container-color: #fffbe6;
+  --mat-snack-bar-container-color: #fffbe6;
+
+  .mdc-snackbar__surface {
+    background: #fffbe6 !important;
+    border-left: 6px solid #facc15;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  .mat-mdc-snack-bar-label {
+    color: #b45309 !important;
+    font-weight: 500;
+    font-size: 1.05em;
+    font-family: var(--body-font);
+  }
+
+  .mat-mdc-snack-bar-actions .mat-mdc-button {
+    color: #92400e !important;
+  }
 }
 
 @media (max-width: 1080px) {

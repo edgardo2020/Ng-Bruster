@@ -17,6 +17,10 @@ export class NotificationService {
     this.open(message, 'info-snackbar');
   }
 
+  warning(message: string): void {
+    this.open(message, 'warning-snackbar');
+  }
+
   private open(message: string, panelClass: string): void {
     this.snackBar.open(message, 'Cerrar', {
       duration: 3500,

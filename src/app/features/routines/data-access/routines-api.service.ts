@@ -36,6 +36,7 @@ type RoutineRequest = {
   id?: string;
   UserId?: string;
   EntrenadorId?: string;
+  IdEmpresa?: number;
   name: string;
   description: string;
   IsCustomized?: boolean;
@@ -72,41 +73,14 @@ export class RoutinesApiService {
   private readonly authService = inject(AuthService);
   private readonly mockEnabled = false;
   private mockRoutines: Routine[] = [
-    {
-      id: 'routine-1',
-      name: 'Fuerza Tren Superior',
-      description: 'Rutina de empuje y traccion para torso.',
-      exercises: [
-        { id: 'routine-ex-1', exerciseId: 'exercise-1', exerciseName: 'Bench Press', sets: 4, reps: 10, weight: 50 },
-        { id: 'routine-ex-2', exerciseId: 'exercise-3', exerciseName: 'Barbell Row', sets: 4, reps: 10, weight: 40 }
-      ]
-    },
-    {
-      id: 'routine-2',
-      name: 'Piernas Base',
-      description: 'Bloque inicial para desarrollar fuerza en tren inferior.',
-      exercises: [
-        { id: 'routine-ex-3', exerciseId: 'exercise-2', exerciseName: 'Back Squat', sets: 4, reps: 8, weight: 60 },
-        { id: 'routine-ex-4', exerciseId: 'exercise-4', exerciseName: 'Romanian Deadlift', sets: 3, reps: 10, weight: 55 }
-      ]
-    }
+
   ];
 
   getAll(): Observable<Routine[]> {
-    if (this.mockEnabled) {
-      return of([...this.mockRoutines]).pipe(delay(320));
-    }
+    const idEmpresa = this.authService.snapshot?.user.idEmpresa;
+    const params = new HttpParams().set('IdEmpresa', idEmpresa ?? '');
 
-    const userId = this.authService.snapshot?.user.id;
-    const hasValidUserId = !!userId && userId.trim().length > 0;
-    const endpoint = hasValidUserId
-      ? `${environment.apiBaseUrl}/Routines/ConsultaByEntrenadorId`
-      : `${environment.apiBaseUrl}/Routines/Consulta`;
-    const options = hasValidUserId
-      ? { params: new HttpParams().set('entrenadorId', userId) }
-      : undefined;
-
-    return this.http.get<ApiResponse<unknown[]>>(endpoint, options).pipe(
+    return this.http.get<ApiResponse<unknown[]>>(`${environment.apiBaseUrl}/Routines/ConsultaByEmpresa`, { params }).pipe(
       map((res) => this.mapRoutines(res.respuesta ?? []))
     );
   }
@@ -190,12 +164,13 @@ export class RoutinesApiService {
   }
 
   private toApi(routine: Routine): RoutineRequest {
-    const userId = this.authService.snapshot?.user.id;
+    const user = this.authService.snapshot?.user;
     const request: RoutineRequest = {
       id: routine.id !== '0' ? routine.id : undefined,
       name: routine.name,
       description: routine.description,
-      EntrenadorId: userId ?? undefined,
+      EntrenadorId: user?.id ?? undefined,
+      IdEmpresa: user?.idEmpresa ?? undefined,
       exercises: routine.exercises.map((ex) => ({
         exerciseId: ex.exerciseId,
         sets: ex.sets,
@@ -248,7 +223,7 @@ export class RoutinesApiService {
     return rawExercises
       .filter((exercise): exercise is ApiRoutineExercise => !!exercise && typeof exercise === 'object')
       .map((exercise) => ({
-        id: String(exercise.id ?? crypto.randomUUID()),
+        id: String(exercise.exerciseId),
         exerciseId: String(exercise.exerciseId ?? exercise.exercise?.id ?? ''),
         exerciseName: exercise.exerciseName ?? exercise.nombreEjercicio ?? exercise.exercise?.name ?? 'Ejercicio',
         exerciseDescription:

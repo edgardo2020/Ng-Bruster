@@ -14,7 +14,12 @@
             <h3>{{ routine.name }}</h3>
             <p>{{ routine.description }}</p>
           </div>
-          <span class="routine-badge">{{ routine.exercises.length }} ejercicios</span>
+          <div class="routine-header-actions">
+            <span class="routine-badge">{{ routine.exercises.length }} ejercicios</span>
+            <button mat-icon-button type="button" (click)="remove(routine)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </header>
 
         @if (routine.exercises.length > 0) {

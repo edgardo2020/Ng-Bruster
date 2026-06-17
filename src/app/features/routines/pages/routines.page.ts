@@ -1,7 +1,8 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -12,6 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 
 import { ExerciseCatalogItem, MuscleGroupCatalogItem, Routine, RoutineExercise, UserRecord } from '../../../core/models/gym.models';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { ToastrService } from 'ngx-toastr';
 import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
 import { AskDialogComponent } from '../../../shared/ui/ask-dialog.component';
@@ -33,6 +35,7 @@ import { UsersApiService } from '../../users/data-access/users-api.service';
     CommonModule,
     AsyncPipe,
     ReactiveFormsModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -49,9 +52,11 @@ import { UsersApiService } from '../../users/data-access/users-api.service';
 })
 export class RoutinesPageComponent implements OnInit {
   @ViewChild('formDialog') private formDialogRef!: TemplateRef<unknown>;
+  @ViewChild('assignUserDialog') private assignUserDialogRef!: TemplateRef<unknown>;
 
   private readonly formBuilder = inject(FormBuilder);
   private readonly toastr = inject(ToastrService);
+  private readonly notificationService = inject(NotificationService);
   private readonly exercisesApiService = inject(ExercisesApiService);
   private readonly muscleGroupsApiService = inject(MuscleGroupsApiService);
   private readonly usersApiService = inject(UsersApiService);
@@ -62,6 +67,8 @@ export class RoutinesPageComponent implements OnInit {
 
   readonly store = inject(RoutinesStore);
   readonly editingId = signal<string | null>(null);
+  readonly assignTargetRoutine = signal<Routine | null>(null);
+  readonly selectedAssignUserId = signal<string | null>(null);
   readonly selectedExercises = signal<RoutineExercise[]>([]);
   readonly exerciseCatalog = signal<ExerciseCatalogItem[]>([]);
   readonly muscleGroupCatalog = signal<MuscleGroupCatalogItem[]>([]);
@@ -76,16 +83,25 @@ export class RoutinesPageComponent implements OnInit {
   readonly title = signal('Mis Rutinas');
   readonly subtitle = signal('Crea y personaliza tus rutinas de entrenamiento para alcanzar tus objetivos fitness.');
   readonly meta = signal('Entrenadores');
+  readonly exerciseSearchControl = new FormControl<string>('');
   readonly filteredExerciseCatalog = computed(() => {
     const selectedGroupId = this.selectedMuscleGroupId();
-    if (selectedGroupId === 0) {
-      return this.exerciseCatalog();
+    const searchTerm = (this.exerciseSearchControl.value || '').toLowerCase().trim();
+
+    let list = this.exerciseCatalog();
+
+    if (selectedGroupId !== 0) {
+      list = list.filter((exercise) => {
+        const muscleGroupId = exercise.muscleGroupCatalogId ?? exercise.muscleGroupCatalog?.id ?? 0;
+        return muscleGroupId === selectedGroupId;
+      });
     }
 
-    return this.exerciseCatalog().filter((exercise) => {
-      const muscleGroupId = exercise.muscleGroupCatalogId ?? exercise.muscleGroupCatalog?.id ?? 0;
-      return muscleGroupId === selectedGroupId;
-    });
+    if (searchTerm) {
+      list = list.filter((exercise) => exercise.name.toLowerCase().includes(searchTerm));
+    }
+
+    return list;
   });
   readonly form = this.formBuilder.nonNullable.group({
     name: ['', Validators.required],
@@ -105,6 +121,7 @@ export class RoutinesPageComponent implements OnInit {
 
     if (this.isRole1()) {
       this.store.load();
+      console.log(this.store.vm$);
       this.loadAdminData();
       this.subtitle.set('Administra las rutinas de entrenamiento ');
       this.meta.set('Entrenadores');
@@ -225,11 +242,17 @@ export class RoutinesPageComponent implements OnInit {
       description: routine.description
     });
     this.selectedExercises.set([...routine.exercises]);
+    console.log(routine);
     this.openDialog();
   }
 
   openDialog(): void {
-    this.dialogRef = this.dialog.open(this.formDialogRef, { width: '1120px', maxWidth: '96vw' });
+    const isMobile = window.innerWidth <= 720;
+    this.dialogRef = this.dialog.open(this.formDialogRef, {
+      width: isMobile ? '100vw' : '1120px',
+      maxWidth: '100vw',
+      panelClass: isMobile ? 'dialog-panel-mobile' : undefined
+    });
     this.dialogRef.afterClosed().pipe(take(1)).subscribe(() => this.resetForm());
   }
 
@@ -250,6 +273,20 @@ export class RoutinesPageComponent implements OnInit {
           .pipe(take(1))
           .subscribe(() => this.toastr.success('Rutina eliminada.'));
       });
+  }
+
+  assignUser(routine: Routine): void {
+    this.assignTargetRoutine.set(routine);
+    this.selectedAssignUserId.set(null);
+    const ref = this.dialog.open(this.assignUserDialogRef, { width: '420px' });
+    ref.afterClosed().pipe(take(1)).subscribe((userId: string | undefined) => {
+      if (!userId) return;
+      const selectedUser = this.users().find((u) => String(u.id) === String(userId));
+      if (!selectedUser) return;
+      this.routinesApiService.createByUser(userId, routine).pipe(take(1)).subscribe(() => {
+        this.toastr.success(`Rutina asignada a ${selectedUser.nombre}.`);
+      });
+    });
   }
 
   save(): void {
@@ -293,17 +330,41 @@ export class RoutinesPageComponent implements OnInit {
       reps: 10,
       weight: 20
     });
+    this.exerciseSearchControl.reset();
+  }
+
+  displayExerciseName(exercise?: ExerciseCatalogItem): string {
+    return exercise ? exercise.name : '';
+  }
+
+  clearExerciseSearch(): void {
+    this.exerciseSearchControl.reset();
+    this.exerciseForm.patchValue({ exerciseId: '' });
+  }
+
+  onExerciseSelected(event: MatAutocompleteSelectedEvent): void {
+    const exercise = event.option.value as ExerciseCatalogItem;
+    this.exerciseForm.patchValue({ exerciseId: exercise.id });
   }
 
   addExerciseToRoutine(): void {
     if (this.exerciseForm.invalid) {
       this.exerciseForm.markAllAsTouched();
+      const exerciseControl = this.exerciseForm.get('exerciseId');
+      if (exerciseControl?.invalid) {
+        this.notificationService.warning('Selecciona un ejercicio de la lista.');
+      }
       return;
     }
 
     const rawValue = this.exerciseForm.getRawValue();
     const selected = this.exerciseCatalog().find((item) => item.id === rawValue.exerciseId);
     if (!selected) {
+      return;
+    }
+
+    if (this.selectedExercises().some((e) => e.exerciseId === String(selected.id))) {
+      this.notificationService.warning(`"${selected.name}" ya está agregado.`);
       return;
     }
 
@@ -326,10 +387,33 @@ export class RoutinesPageComponent implements OnInit {
       reps: 10,
       weight: 20
     });
+    this.exerciseSearchControl.reset();
+    this.partialSave();
   }
 
   removeExerciseFromRoutine(exerciseId: string): void {
     this.selectedExercises.update((current) => current.filter((item) => item.id !== exerciseId));
+    this.partialSave();
+  }
+
+  private partialSave(): void {
+    const editingId = this.editingId();
+    if (!editingId) return;
+
+    const rawValue = this.form.getRawValue();
+    const entrenadorId = this.authService.snapshot?.user.id ?? '';
+
+    const payload: Routine = {
+      id: editingId,
+      name: rawValue.name,
+      description: rawValue.description,
+      EntrenadorId: entrenadorId && entrenadorId.trim().length > 0 ? entrenadorId : undefined,
+      exercises: [...this.selectedExercises()]
+    };
+
+    this.store.update(payload).pipe(take(1)).subscribe(() => {
+      this.toastr.success('Ejercicios guardados.');
+    });
   }
 
   getVisibleRoutines(data: Routine[]): Routine[] {
