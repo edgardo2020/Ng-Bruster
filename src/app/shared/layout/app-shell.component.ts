@@ -75,14 +75,14 @@ export class AppShellComponent {
   readonly navigation: NavigationItem[] = [
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', roles: ['Trainer'] },
     { label: 'Usuarios', icon: 'groups', route: '/users', roles: ['Trainer'] },
-    { label: 'Membresías', icon: 'workspace_premium', route: '/memberships', roles: ['Trainer',] },
+    //{ label: 'Membresías', icon: 'workspace_premium', route: '/memberships', roles: ['Trainer',] },
     { label: 'Ejercicios', icon: 'sports_gymnastics', route: '/exercises', roles: ['Trainer'] },
     { label: 'Comidas', icon: 'restaurant_menu', route: '/foods', roles: ['Trainer', 'Trainee'] },
     { label: 'Rutinas', icon: 'fitness_center', route: '/routines', roles: ['Trainer', 'Trainee'] },
     { label: 'Planes', icon: 'calendar_month', route: '/training-plans', roles: ['Trainer', 'Trainee'] },
     { label: 'Asignaciones', icon: 'assignment_ind', route: '/assignments', roles: ['Trainer'] },
-    { label: 'Check-in', icon: 'qr_code_scanner', route: '/checkin', roles: ['Trainer', ] },
-    { label: 'Reportes', icon: 'monitoring', route: '/reports', roles: ['Trainer'] }
+    //{ label: 'Check-in', icon: 'qr_code_scanner', route: '/checkin', roles: ['Trainer', ] },
+    //{ label: 'Reportes', icon: 'monitoring', route: '/reports', roles: ['Trainer'] }
   ];
 
   toggleSidebar(): void {

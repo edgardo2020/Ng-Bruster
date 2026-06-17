@@ -23,6 +23,7 @@
     "@angular/service-worker": "21.2.9",
     "chart.js": "^4.5.1",
     "express": "^4.18.2",
+    "jspdf": "^4.2.1",
     "ng2-charts": "^10.0.0",
     "ngx-toastr": "^20.0.5",
     "rxjs": "^7.8.2",

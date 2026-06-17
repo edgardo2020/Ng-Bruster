@@ -5,14 +5,46 @@
         <h2>Progreso de peso de {{ userName }}</h2>
         <p>Histórico visual del peso registrado por el usuario.</p>
       </div>
+      <button mat-stroked-button type="button" class="pdf-btn"
+        (click)="generatePdf()" [disabled]="isGeneratingPdf()"
+        matTooltip="Generar reporte PDF">
+        <mat-spinner diameter="14" *ngIf="isGeneratingPdf()"></mat-spinner>
+        <mat-icon *ngIf="!isGeneratingPdf()">picture_as_pdf</mat-icon>
+        <span>{{ isGeneratingPdf() ? 'Generando...' : 'PDF' }}</span>
+      </button>
     </div>
-    <div class="weight-graph-mock full-graph">
-      <canvas baseChart
-        [data]="lineChartData"
-        [options]="lineChartOptions"
-        [type]="lineChartType"
-        class="chart-full-width"
-      ></canvas>
+
+    <div class="chart-container">
+      <div *ngIf="weightRecords.length; else noDataChart">
+        <canvas baseChart
+          [data]="lineChartData"
+          [options]="lineChartOptions"
+          [type]="lineChartType"
+          class="chart-full-width"
+        ></canvas>
+      </div>
+      <ng-template #noDataChart>
+        <div class="empty-chart">
+          <mat-icon>bar_chart</mat-icon>
+          <p>Aún no hay registros de peso para mostrar en la gráfica.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="goal-progress" *ngIf="weightGoalProgress as gp">
+      <div class="goal-progress-header">
+        <span>Progreso hacia la meta</span>
+        <span class="goal-progress-numbers">{{ gp.current }} kg / {{ gp.goal }} kg</span>
+      </div>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="gp.progress * 100"
+        [color]="gp.progress >= 1 ? 'accent' : 'primary'"
+      ></mat-progress-bar>
+      <div class="goal-progress-labels">
+        <span>{{ gp.start }} kg</span>
+        <span>{{ gp.goal }} kg</span>
+      </div>
     </div>
   </article>
 
@@ -20,7 +52,7 @@
     <article class="card-surface">
       <div class="panel-header">
         <div>
-          <h2>Perfil y objetivos fisicos</h2>
+          <h2>Perfil y objetivos físicos</h2>
           <p>Define datos base y metas para dar seguimiento al progreso del usuario.</p>
         </div>
       </div>
@@ -28,31 +60,42 @@
         <mat-form-field appearance="outline">
           <mat-label>Peso de inicio (kg)</mat-label>
           <input matInput formControlName="pesoInicio" type="number" min="0" step="0.1" />
+          <mat-error *ngIf="goalsForm.controls['pesoInicio'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="goalsForm.controls['pesoInicio'].hasError('min')">Debe ser mayor a 0</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Peso objetivo (kg)</mat-label>
           <input matInput formControlName="pesoObjetivo" type="number" min="0" step="0.1" />
+          <mat-error *ngIf="goalsForm.controls['pesoObjetivo'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="goalsForm.controls['pesoObjetivo'].hasError('min')">Debe ser mayor a 0</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Fecha de inicio</mat-label>
           <input matInput formControlName="fechaInicio" type="date" />
+          <mat-error *ngIf="goalsForm.controls['fechaInicio'].hasError('required')">Requerido</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Altura (m)</mat-label>
           <input matInput formControlName="altura" type="number" min="0" step="0.01" />
+          <mat-error *ngIf="goalsForm.controls['altura'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="goalsForm.controls['altura'].hasError('min')">Debe ser mayor a 0</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Peso ideal (kg)</mat-label>
           <input matInput formControlName="pesoIdeal" type="number" min="0" step="0.1" />
+          <mat-error *ngIf="goalsForm.controls['pesoIdeal'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="goalsForm.controls['pesoIdeal'].hasError('min')">Debe ser mayor a 0</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>IMC</mat-label>
           <input matInput formControlName="imc" type="number" min="0" step="0.01" readonly />
+          <mat-hint>Se calcula automáticamente</mat-hint>
+          <mat-error *ngIf="goalsForm.controls['imc'].hasError('required')">Requerido</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-span">
@@ -61,7 +104,10 @@
         </mat-form-field>
 
         <div class="full-span goals-actions">
-          <button mat-flat-button color="primary" type="button" (click)="saveGoalsProfile()">Guardar perfil</button>
+          <button mat-flat-button color="primary" type="button" (click)="saveGoalsProfile()" [disabled]="isSavingGoal()">
+            <mat-spinner diameter="16" *ngIf="isSavingGoal()"></mat-spinner>
+            <span>{{ isSavingGoal() ? 'Guardando...' : 'Guardar perfil' }}</span>
+          </button>
         </div>
       </form>
     </article>
@@ -77,14 +123,19 @@
         <mat-form-field appearance="outline">
           <mat-label>Peso (kg)</mat-label>
           <input matInput formControlName="peso" type="number" min="0" step="0.1" />
+          <mat-error *ngIf="form.controls['peso'].hasError('required')">Requerido</mat-error>
+          <mat-error *ngIf="form.controls['peso'].hasError('min')">Debe ser mayor a 0</mat-error>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Comentario</mat-label>
           <input matInput formControlName="comentario" />
         </mat-form-field>
-        <button mat-flat-button color="primary" type="button" (click)="addWeightRecord()">Agregar registro</button>
+        <button mat-flat-button color="primary" type="button" (click)="addWeightRecord()" [disabled]="isSavingWeight()">
+          <mat-spinner diameter="16" *ngIf="isSavingWeight()"></mat-spinner>
+          <span>{{ isSavingWeight() ? 'Agregando...' : 'Agregar registro' }}</span>
+        </button>
       </form>
-      <div class="weight-list" *ngIf="weightRecords.length">
+      <div class="weight-list" *ngIf="weightRecords.length; else noRecords">
         <h3>Registros recientes</h3>
         <div class="weight-table-scroll">
           <table class="weight-table">
@@ -93,18 +144,32 @@
                 <th>Fecha</th>
                 <th>Peso (kg)</th>
                 <th>Comentario</th>
+                <th class="th-actions"></th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let w of weightRecords">
+              <tr *ngFor="let w of weightRecords; trackBy: trackByWeightRecord">
                 <td>{{ w.fecha | date:'shortDate' }}</td>
                 <td>{{ w.peso }}</td>
-                <td>{{ w.comentario }}</td>
+                <td class="td-comment">{{ w.comentario }}</td>
+                <td class="td-actions">
+                  <button mat-icon-button type="button" color="warn"
+                    [disabled]="isDeletingWeight()"
+                    (click)="deleteWeightRecord(w.id)"
+                    matTooltip="Eliminar registro">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+      <ng-template #noRecords>
+        <div class="empty-records">
+          <p>No hay registros de peso aún.</p>
+        </div>
+      </ng-template>
     </article>
   </div>
 </section>
