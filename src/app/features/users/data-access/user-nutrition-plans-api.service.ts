@@ -16,6 +16,7 @@ type ApiUserNutritionPlanItem = {
   protein?: string | number;
   carbs?: string | number;
   fats?: string | number;
+  order?: string | number;
   day?: string;
   notes?: string;
   completed?: boolean;
@@ -173,7 +174,6 @@ export class UserNutritionPlansApiService {
     return {
       id: dto.id != null ? String(dto.id) : crypto.randomUUID(),
       mealType: dto.mealType ?? '',
-      //name: dto.foodName ?? '',
       foodId: this.toNumber(dto.foodId),
       foodName: payload.food.name ?? dto.foodName ?? '',
       quantity: this.toNumber(dto.quantity, 1),
@@ -182,6 +182,7 @@ export class UserNutritionPlansApiService {
       protein: this.toNumber(dto.protein),
       carbs: this.toNumber(dto.carbs),
       fats: this.toNumber(dto.fats),
+      order: this.toNumber(dto.order, 0),
       day: dto.day ?? '',
       notes: dto.notes ?? '',
       completed: dto.completed ?? false
@@ -214,6 +215,7 @@ export class UserNutritionPlansApiService {
       protein: item.protein,
       carbs: item.carbs,
       fats: item.fats,
+      order: item.order ?? 0,
       day: item.day ?? '',
       notes: item.notes ?? '',
       completed: item.completed ?? false

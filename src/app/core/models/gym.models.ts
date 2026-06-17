@@ -207,6 +207,7 @@ export interface UserNutritionPlanMealItem {
   protein: number;
   carbs: number;
   fats: number;
+  order?: number;
   day?: string;
   notes?: string;
   completed?: boolean;

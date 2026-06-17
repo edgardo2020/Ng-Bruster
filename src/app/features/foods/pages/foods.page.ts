@@ -39,6 +39,11 @@ import { UserNutritionPlansApiService } from '../../users/data-access/user-nutri
 export class FoodsPageComponent implements OnInit {
   @ViewChild('formDialog') private formDialogRef!: TemplateRef<unknown>;
 
+  private readonly dayIndexMap: Record<string, number> = {
+    Lunes: 0, Martes: 1, Miércoles: 2, Jueves: 3, Viernes: 4, Sábado: 5, Domingo: 6
+  };
+  readonly weekDays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
   readonly detailDialog = signal<{ plan: UserNutritionPlan; field: 'objective' | 'notes'; label: string } | null>(null);
   readonly plansCarouselIndex = signal(0);
 
@@ -59,6 +64,18 @@ export class FoodsPageComponent implements OnInit {
           return next;
         });
       }
+    }
+    setTimeout(() => this.adjustContainerHeight(), 0);
+  }
+
+  private adjustContainerHeight(): void {
+    if (typeof window === 'undefined' || window.innerWidth > 760) return;
+    const container = this.plansCarouselRef()?.nativeElement;
+    if (!container) return;
+    const items = container.querySelectorAll<HTMLElement>('.plan-item');
+    const item = items[this.plansCarouselIndex()];
+    if (item) {
+      container.style.height = `${item.scrollHeight}px`;
     }
   }
 
@@ -91,6 +108,7 @@ export class FoodsPageComponent implements OnInit {
   readonly userRoleId = signal<number | null>(null);
   readonly editingId = signal<number | null>(null);
   readonly collapsedPlans = signal<Set<string>>(new Set());
+  readonly collapsedDays = signal<Set<string>>(new Set());
 
   isCollapsed(planId: string): boolean {
     return this.collapsedPlans().has(planId);
@@ -106,8 +124,28 @@ export class FoodsPageComponent implements OnInit {
       }
       return next;
     });
+    setTimeout(() => this.adjustContainerHeight(), 0);
+  }
+
+  isDayCollapsed(planId: string, day: string): boolean {
+    return this.collapsedDays().has(`${planId}-${day}`);
+  }
+
+  toggleDayCollapse(planId: string, day: string): void {
+    this.collapsedDays.update((set) => {
+      const next = new Set(set);
+      const key = `${planId}-${day}`;
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+    setTimeout(() => this.adjustContainerHeight(), 0);
   }
   readonly displayedColumns = ['name', 'category', 'serving', 'calories', 'macros', 'active', 'actions'];
+  readonly planColumns = ['order', 'mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes', 'done'];
 
   readonly form = this.fb.nonNullable.group({
     name: ['', Validators.required],
@@ -209,6 +247,27 @@ export class FoodsPageComponent implements OnInit {
     }
 
     return raw;
+  }
+
+  getSortedItems(items: UserNutritionPlanMealItem[]): UserNutritionPlanMealItem[] {
+    return [...items].sort((a, b) => {
+      const da = this.dayIndexMap[a.day || ''] ?? 99;
+      const db = this.dayIndexMap[b.day || ''] ?? 99;
+      if (da !== db) return da - db;
+      return (a.order ?? 99) - (b.order ?? 99);
+    });
+  }
+
+  itemsByDay(items: UserNutritionPlanMealItem[]): { day: string; items: UserNutritionPlanMealItem[] }[] {
+    const map = new Map<string, UserNutritionPlanMealItem[]>();
+    for (const item of this.getSortedItems(items)) {
+      const day = item.day || 'Sin día';
+      if (!map.has(day)) map.set(day, []);
+      map.get(day)!.push(item);
+    }
+    return this.weekDays
+      .filter((d) => map.has(d))
+      .map((d) => ({ day: d, items: map.get(d)! }));
   }
 
   openDialog(): void {
@@ -315,6 +374,7 @@ export class FoodsPageComponent implements OnInit {
         }
         this.collapsedPlans.set(collapsed);
         setTimeout(() => this.scrollToFirstIncomplete(), 100);
+        setTimeout(() => this.adjustContainerHeight(), 200);
       },
       error: (error: unknown) => {
         this.toastr.error(this.getErrorMessage(error, 'No se pudieron cargar tus planes de alimentacion.'));

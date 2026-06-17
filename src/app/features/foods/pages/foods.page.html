@@ -43,82 +43,103 @@
                   }
                 </div>
 
-                <div class="table-scroll compact-scroll">
-                  <table mat-table [dataSource]="plan.items" class="mat-elevation-z0 desktop-table">
-                    <ng-container matColumnDef="mealType">
-                      <th mat-header-cell *matHeaderCellDef>Comida</th>
-                      <td mat-cell *matCellDef="let item">{{ item.mealType }}</td>
-                    </ng-container>
+                <div class="table-scroll compact-scroll desktop-table">
+                  @for (group of itemsByDay(plan.items); track group.day) {
+                    <div class="day-group">
+                      <button type="button" class="day-group__header" (click)="toggleDayCollapse(plan.id, group.day)">
+                        <span>{{ group.day }}</span>
+                        <mat-icon>{{ isDayCollapsed(plan.id, group.day) ? 'expand_more' : 'expand_less' }}</mat-icon>
+                      </button>
+                      @if (!isDayCollapsed(plan.id, group.day)) {
+                      <table mat-table [dataSource]="group.items" class="mat-elevation-z0">
+                        <ng-container matColumnDef="order">
+                          <th mat-header-cell *matHeaderCellDef>#</th>
+                          <td mat-cell *matCellDef="let item">{{ item.order ?? 1 }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="mealType">
+                          <th mat-header-cell *matHeaderCellDef>Comida</th>
+                          <td mat-cell *matCellDef="let item">{{ item.mealType }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="foodName">
+                          <th mat-header-cell *matHeaderCellDef>Alimento</th>
+                          <td mat-cell *matCellDef="let item">{{ item.foodName }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="quantity">
+                          <th mat-header-cell *matHeaderCellDef>Cant.</th>
+                          <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="kcal">
+                          <th mat-header-cell *matHeaderCellDef>Kcal</th>
+                          <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="macros">
+                          <th mat-header-cell *matHeaderCellDef>Macros</th>
+                          <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="notes">
+                          <th mat-header-cell *matHeaderCellDef>Notas</th>
+                          <td mat-cell *matCellDef="let item">{{ item.notes }}</td>
+                        </ng-container>
+                        <ng-container matColumnDef="done">
+                          <th mat-header-cell *matHeaderCellDef></th>
+                          <td mat-cell *matCellDef="let item">
+                            <button mat-icon-button type="button" (click)="toggleItemStatus(plan, item)" [disabled]="getCompletedTotals(plan).pct === 100">
+                              <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                            </button>
+                          </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="planColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: planColumns" [class.completed]="row.completed" [attr.data-completed]="row.completed"></tr>
+                      </table>
+                      }
+                    </div>
+                  }
+                </div>
 
-                    <ng-container matColumnDef="foodName">
-                      <th mat-header-cell *matHeaderCellDef>Alimento</th>
-                      <td mat-cell *matCellDef="let item">{{ item.foodName }}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="quantity">
-                      <th mat-header-cell *matHeaderCellDef>Cant.</th>
-                      <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="kcal">
-                      <th mat-header-cell *matHeaderCellDef>Kcal</th>
-                      <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="macros">
-                      <th mat-header-cell *matHeaderCellDef>Macros</th>
-                      <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
-                    </ng-container>
-
-                     <ng-container matColumnDef="notes">
-                      <th mat-header-cell *matHeaderCellDef>Notas</th>
-                      <td mat-cell *matCellDef="let item">{{ item.notes }}</td>
-                    </ng-container>
-
-                    <ng-container matColumnDef="done">
-                      <th mat-header-cell *matHeaderCellDef></th>
-                      <td mat-cell *matCellDef="let item">
-                        <button mat-icon-button type="button" (click)="toggleItemStatus(plan, item)" [disabled]="getCompletedTotals(plan).pct === 100">
-                          <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-                        </button>
-                      </td>
-                    </ng-container>
-
-                    <tr mat-header-row *matHeaderRowDef="['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes', 'done']"></tr>
-                    <tr mat-row *matRowDef="let row; columns: ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'notes', 'done']" [class.completed]="row.completed" [attr.data-completed]="row.completed"></tr>
-                  </table>
-
-                  <div class="mobile-cards">
-                    @for (item of plan.items; track item.id) {
-                      <article class="mobile-card" [class.completed]="item.completed" [attr.data-completed]="item.completed">
-                        <div class="mobile-card__row">
-                          <span class="mobile-card__label">Comida</span>
-                          <span class="mobile-card__value">{{ item.mealType }}</span>
-                        </div>
-                        <div class="mobile-card__row">
-                          <span class="mobile-card__label">Alimento</span>
-                          <span class="mobile-card__value">{{ item.foodName }}</span>
-                        </div>
-                        <div class="mobile-card__row">
-                          <span class="mobile-card__label">Cantidad</span>
-                          <span class="mobile-card__value">{{ item.quantity }} x {{ item.serving }}</span>
-                        </div>
-                        <div class="mobile-card__row">
-                          <span class="mobile-card__label">Kcal</span>
-                          <span class="mobile-card__value">{{ item.calories }}</span>
-                        </div>
-                        <div class="mobile-card__row">
-                          <span class="mobile-card__label">Macros</span>
-                          <span class="mobile-card__value">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</span>
-                        </div>
-                        <div class="mobile-card__actions">
-                          <button mat-icon-button type="button" (click)="toggleItemStatus(plan, item)" [disabled]="getCompletedTotals(plan).pct === 100">
-                            <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-                          </button>
-                        </div>
-                      </article>
-                    }
-                  </div>
+                <div class="mobile-cards">
+                  @for (group of itemsByDay(plan.items); track group.day) {
+                    <div class="day-group">
+                      <button type="button" class="day-group__header" (click)="toggleDayCollapse(plan.id, group.day)">
+                        <span>{{ group.day }}</span>
+                        <mat-icon>{{ isDayCollapsed(plan.id, group.day) ? 'expand_more' : 'expand_less' }}</mat-icon>
+                      </button>
+                      @if (!isDayCollapsed(plan.id, group.day)) {
+                      @for (item of group.items; track item.id) {
+                        <article class="mobile-card" [class.completed]="item.completed" [attr.data-completed]="item.completed">
+                          <div class="mobile-card__row">
+                            <span class="mobile-card__label">#</span>
+                            <span class="mobile-card__value">{{ item.order ?? 1 }}</span>
+                          </div>
+                          <div class="mobile-card__row">
+                            <span class="mobile-card__label">Comida</span>
+                            <span class="mobile-card__value">{{ item.mealType }}</span>
+                          </div>
+                          <div class="mobile-card__row">
+                            <span class="mobile-card__label">Alimento</span>
+                            <span class="mobile-card__value">{{ item.foodName }}</span>
+                          </div>
+                          <div class="mobile-card__row">
+                            <span class="mobile-card__label">Cantidad</span>
+                            <span class="mobile-card__value">{{ item.quantity }} x {{ item.serving }}</span>
+                          </div>
+                          <div class="mobile-card__row">
+                            <span class="mobile-card__label">Kcal</span>
+                            <span class="mobile-card__value">{{ item.calories }}</span>
+                          </div>
+                          <div class="mobile-card__row">
+                            <span class="mobile-card__label">Macros</span>
+                            <span class="mobile-card__value">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</span>
+                          </div>
+                          <div class="mobile-card__actions">
+                            <button mat-icon-button type="button" (click)="toggleItemStatus(plan, item)" [disabled]="getCompletedTotals(plan).pct === 100">
+                              <mat-icon>{{ item.completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                            </button>
+                          </div>
+                        </article>
+                      }
+                      }
+                    </div>
+                  }
                 </div>
 
                 @let comp = getCompletedTotals(plan);

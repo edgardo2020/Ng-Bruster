@@ -74,7 +74,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   private readonly plansCarouselRef = viewChild<ElementRef<HTMLElement>>('plansCarousel');
   readonly mealTypeOptions: Meals[] = [];
 
-  readonly mealColumns = ['mealType', 'foodName', 'quantity', 'kcal', 'macros', 'actions'];
+  readonly mealColumns = ['order', 'mealType', 'foodName', 'quantity', 'kcal', 'macros', 'actions'];
   readonly dayLabels = ['Todos', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
   readonly selectedDayFilter = signal('');
 
@@ -98,20 +98,36 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     return map;
   });
 
-  readonly dayCarouselIndex = signal(0);
-  private readonly dayCarouselRef = viewChild<ElementRef<HTMLElement>>('dayCarousel');
+  readonly selectedDayIndex = signal(0);
 
-  onDayCarouselScroll(): void {
-    const el = this.dayCarouselRef()?.nativeElement;
-    if (!el) return;
-    const cardWidth = el.querySelector('.day-slide')?.clientWidth ?? 1;
-    if (!cardWidth) return;
-    const idx = Math.round(el.scrollLeft / cardWidth);
-    this.dayCarouselIndex.set(idx);
+  selectDayIndex(index: number): void {
+    const days = this.availableDays();
+    if (index < 0 || index >= days.length) return;
+    this.selectedDayIndex.set(index);
+    this.selectDayTab(days[index]);
+  }
+
+  private touchStartX = 0;
+
+  onTouchStart(event: TouchEvent): void {
+    this.touchStartX = event.touches[0].clientX;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    const diff = event.changedTouches[0].clientX - this.touchStartX;
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? this.selectDayIndex(this.selectedDayIndex() - 1) : this.selectDayIndex(this.selectedDayIndex() + 1);
+    }
   }
 
   selectDayTab(day: string): void {
     this.selectedDayFilter.set(day);
+    const days = this.availableDays();
+    const idx = days.indexOf(day);
+    if (idx >= 0) this.selectedDayIndex.set(idx);
+    const dayItems = this.selectedItems().filter((i) => i.day === day);
+    const nextOrder = Math.max(...dayItems.map((i) => i.order || 0), 0) + 1;
+    this.mealForm.patchValue({ order: nextOrder });
   }
 
   readonly pageSize = 4;
@@ -121,6 +137,17 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     const items = this.filteredByDay();
     const start = (this.currentPage() - 1) * this.pageSize;
     return items.slice(start, start + this.pageSize);
+  });
+
+  getPlanDays(plan: UserNutritionPlan): string {
+    const days = new Set(plan.items.map((i) => i.day).filter(Boolean));
+    return days.size ? [...days].join(', ') : 'Sin dias';
+  }
+
+  readonly dailyProgress = computed(() => {
+    const target = Number(this.planForm.getRawValue().targetCalories) || 0;
+    if (!target) return 0;
+    return Math.min(100, Math.round((this.totals().calories / target) * 100));
   });
 
   changePage(delta: 1 | -1): void {
@@ -162,12 +189,17 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   });
 
   readonly daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+  readonly dayAbbreviation: Record<string, string> = {
+    Lunes: 'L', Martes: 'M', Miércoles: 'M', Jueves: 'J', Viernes: 'V', Sábado: 'S', Domingo: 'D'
+  };
+
+  readonly currentDay = computed(() => this.selectedDayFilter() || 'Lunes');
 
   readonly mealForm = this.fb.nonNullable.group({
     mealType: [{ id: 0, nombre: ''} , Validators.required],
     foodId: [0, Validators.required],
     quantity: [1, [Validators.required, Validators.min(0.1)]],
-    day: [''],
+    order: [1, [Validators.min(1)]],
     notes: ['']
   });
 
@@ -178,8 +210,10 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   }
 
   onFoodSelected(event: { option: { value: number } }): void {
-    this.mealForm.controls.foodId.setValue(event.option.value);
-    this.foodSearchText.set('');
+    const foodId = event.option.value;
+    this.mealForm.controls.foodId.setValue(foodId);
+    const food = this.foods().find((f) => f.id === foodId);
+    this.foodSearchText.set(food ? `${food.name} · ${food.serving}` : '');
   }
 
   addMealItem(): void {
@@ -195,6 +229,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       return;
     }
 
+    const day = this.currentDay();
     const qty = Number(raw.quantity) || 1;
     const newItem: UserNutritionPlanMealItem = {
       id: "",
@@ -207,17 +242,21 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       protein: Number((food.protein * qty).toFixed(1)),
       carbs: Number((food.carbs * qty).toFixed(1)),
       fats: Number((food.fats * qty).toFixed(1)),
-      day: raw.day || '',
+      order: Number(raw.order) || 1,
+      day,
       notes: raw.notes
     };
     this.selectedItems.update((current) => [...current, newItem]);
 
     this.currentPage.set(1);
 
+    const dayItems = this.selectedItems().filter((i) => i.day === day);
+    const nextOrder = Math.max(...dayItems.map((i) => i.order || 0), 0) + 1;
     this.mealForm.patchValue({
       mealType: raw.mealType,
       foodId: 0,
       quantity: 1,
+      order: nextOrder,
       notes: ''
     });
     this.foodSearchText.set('');
@@ -272,9 +311,44 @@ export class UserNutritionPlanDialogComponent implements OnInit {
           return;
         }
 
-        this.selectedItems.update((current) => current.filter((entry) => entry.id !== itemId));
+        const updatedItems = this.selectedItems().filter((entry) => entry.id !== itemId);
+        this.selectedItems.set(updatedItems);
+
+        const day = this.selectedDayFilter();
+        if (day) {
+          const dayItems = updatedItems.filter((i) => i.day === day);
+          const nextOrder = Math.max(...dayItems.map((i) => i.order || 0), 0) + 1;
+          this.mealForm.patchValue({ order: nextOrder });
+        }
         this.currentPage.set(1);
-        this.toastr.success('Alimento removido del plan.');
+
+        if (this.editingPlanId()) {
+          const planRaw = this.planForm.getRawValue();
+          const toDateStr = (d: Date | null | string): string | undefined =>
+            d ? (typeof d === 'string' ? d : d.toISOString().split('T')[0]) : undefined;
+          const payload: Omit<UserNutritionPlan, 'id'> = {
+            userId: this.userId,
+            name: planRaw.name || 'Plan de alimentacion',
+            objective: planRaw.objective || '',
+            startDate: toDateStr(planRaw.startDate) ?? new Date().toISOString().split('T')[0],
+            endDate: toDateStr(planRaw.endDate),
+            targetCalories: Number(planRaw.targetCalories) || 2200,
+            notes: planRaw.notes || '',
+            items: updatedItems
+          };
+
+          this.plansApiService.update({ id: this.editingPlanId() as string, ...payload }).pipe(take(1)).subscribe({
+            next: () => {
+              this.loadPlans();
+              this.toastr.success('Alimento removido del plan.');
+            },
+            error: (error: unknown) => {
+              this.toastr.error(this.getErrorMessage(error, 'No se pudo actualizar el plan.'));
+            }
+          });
+        } else {
+          this.toastr.success('Alimento removido del plan.');
+        }
       });
   }
 
@@ -324,6 +398,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
               notes: saved.notes ?? ''
             });
             this.selectedItems.set([...saved.items]);
+            const nextOrder = Math.max(...saved.items.map((i) => i.order || 0), 0) + 1;
+            this.mealForm.patchValue({ order: nextOrder });
           }
           this.mobileViewPlansOnly.set(false);
           this.showFullForm.set(false);
@@ -347,6 +423,8 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       notes: plan.notes ?? ''
     });
     this.selectedItems.set([...plan.items]);
+    const nextOrder = Math.max(...plan.items.map((i) => i.order || 0), 0) + 1;
+    this.mealForm.patchValue({ order: nextOrder });
     this.mobileViewPlansOnly.set(false);
     this.showFullForm.set(false);
   }
@@ -445,7 +523,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       mealType: { id: 0, nombre: ''},
       foodId: 0,
       quantity: 1,
-      day: '',
+      order: 1,
       notes: ''
     });
     this.foodSearchText.set('');

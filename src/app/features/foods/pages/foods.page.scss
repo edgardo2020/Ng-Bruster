@@ -210,6 +210,46 @@ tr.completed {
   font-size: 0.82rem;
 }
 
+.day-group {
+  & + .day-group {
+    border-top: 1px solid #e2e8f0;
+  }
+
+  table {
+    margin: 0;
+  }
+}
+
+.day-group__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.65rem;
+  background: #f8fafc;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #f1f5f9;
+  }
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    color: #94a3b8;
+  }
+}
+
 .compact-scroll {
   margin-top: 0.55rem;
   max-height: 280px;
@@ -374,15 +414,25 @@ tr.completed {
   }
 
   .plan-list {
+    flex: none;
+    height: auto;
     display: flex;
     align-items: flex-start;
     gap: 0.8rem;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 0.5rem;
     scrollbar-width: none;
     min-width: 0;
+  }
+
+  .plan-item {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-width: 0;
+    overflow: visible;
   }
 
   .plan-list::-webkit-scrollbar {
