@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild, computed, inject, signal, viewChild } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastrService } from 'ngx-toastr';
 
 import { FoodCatalogItem, UserNutritionPlan, UserNutritionPlanMealItem } from '../../../core/models/gym.models';
@@ -24,6 +26,7 @@ import { UserNutritionPlansApiService } from '../../users/data-access/user-nutri
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatButtonModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -31,6 +34,7 @@ import { UserNutritionPlansApiService } from '../../users/data-access/user-nutri
     MatInputModule,
     MatSlideToggleModule,
     MatTableModule,
+    MatTooltipModule,
     PageHeaderComponent
   ],
   templateUrl: './foods.page.html',
@@ -103,12 +107,31 @@ export class FoodsPageComponent implements OnInit {
     year: 'numeric'
   });
 
+  readonly searchQuery = signal('');
   readonly foods = signal<FoodCatalogItem[]>([]);
   readonly userPlans = signal<UserNutritionPlan[]>([]);
   readonly userRoleId = signal<number | null>(null);
   readonly editingId = signal<number | null>(null);
   readonly collapsedPlans = signal<Set<string>>(new Set());
   readonly collapsedDays = signal<Set<string>>(new Set());
+
+  readonly filteredFoods = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    if (!q) return this.foods();
+    return this.foods().filter(
+      f => f.name.toLowerCase().includes(q) || f.category.toLowerCase().includes(q)
+    );
+  });
+
+  readonly filteredPlans = computed(() => {
+    const q = this.searchQuery().toLowerCase().trim();
+    if (!q) return this.userPlans();
+    return this.userPlans().filter(p => p.name.toLowerCase().includes(q));
+  });
+
+  onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+  }
 
   isCollapsed(planId: string): boolean {
     return this.collapsedPlans().has(planId);

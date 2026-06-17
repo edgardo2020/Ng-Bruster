@@ -44,7 +44,6 @@ import { TrainingPlansStore } from '../data-access/training-plans.store';
     ReactiveFormsModule,
     MatButtonModule,
     MatDialogModule,
-      AskDialogComponent,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,

@@ -1,7 +1,7 @@
 <section class="app-page">
   <app-page-header
     [title]="isRole2() ? 'Mis planes de alimentacion' : 'Catalogo de comidas'"
-    [subtitle]="isRole2() ? 'Consulta tus planes nutricionales asignados' : 'Administra alimentos y sus macros para planes nutricionales'"
+    [subtitle]="isRole2() ? '' : ''"
     [meta]="isRole2() ? 'Trainee' : 'Entrenadores'"
   />
 
@@ -9,8 +9,17 @@
     <article class="card-surface">
       @if (isRole2()) {
         <div class="plans-wrapper">
+          <div class="search-bar">
+            <mat-icon class="search-bar__icon">search</mat-icon>
+            <input class="search-bar__input" type="text" placeholder="Buscar plan..." [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)" />
+            @if (searchQuery()) {
+              <button class="search-bar__clear" type="button" (click)="onSearchInput('')">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </div>
           <div class="plan-list" #plansCarousel (scroll)="onPlansScroll()">
-            @for (plan of userPlans(); track plan.id) {
+            @for (plan of filteredPlans(); track plan.id) {
               <article class="plan-item" [class.plan-item--complete]="getCompletedTotals(plan).pct === 100">
                 <div class="plan-item__header">
                     <div>
@@ -156,13 +165,13 @@
             }
           </div>
 
-          @if (!userPlans().length) {
-            <div class="empty-state compact">Aun no tienes planes de alimentacion asignados.</div>
+          @if (!filteredPlans().length) {
+            <div class="empty-state compact">{{ searchQuery() ? 'Ningun plan coincide con la busqueda.' : 'Aun no tienes planes de alimentacion asignados.' }}</div>
           }
 
-          @if (userPlans().length > 0) {
+          @if (filteredPlans().length > 0) {
             <div class="plans-indicators">
-              @for (plan of userPlans(); track plan.id; let i = $index) {
+              @for (plan of filteredPlans(); track plan.id; let i = $index) {
                 <span class="carousel-dot" [class.carousel-dot--active]="plansCarouselIndex() === i"></span>
               }
               <span class="carousel-count">{{ plansCarouselIndex() + 1 }}/{{ userPlans().length }}</span>
@@ -172,16 +181,22 @@
       }
       @else {
         <div class="panel-header">
-          <div>
-            <h2>Alimentos</h2>
-          </div>
-          <button mat-flat-button color="primary" type="button" (click)="openDialog()">
-            <mat-icon>add</mat-icon> Nuevo alimento
+          <button mat-icon-button color="primary" type="button" (click)="openDialog()" matTooltip="Nuevo alimento">
+            <mat-icon>add</mat-icon>
           </button>
+          <div class="search-bar search-bar--inline">
+            <mat-icon class="search-bar__icon">search</mat-icon>
+            <input class="search-bar__input" type="text" placeholder="Buscar alimento..." [ngModel]="searchQuery()" (ngModelChange)="onSearchInput($event)" />
+            @if (searchQuery()) {
+              <button class="search-bar__clear" type="button" (click)="onSearchInput('')">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </div>
         </div>
 
         <div class="table-scroll">
-          <table mat-table [dataSource]="foods()" class="mat-elevation-z0 desktop-table">
+          <table mat-table [dataSource]="filteredFoods()" class="mat-elevation-z0 desktop-table">
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>Nombre</th>
               <td mat-cell *matCellDef="let food">{{ food.name }}</td>
@@ -229,7 +244,7 @@
           </table>
 
           <div class="mobile-cards">
-            @for (food of foods(); track food.id) {
+            @for (food of filteredFoods(); track food.id) {
               <article class="mobile-card">
                 <div class="mobile-card__row">
                   <span class="mobile-card__label">Nombre</span>
@@ -268,8 +283,8 @@
           </div>
         </div>
 
-        @if (!foods().length) {
-          <div class="empty-state compact">No hay alimentos registrados.</div>
+        @if (!filteredFoods().length) {
+          <div class="empty-state compact">{{ searchQuery() ? 'Ningun alimento coincide con la busqueda.' : 'No hay alimentos registrados.' }}</div>
         }
       }
     </article>
@@ -284,14 +299,13 @@
     </h2>
 
     <mat-dialog-content class="dialog-content">
-      <br>
-      <form class="form-grid dialog-form" [formGroup]="form">
-        <mat-form-field appearance="outline" [floatLabel]="'auto'">
+      <form class="form-grid dialog-form dialog-form--mobile" [formGroup]="form">
+        <mat-form-field class="full-span" appearance="outline" [floatLabel]="'auto'">
           <mat-label>Nombre</mat-label>
           <input matInput formControlName="name" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" [floatLabel]="'auto'">
+        <mat-form-field class="full-span" appearance="outline" [floatLabel]="'auto'">
           <mat-label>Categoria</mat-label>
           <input matInput formControlName="category" />
         </mat-form-field>
@@ -316,7 +330,7 @@
           <input matInput type="number" min="0" step="0.1" formControlName="carbs" />
         </mat-form-field>
 
-        <mat-form-field appearance="outline" [floatLabel]="'auto'">
+        <mat-form-field class="full-span" appearance="outline" [floatLabel]="'auto'">
           <mat-label>Grasas (g)</mat-label>
           <input matInput type="number" min="0" step="0.1" formControlName="fats" />
         </mat-form-field>

@@ -17,7 +17,7 @@ export interface UserRoutinesDetailDialogData {
 @Component({
   selector: 'app-user-routines-detail-dialog',
   standalone: true,
-  imports: [MatDialogModule, MatButtonModule, MatIconModule, AskDialogComponent],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule],
   templateUrl: './user-routines-detail-dialog.component.html',
   styleUrl: './user-routines-detail-dialog.component.scss'
 })
