@@ -10,7 +10,7 @@ export class CheckinApiService {
   private readonly http = inject(HttpClient);
   private readonly mockEnabled = true;
   private mockCheckins: CheckInRecord[] = [
-    {
+/*    {
       id: 'checkin-1',
       userName: 'Ana Martinez',
       membershipName: 'Premium',
@@ -23,7 +23,7 @@ export class CheckinApiService {
       membershipName: 'Basic',
       checkInAt: new Date(Date.now() - 35 * 60000).toISOString(),
       channel: 'Manual'
-    }
+    }*/
   ];
 
   getRecent(): Observable<CheckInRecord[]> {

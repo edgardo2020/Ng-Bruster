@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, of, take } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject, forkJoin, catchError, of, take } from 'rxjs';
 
-import { DashboardSummary, ResourceState } from '../../../core/models/gym.models';
-import { DashboardApiService } from './dashboard-api.service';
+import { CheckInRecord, DashboardSummary, ResourceState } from '../../../core/models/gym.models';
+import { UsersApiService } from '../../users/data-access/users-api.service';
+import { CheckinApiService } from '../../checkin/data-access/checkin-api.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 const emptySummary: DashboardSummary = {
   activeUsers: 0,
@@ -24,20 +26,54 @@ export class DashboardStore {
 
   readonly vm$ = this.stateSubject.asObservable();
 
-  constructor(private readonly api: DashboardApiService) {}
+  private readonly usersApi = inject(UsersApiService);
+  private readonly checkinApi = inject(CheckinApiService);
+  private readonly authService = inject(AuthService);
 
   load(): void {
     this.stateSubject.next({ ...this.stateSubject.value, loading: true, error: null });
 
-    this.api
-      .getSummary()
-      .pipe(
-        take(1),
-        catchError(() => {
-          this.stateSubject.next({ data: emptySummary, loading: false, error: 'No se pudo cargar el dashboard.' });
-          return of(emptySummary);
-        })
-      )
-      .subscribe((data) => this.stateSubject.next({ data, loading: false, error: null }));
+    const empresaId = this.authService.snapshot?.user.idEmpresa;
+    const users$ = empresaId ? this.usersApi.getByEmpresa(empresaId) : this.usersApi.getAll();
+
+    forkJoin({
+      users: users$,
+      checkins: this.checkinApi.getRecent()
+    }).pipe(
+      take(1),
+      catchError(() => {
+        this.stateSubject.next({ data: emptySummary, loading: false, error: 'No se pudo cargar el dashboard.' });
+        return of({ users: [], checkins: [] });
+      })
+    ).subscribe(({ users, checkins }) => {
+      const trainees = users.filter((u) => u.idRol === 2);
+      const userCheckins: CheckInRecord[] = trainees
+        .filter((u) => u.joinedAt)
+        .map((u) => ({
+          id: u.id,
+          userName: u.nombre,
+          membershipName: u.membershipStatus,
+          checkInAt: u.joinedAt,
+          channel: 'Manual' as const
+        }));
+
+      const allCheckins = [...checkins, ...userCheckins].sort(
+        (a, b) => new Date(b.checkInAt).getTime() - new Date(a.checkInAt).getTime()
+      );
+
+      this.stateSubject.next({
+        data: {
+          activeUsers: trainees.filter((u) => u.active && u.membershipStatus === 'Active').length,
+          monthlyRevenue: 0,
+          attendanceRate: 0,
+          monthlyGrowth: 0,
+          recentCheckins: allCheckins,
+          revenueSeries: [],
+          attendanceSeries: []
+        },
+        loading: false,
+        error: null
+      });
+    });
   }
 }
