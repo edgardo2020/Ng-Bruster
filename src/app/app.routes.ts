@@ -30,7 +30,7 @@ export const routes: Routes = [
 			{
 				path: 'users',
 				canActivate: [roleGuard],
-				data: { roles: ['Trainer'] },
+				data: { roles: ['Trainer','Trainee'] },
 				loadChildren: () => import('./features/users/users.routes').then((module) => module.USERS_ROUTES)
 			},
 			{
