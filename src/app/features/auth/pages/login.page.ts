@@ -96,7 +96,7 @@ export class LoginPageComponent {
           }
           console.log('Usuario autenticado:', user?.membershipStatus);
           if (user?.roles.includes('Trainee')) {
-            this.router.navigate(['/routines']);
+            this.router.navigate(['/users/progress']);
           } else {
             this.router.navigate(['/dashboard']);
           }

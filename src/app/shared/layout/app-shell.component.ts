@@ -73,7 +73,7 @@ export class AppShellComponent {
   }
 
   readonly navigation: NavigationItem[] = [
-    { label: 'Progreso', icon: 'monitoring', route: '/users/progress', roles: ['Trainer','Trainee'] },
+    { label: 'Progreso', icon: 'monitoring', route: '/users/progress', roles: ['Trainee'] },
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', roles: ['Trainer'] },
     { label: 'Usuarios', icon: 'groups', route: '/users', roles: ['Trainer'] },
     //{ label: 'Membresías', icon: 'workspace_premium', route: '/memberships', roles: ['Trainer',] },
