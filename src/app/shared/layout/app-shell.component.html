@@ -1,80 +1,180 @@
 @let isDesktop = !!(isDesktop$ | async);
-<mat-sidenav-container class="shell-container">
+<mat-sidenav-container class="shell-container" [class.shell-container--collapsed]="collapsed() && isDesktop">
   <mat-sidenav
     class="shell-sidenav"
+    [class.collapsed]="collapsed() && isDesktop"
     [mode]="isDesktop ? 'side' : 'over'"
     [opened]="navOpen()"
     (closedStart)="navOpen.set(false)"
   >
-      <div class="shell-brand">
-          <img src="assets/icons/gym_icon.png" alt="Logo TEAM BRUSTER" width="150" height="150" />
-        <div>
-          <strong>TEAM BRUSTER</strong>
-          <p style="font-size: 0.5rem;">Plan de entrenamiento personalizado</p>
+    <!-- Brand Header -->
+    <div class="shell-brand">
+      <div class="shell-brand__mark">
+        <img src="assets/icons/gym_icon.png" alt="TEAM BRUSTER" />
+      </div>
+      <div class="shell-brand__text">
+        <strong>TEAM BRUSTER</strong>
+        <p>Plataforma de entrenamiento</p>
+      </div>
+    </div>
+
+    <mat-divider class="shell-divider"></mat-divider>
+
+    <!-- User Profile Section -->
+    @if (authService.currentUser$ | async; as user) {
+      <div class="shell-user-panel">
+        <div class="shell-user-panel__avatar" [style.background]="getAvatarGradient(user.fullName)">
+          {{ user.fullName.charAt(0) }}
+        </div>
+        <div class="shell-user-panel__info">
+          <strong class="shell-user-panel__name">{{ user.fullName }}</strong>
+          <span class="shell-user-panel__role">
+            <mat-chip-set>
+              @for (role of user.roles; track role) {
+                <mat-chip class="role-chip">{{ role }}</mat-chip>
+              }
+            </mat-chip-set>
+          </span>
+          @if (user.roles.includes('Trainee') && user.expiredTime) {
+            <span class="shell-user-panel__expiry"
+              [class.expiry--ok]="!isExpired(user.expiredTime)"
+              [class.expiry--expired]="isExpired(user.expiredTime)">
+              <mat-icon>schedule</mat-icon>
+              {{ isExpired(user.expiredTime) ? 'Expirado' : 'Expira: ' + (user.expiredTime | date:'dd/MM/yyyy') }}
+            </span>
+          }
         </div>
       </div>
+      <mat-divider class="shell-divider"></mat-divider>
+    }
 
-      <mat-divider></mat-divider>
+    <!-- Quick Actions for Trainers -->
+    @if (isTrainer()) {
+      <section class="shell-quick-actions">
+        <h3 class="shell-section-title">Acciones rápidas</h3>
+        <div class="shell-quick-actions__grid">
+          <button mat-flat-button class="quick-action-btn" (click)="navigate('/users/new')" type="button">
+            <mat-icon>person_add</mat-icon>
+            <span>Nuevo cliente</span>
+          </button>
+          <button mat-flat-button class="quick-action-btn" (click)="navigate('/routines/new')" type="button">
+            <mat-icon>fitness_center</mat-icon>
+            <span>Nueva rutina</span>
+          </button>
+          <button mat-flat-button class="quick-action-btn" (click)="navigate('/training-plans/new')" type="button">
+            <mat-icon>calendar_month</mat-icon>
+            <span>Nuevo plan</span>
+          </button>
+          <button mat-flat-button class="quick-action-btn" (click)="navigate('/assignments/new')" type="button">
+            <mat-icon>assignment_ind</mat-icon>
+            <span>Asignar</span>
+          </button>
+        </div>
+      </section>
+      <mat-divider class="shell-divider"></mat-divider>
+    }
 
-      <mat-nav-list>
-        @for (item of navigation; track item.route) {
-          @if (canAccess(item.roles)) {
-            <a
-              mat-list-item
-              [routerLink]="item.route"
-              routerLinkActive="is-active"
-              [routerLinkActiveOptions]="{ exact: true }"
-              (click)="closeOnMobile(isDesktop)"
-            >
-              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-              <span matListItemTitle>{{ item.label }}</span>
-            </a>
-          }
+    <!-- Navigation Sections -->
+    <mat-nav-list class="shell-nav-list" role="navigation" aria-label="Navegación principal">
+      @for (section of navigationSections(); track section.key) {
+        @if (section.items.length > 0) {
+          <div class="shell-nav-section">
+            <h4 class="shell-nav-section__title">{{ section.label }}</h4>
+            @for (item of section.items; track item.route) {
+              <a
+                mat-list-item
+                [routerLink]="item.route"
+                routerLinkActive="is-active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="closeOnMobile(isDesktop)"
+                class="shell-nav-item"
+                [attr.aria-current]="isActiveRoute(item.route) ? 'page' : null"
+              >
+                <mat-icon matListItemIcon class="shell-nav-item__icon">{{ item.icon }}</mat-icon>
+                <span matListItemTitle class="shell-nav-item__label">{{ item.label }}</span>
+                @if (item.badge !== undefined) {
+                  <span class="shell-nav-item__badge" [class.badge--accent]="item.badgeType === 'accent'">
+                    {{ item.badge }}
+                  </span>
+                }
+              </a>
+            }
+          </div>
         }
-      </mat-nav-list>
+      }
+    </mat-nav-list>
 
-      <!--<section class="shell-cta card-surface">
-        <p class="shell-cta__eyebrow">Roadmap</p>
-        <h3>Preparado para QR y multi-sede</h3>
-        <p>La arquitectura deja features desacopladas para seguir creciendo sobre la API .NET.</p>
-      </section>-->
+    <!-- Stats Summary for Trainers (Desktop only) -->
+    @if (isTrainer() && isDesktop && (trainerStats$ | async); as stats) {
+      <mat-divider class="shell-divider"></mat-divider>
+      <section class="shell-stats" aria-label="Resumen de actividad">
+        <h4 class="shell-section-title">Hoy</h4>
+        <div class="shell-stats__grid">
+          <div class="stat-card">
+            <span class="stat-card__value">{{ stats.activeClients }}</span>
+            <span class="stat-card__label">Clientes activos</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card__value">{{ stats.sessionsToday }}</span>
+            <span class="stat-card__label">Sesiones hoy</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-card__value">{{ stats.pendingPlans }}</span>
+            <span class="stat-card__label">Planes pendientes</span>
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Footer -->
+    <div class="shell-footer">
+      <span class="shell-footer__version">v1.0.0</span>
+      <span class="shell-footer__copyright">© 2025 TEAM BRUSTER</span>
+    </div>
   </mat-sidenav>
 
   <mat-sidenav-content>
     <mat-toolbar class="shell-toolbar">
-      <button mat-icon-button type="button" class="shell-toolbar__menu" (click)="toggleSidebar()">
-          <mat-icon>menu</mat-icon>
-        </button>
+      <button mat-icon-button type="button" class="shell-toolbar__menu" (click)="toggleSidebar()" aria-label="Toggle navigation">
+        <mat-icon>menu</mat-icon>
+      </button>
 
-        <div class="shell-toolbar__spacer"></div>
+      <div class="shell-toolbar__spacer"></div>
 
-        @if (authService.currentUser$ | async; as user) {
-          <button mat-button [matMenuTriggerFor]="userMenu" class="shell-user">
-            <span class="shell-user__content">
-              <span class="shell-user__meta">
-                <strong>{{ user.fullName }}</strong>
-                <small class="shell-user__roles">{{ user.roles.join(' / ') }}</small>
-              </span>
-              <span class="shell-user__avatar">{{ user.fullName.charAt(0) }}</span>
+      <button mat-icon-button type="button" (click)="themeService.toggle()" matTooltip="Cambiar tema" aria-label="Toggle theme">
+        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+
+      @if (authService.currentUser$ | async; as user) {
+        <button mat-button [matMenuTriggerFor]="userMenu" class="shell-user" aria-label="User menu">
+          <span class="shell-user__content">
+            <span class="shell-user__meta">
+              <strong>{{ user.fullName }}</strong>
+              <small class="shell-user__roles">{{ user.roles.join(' / ') }}</small>
             </span>
-          </button>
-        }
-      </mat-toolbar>
-
-      @if (loadingService.isLoading$ | async) {
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <span class="shell-user__avatar" [style.background]="getAvatarGradient(user.fullName)">
+              {{ user.fullName.charAt(0) }}
+            </span>
+          </span>
+        </button>
       }
+    </mat-toolbar>
 
-      <main class="shell-content">
-        <router-outlet></router-outlet>
-      </main>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+    @if (loadingService.isLoading$ | async) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <main class="shell-content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
 
   <mat-menu #userMenu="matMenu">
     @if (authService.currentUser$ | async; as user) {
       <div class="user-menu-card" (click)="$event.stopPropagation()">
-        <div class="user-menu-avatar">{{ user.fullName.charAt(0) }}</div>
+        <div class="user-menu-avatar" [style.background]="getAvatarGradient(user.fullName)">
+          {{ user.fullName.charAt(0) }}
+        </div>
         <div class="user-menu-info">
           <strong>{{ user.fullName }}</strong>
           <span>{{ user.email }}</span>
@@ -96,3 +196,4 @@
       <span>Cerrar sesión</span>
     </button>
   </mat-menu>
+</mat-sidenav-container>

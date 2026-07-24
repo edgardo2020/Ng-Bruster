@@ -1,11 +1,12 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, computed, inject, signal, effect } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { map, shareReplay, take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -17,14 +18,28 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { UserRole } from '../../core/models/auth.models';
 import { AuthService } from '../../core/services/auth.service';
 import { LoadingService } from '../../core/services/loading.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { ExpiredMembershipDialogComponent } from '../ui/expired-membership-dialog.component';
-//import { ExpiredMembershipDialogComponent } from '../ui/expired-membership-dialog.component';
 
 interface NavigationItem {
   label: string;
   icon: string;
   route: string;
   roles: UserRole[];
+  badge?: number | string;
+  badgeType?: 'default' | 'accent';
+}
+
+interface NavSection {
+  key: string;
+  label: string;
+  items: NavigationItem[];
+}
+
+interface TrainerStats {
+  activeClients: number;
+  sessionsToday: number;
+  pendingPlans: number;
 }
 
 @Component({
@@ -37,6 +52,8 @@ interface NavigationItem {
     RouterLinkActive,
     RouterOutlet,
     MatButtonModule,
+    MatChipsModule,
+    MatDialogModule,
     MatDividerModule,
     MatIconModule,
     MatListModule,
@@ -52,19 +69,87 @@ export class AppShellComponent {
   private readonly breakpointObserver = inject(BreakpointObserver);
   readonly authService = inject(AuthService);
   readonly loadingService = inject(LoadingService);
+  readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
   readonly navOpen = signal(true);
+  readonly collapsed = signal(false);
 
   readonly isDesktop$ = this.breakpointObserver.observe('(min-width: 960px)').pipe(
     map((result) => result.matches),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  readonly isTrainer = computed(() => this.authService.hasAnyRole(['Trainer']));
+
+  readonly navigationSections = computed<NavSection[]>(() => {
+    const isTrainer = this.isTrainer();
+    const isTrainee = this.authService.hasAnyRole(['Trainee']);
+
+    const sections: NavSection[] = [];
+
+    if (isTrainee) {
+      sections.push({
+        key: 'training',
+        label: 'Mi Entrenamiento',
+        items: [
+          { label: 'Progreso', icon: 'monitoring', route: '/users/progress', roles: ['Trainee'] },
+          { label: 'Mis Rutinas', icon: 'fitness_center', route: '/routines', roles: ['Trainee'] },
+          { label: 'Mis Planes', icon: 'calendar_month', route: '/training-plans', roles: ['Trainee'] },
+          { label: 'Comidas', icon: 'restaurant_menu', route: '/foods', roles: ['Trainee'] },
+        ]
+      });
+    }
+
+    if (isTrainer) {
+      sections.push({
+        key: 'clients',
+        label: 'Clientes',
+        items: [
+          { label: 'Usuarios', icon: 'groups', route: '/users', roles: ['Trainer'] },
+          { label: 'Asignaciones', icon: 'assignment_ind', route: '/assignments', roles: ['Trainer'] },
+        ]
+      });
+
+      sections.push({
+        key: 'programming',
+        label: 'Programación',
+        items: [
+          { label: 'Ejercicios', icon: 'sports_gymnastics', route: '/exercises', roles: ['Trainer'] },
+          { label: 'Rutinas', icon: 'fitness_center', route: '/routines', roles: ['Trainer'] },
+          { label: 'Planes', icon: 'calendar_month', route: '/training-plans', roles: ['Trainer'] },
+        ]
+      });
+
+      sections.push({
+        key: 'nutrition',
+        label: 'Nutrición',
+        items: [
+          { label: 'Comidas', icon: 'restaurant_menu', route: '/foods', roles: ['Trainer'] },
+        ]
+      });
+    }
+
+    return sections.filter(s => s.items.some(item => this.authService.hasAnyRole(item.roles)));
+  });
+
+  readonly trainerStats$ = this.authService.currentUser$.pipe(
+    map(user => {
+      if (!user || !user.roles.includes('Trainer')) return null;
+      return {
+        activeClients: 24,
+        sessionsToday: 8,
+        pendingPlans: 3
+      } as TrainerStats;
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   constructor() {
     this.isDesktop$.pipe(takeUntilDestroyed()).subscribe((isDesktop) => {
       this.navOpen.set(isDesktop);
+      this.collapsed.set(false);
     });
 
     this.authService.refreshCurrentUser().pipe(take(1)).subscribe(() => {
@@ -72,41 +157,53 @@ export class AppShellComponent {
     });
   }
 
-  readonly navigation: NavigationItem[] = [
-    { label: 'Progreso', icon: 'monitoring', route: '/users/progress', roles: ['Trainee'] },
-    { label: 'Dashboard', icon: 'dashboard', route: '/dashboard', roles: ['Trainer'] },
-    { label: 'Usuarios', icon: 'groups', route: '/users', roles: ['Trainer'] },
-    //{ label: 'Membresías', icon: 'workspace_premium', route: '/memberships', roles: ['Trainer',] },
-    { label: 'Ejercicios', icon: 'sports_gymnastics', route: '/exercises', roles: ['Trainer'] },
-    { label: 'Comidas', icon: 'restaurant_menu', route: '/foods', roles: ['Trainer', 'Trainee'] },
-    { label: 'Rutinas', icon: 'fitness_center', route: '/routines', roles: ['Trainer', 'Trainee'] },
-    { label: 'Planes', icon: 'calendar_month', route: '/training-plans', roles: ['Trainer', 'Trainee'] },
-    { label: 'Asignaciones', icon: 'assignment_ind', route: '/assignments', roles: ['Trainer'] },
-    //{ label: 'Check-in', icon: 'qr_code_scanner', route: '/checkin', roles: ['Trainer', ] },
-    //{ label: 'Reportes', icon: 'monitoring', route: '/reports', roles: ['Trainer'] }
-  ];
-
   toggleSidebar(): void {
-    this.navOpen.update((value) => !value);
+    if (this.isDesktop()) {
+      this.collapsed.update(v => !v);
+    } else {
+      this.navOpen.update(v => !v);
+    }
+  }
+
+  isDesktop(): boolean {
+    let result = false;
+    this.isDesktop$.pipe(take(1)).subscribe(v => result = v);
+    return result;
   }
 
   closeOnMobile(isDesktop: boolean): void {
     if (!isDesktop) this.navOpen.set(false);
   }
 
-  canAccess(roles: UserRole[]): boolean {
-    return this.authService.hasAnyRole(roles);
+  navigate(route: string): void {
+    this.router.navigate([route]);
+    if (!this.isDesktop()) this.navOpen.set(false);
   }
 
-  goToProfile(): void {
-    this.router.navigate(['/dashboard']);
+  isActiveRoute(route: string): boolean {
+    return this.router.isActive(route, { paths: 'exact', queryParams: 'ignored', fragment: 'ignored', matrixParams: 'ignored' });
+  }
+
+  getAvatarGradient(name: string): string {
+    const gradients = [
+      'linear-gradient(135deg, #1050D6, #4F8CFF)',
+      'linear-gradient(135deg, #6C5CE7, #A29BFE)',
+      'linear-gradient(135deg, #E17055, #FAB1A0)',
+      'linear-gradient(135deg, #00B894, #55EFC4)',
+      'linear-gradient(135deg, #0984E3, #74B9FF)',
+      'linear-gradient(135deg, #6C5CE7, #FDA7DF)',
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return gradients[Math.abs(hash) % gradients.length];
   }
 
   logout(): void {
     this.authService.logout();
   }
 
-  /** Devuelve true solo si la fecha de expiración es estrictamente anterior a hoy (sin contar hoy). */
   isExpired(expiredTime: string): boolean {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
