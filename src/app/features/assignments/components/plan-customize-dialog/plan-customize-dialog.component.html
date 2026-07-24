@@ -7,7 +7,6 @@
 
 <mat-dialog-content class="dialog-content customize-dialog-content">
   <div class="customize-shell">
-    <br>
     @if (editingAssignmentId != null) {
       <div class="dashboard-toggle-row">
         <button
@@ -251,13 +250,10 @@
 
       @if (showExercisesPanel()) {
       <article class="card-surface customize-exercises-panel">
-        <div class="panel-header">
-          <div>
-            <h3>Ejercicios disponibles</h3>
-          </div>
-
+        <div class="panel-header exercises-panel-header">
+          <h3>Ejercicios disponibles</h3>
           <div class="exercises-panel-controls">
-            <mat-form-field appearance="outline" class="muscle-group-filter" [floatLabel]="'auto'">
+            <mat-form-field appearance="fill" class="muscle-group-filter muscle-group-select" [floatLabel]="'auto'">
               <mat-label>Grupo muscular</mat-label>
               <mat-select [value]="selectedMuscleGroupId()" (valueChange)="setSelectedMuscleGroup($event)">
                 <mat-option value="all">Todos</mat-option>
@@ -281,8 +277,14 @@
             <div class="exercise-list">
               @for (exercise of getAvailableExercises(); track exercise.id) {
                 <div class="exercise-item" cdkDrag [cdkDragData]="exercise">
-                  <strong>{{ exercise.name }}</strong>
-                  <p>{{ exercise.description ? (exercise.description.length > 20 ? exercise.description.substring(0, 20) + '...' : exercise.description) : '' }}</p>
+                  <div class="exercise-card-header">
+                    <strong>{{ exercise.name }}</strong>
+                    <div class="exercise-chip-row" *ngIf="exercise.muscleGroupCatalog?.description || exercise.muscleGroupCatalogId">
+                      <span class="exercise-chip">
+                        {{ exercise.muscleGroupCatalog?.description ?? exercise.muscleGroupCatalogId ?? 'Otro' }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               }
             </div>
@@ -295,7 +297,7 @@
     </section>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
+<mat-dialog-actions *ngIf="isDialogMode" align="end">
   <button mat-button type="button" (click)="close()">Cancelar</button>
   @if (editingAssignmentId == null) {
   <button mat-flat-button color="primary" type="button" (click)="save()">

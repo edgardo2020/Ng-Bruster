@@ -641,6 +641,16 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
   margin-top: 0.5rem;
 }
 
+.assignment-editor-page {
+  padding-top: 0.25rem;
+}
+
+.embedded-back-bar {
+  margin-bottom: 0.5rem;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+}
+
 // Responsividad
 @media (max-width: 600px) {
   .card-surface {

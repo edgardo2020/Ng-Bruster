@@ -6,28 +6,18 @@
   />
 
   <section class="entity-layout">
-    <app-plan-customize-dialog
-      *ngIf="alwaysFalse()"
-      style="display:none"
-      [data]="selectedAssignmentData()"
-      (embeddedClose)="closeAssignmentEditor()"
-      (saveCompleted)="handleAssignmentSave($event)"
-    ></app-plan-customize-dialog>
     <article class="card-surface" style="grid-column: 1 / -1">
       @if (selectedAssignmentData(); as assignmentData) {
-        <div class="assignment-editor-page">
-          <div class="assignment-editor-header">
-            <button mat-icon-button type="button" aria-label="Volver" (click)="closeAssignmentEditor()" class="btn-back">
-              <mat-icon>arrow_back</mat-icon>
-            </button>
-          </div>
-
+        <div class="embedded-back-bar">
+          <button mat-icon-button type="button" aria-label="Volver" (click)="closeAssignmentEditor()" class="btn-back">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
           <app-plan-customize-dialog
             [data]="assignmentData"
             (embeddedClose)="closeAssignmentEditor()"
             (saveCompleted)="handleAssignmentSave($event)"
           ></app-plan-customize-dialog>
-        </div>
       }
       @else if (selectedUserForNutrition(); as nutUser) {
         <div class="user-nutrition-page">
