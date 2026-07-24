@@ -1,4 +1,4 @@
-<h2 mat-dialog-title class="dialog-title">
+<h2 mat-dialog-title class="dialog-title" *ngIf="isDialogMode">
   <span>{{ dialogTitle }}</span>
   <button mat-icon-button type="button" aria-label="Cerrar dialogo" (click)="close()">
     <mat-icon>close</mat-icon>
@@ -61,7 +61,7 @@
                 <div class="selected-user-note locked-assignment-row">
                   <span class="locked-assignment-item"><strong>Usuario:</strong> {{ getSelectedUserName() }}</span>
                   <span class="locked-assignment-separator desktop-only">|</span>
-                  <span class="locked-assignment-item"><strong>Fecha de inicio:</strong> {{ form.controls.startDate.value | date: 'dd/MM/yyyy' }}</span>
+                  <span class="locked-assignment-item"><strong>Fecha de inicio:</strong> {{ form.controls['startDate'].value | date: 'dd/MM/yyyy' }}</span>
                   <span class="locked-assignment-separator desktop-only">|</span>
                   <span class="locked-assignment-item"><strong>Plan:</strong> {{ lockedAssignment?.planName }}</span>
                 </div>

@@ -1,7 +1,7 @@
-import { DatePipe } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Component, DestroyRef, computed, inject, Input, Output, EventEmitter, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -71,6 +71,7 @@ export interface PlanCustomizeDialogResult {
   selector: 'app-plan-customize-dialog',
   standalone: true,
   imports: [
+    CommonModule,
     DatePipe,
     ReactiveFormsModule,
     DragDropModule,
@@ -165,26 +166,54 @@ export class PlanCustomizeDialogComponent {
       this.agendaBySlot.set(bySlot);
       this.syncSlotRoutine(week, day);
     }
+  @Input() data?: PlanCustomizeDialogData;
+  @Output() embeddedClose = new EventEmitter<void>();
+  @Output() saveCompleted = new EventEmitter<PlanCustomizeDialogResult>();
+
   private readonly formBuilder = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly dialogRef = inject(MatDialogRef<PlanCustomizeDialogComponent, PlanCustomizeDialogResult>);
+  private readonly dialogRef = inject(MatDialogRef<PlanCustomizeDialogComponent, PlanCustomizeDialogResult>, { optional: true });
+  private readonly injectedData = inject<PlanCustomizeDialogData | null>(MAT_DIALOG_DATA, { optional: true });
   private readonly assignmentsStore = inject(AssignmentsStore);
   private readonly routinesApi = inject(RoutinesApiService);
   private readonly notificationService = inject(NotificationService);
   private readonly detailSyncQueue$ = new Subject<void>();
 
-  readonly data = inject<PlanCustomizeDialogData>(MAT_DIALOG_DATA);
-  readonly lockedAssignment = this.data.lockedAssignment;
-  readonly hasLockedAssignment = Boolean(this.lockedAssignment);
-  readonly editingAssignmentId = this.data.editingAssignmentId;
-  readonly usersRole2 = this.data.users.filter(
-    (user) => user.idRol === 2 && (this.data.companyId == null || user.idEmpresa === this.data.companyId)
-  );
+  private get resolvedData(): PlanCustomizeDialogData {
+    const data = this.data ?? this.injectedData;
+    if (!data) {
+      throw new Error('PlanCustomizeDialogData is required for PlanCustomizeDialogComponent');
+    }
+    return data;
+  }
+
+  get lockedAssignment() {
+    return this.resolvedData.lockedAssignment;
+  }
+
+  get hasLockedAssignment() {
+    return Boolean(this.lockedAssignment);
+  }
+
+  get editingAssignmentId() {
+    return this.resolvedData.editingAssignmentId;
+  }
+
+  get usersRole2() {
+    return this.resolvedData.users.filter(
+      (user) => user.idRol === 2 && (this.resolvedData.companyId == null || user.idEmpresa === this.resolvedData.companyId)
+    );
+  }
   readonly days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
   readonly availableExercises = signal<ExerciseCatalogItem[]>([]);
   readonly selectedMuscleGroupId = signal<number | 'all'>('all');
-  readonly focusOptions = this.data.focusOptions ?? ['Hipertrofia', 'Resistencia', 'Definicion', 'Fuerza funcional'];
-  readonly intensityOptions = this.data.intensityOptions ?? ['Baja', 'Media', 'Alta'];
+  get focusOptions(): string[] {
+    return this.resolvedData.focusOptions ?? ['Hipertrofia', 'Resistencia', 'Definicion', 'Fuerza funcional'];
+  }
+
+  get intensityOptions(): string[] {
+    return this.resolvedData.intensityOptions ?? ['Baja', 'Media', 'Alta'];
+  }
   readonly showDashboardCard = signal(true);
   readonly showExercisesPanel = signal(true);
   readonly durationWeeks = signal(1);
@@ -193,7 +222,7 @@ export class PlanCustomizeDialogComponent {
   readonly routineIdsBySlot = signal<Record<string, string | undefined>>({});
   private firstUserEmissionHandled = false;
   readonly muscleGroupOptions = computed(() =>
-    [...this.data.muscleGroups].sort((left, right) => left.description.localeCompare(right.description))
+    [...this.resolvedData.muscleGroups].sort((left, right) => left.description.localeCompare(right.description))
   );
   readonly filteredAvailableExercises = computed(() => {
     const muscleGroupId = this.selectedMuscleGroupId();
@@ -206,15 +235,19 @@ export class PlanCustomizeDialogComponent {
     return exercises.filter((exercise) => this.getExerciseMuscleGroupId(exercise) === muscleGroupId);
   });
 
-  readonly form = this.formBuilder.nonNullable.group({
-    userId: ['', Validators.required],
-    startDate: [this.todayIsoDate(), Validators.required],
-    focus: [this.focusOptions[0], Validators.required],
-    intensity: [this.intensityOptions[1] ?? this.intensityOptions[0], Validators.required],
-    notes: ['']
-  });
+  form!: FormGroup;
 
-  constructor() {
+  constructor() {}
+
+  ngOnInit(): void {
+    this.form = this.formBuilder.nonNullable.group({
+      userId: ['', Validators.required],
+      startDate: [this.todayIsoDate(), Validators.required],
+      focus: [this.focusOptions[0], Validators.required],
+      intensity: [this.intensityOptions[1] ?? this.intensityOptions[0], Validators.required],
+      notes: ['']
+    });
+
     this.durationWeeks.set(this.resolveInitialWeeks());
 
     // Si es un plan customizado nuevo (no edición), ocultar cards al abrir
@@ -228,17 +261,17 @@ export class PlanCustomizeDialogComponent {
         userId: this.lockedAssignment.userId,
         startDate: this.toIsoDate(this.lockedAssignment.startDate)
       });
-      this.form.controls.userId.disable();
+      this.form.controls['userId'].disable();
     }
 
     this.form.patchValue({
       focus: this.resolveInitialFocus(),
       intensity: this.resolveInitialIntensity(),
-      notes: this.data.initialNotes ?? ''
+      notes: this.resolvedData.initialNotes ?? ''
     });
 
-    this.form.controls.userId.valueChanges
-      .pipe(startWith(this.form.controls.userId.value), takeUntilDestroyed(this.destroyRef))
+    this.form.controls['userId'].valueChanges
+      .pipe(startWith(this.form.controls['userId'].value), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.resetBoard();
 
@@ -260,7 +293,16 @@ export class PlanCustomizeDialogComponent {
   }
 
   close(): void {
-    this.dialogRef.close();
+    if (this.dialogRef) {
+      this.dialogRef.close();
+      return;
+    }
+
+    this.embeddedClose.emit();
+  }
+
+  get isDialogMode(): boolean {
+    return Boolean(this.dialogRef);
   }
 
   get dialogTitle(): string {
@@ -295,12 +337,19 @@ export class PlanCustomizeDialogComponent {
         }))
       }))
     );
-   // console.log('Selected Agenda:', selectedAgenda);
-    this.dialogRef.close({
+
+    const result: PlanCustomizeDialogResult = {
       ...this.form.getRawValue(),
       durationWeeks: this.durationWeeks(),
       selectedAgenda
-    });
+    };
+
+    if (this.dialogRef) {
+      this.dialogRef.close(result);
+      return;
+    }
+
+    this.saveCompleted.emit(result);
   }
 
   addWeek(): void {
@@ -336,7 +385,7 @@ export class PlanCustomizeDialogComponent {
   }
 
   getSelectedUser(): UserRecord | undefined {
-    const userId = this.form.controls.userId.value;
+    const userId = this.form.controls['userId'].value;
     return this.usersRole2.find((user) => String(user.id) === String(userId));
   }
 
@@ -539,7 +588,7 @@ export class PlanCustomizeDialogComponent {
     const exercises = this.getExercisesForSlot(week, day);
     const existingRoutineId = this.routineIdsBySlot()[key];
     const isCreatingRoutine = !existingRoutineId;
-    const planId = this.data.initialDetail?.planId;
+    const planId = this.resolvedData.initialDetail?.planId;
     const userName = this.getSelectedUserName();
     console.log('id de rutina existente:', existingRoutineId);
     const routineExercises: RoutineExercise[] = exercises.map((ex) => ({
@@ -581,7 +630,7 @@ export class PlanCustomizeDialogComponent {
   }
 
   private buildDetailPayload(): AssignmentDetail {
-    const baseDetail = this.data.initialDetail;
+    const baseDetail = this.resolvedData.initialDetail;
     const rawValue = this.form.getRawValue();
 
     return {
@@ -648,7 +697,7 @@ export class PlanCustomizeDialogComponent {
   }
 
   private resolveInitialFocus(): string {
-    const initialFocus = this.data.initialFocus;
+    const initialFocus = this.resolvedData.initialFocus;
 
     if (initialFocus && this.focusOptions.includes(initialFocus)) {
       return initialFocus;
@@ -658,7 +707,7 @@ export class PlanCustomizeDialogComponent {
   }
 
   private resolveInitialIntensity(): string {
-    const initialIntensity = this.data.initialIntensity;
+    const initialIntensity = this.resolvedData.initialIntensity;
 
     if (initialIntensity && this.intensityOptions.includes(initialIntensity)) {
       return initialIntensity;
@@ -668,11 +717,11 @@ export class PlanCustomizeDialogComponent {
   }
 
   private resolveInitialWeeks(): number {
-    const requestedWeeks = Number(this.data.initialWeeks ?? this.data.initialDetail?.durationWeeks ?? 1);
+    const requestedWeeks = Number(this.resolvedData.initialWeeks ?? this.resolvedData.initialDetail?.durationWeeks ?? 1);
     const safeRequestedWeeks = Number.isFinite(requestedWeeks) ? Math.floor(requestedWeeks) : 1;
 
-    const maxAgendaWeekWithExercises = Array.isArray(this.data.initialAgenda)
-      ? this.data.initialAgenda.reduce((maxWeek, entry) => {
+    const maxAgendaWeekWithExercises = Array.isArray(this.resolvedData.initialAgenda)
+      ? this.resolvedData.initialAgenda.reduce((maxWeek, entry) => {
           const entryWeek = Number(entry.week);
           if (!Number.isFinite(entryWeek) || !Array.isArray(entry.exercises) || entry.exercises.length === 0) {
             return maxWeek;
@@ -688,19 +737,19 @@ export class PlanCustomizeDialogComponent {
 
   private resetBoard(): void {
     this.selectedMuscleGroupId.set('all');
-    this.availableExercises.set([...this.data.exercises]);
+    this.availableExercises.set([...this.resolvedData.exercises]);
     this.agendaBySlot.set(this.createEmptyAgendaBySlot(this.durationWeeks()));
   }
 
   private applyInitialAgenda(): void {
-    if (!Array.isArray(this.data.initialAgenda) || !this.data.initialAgenda.length) {
+    if (!Array.isArray(this.resolvedData.initialAgenda) || !this.resolvedData.initialAgenda.length) {
       return;
     }
 
     const nextAgendaBySlot = this.createEmptyAgendaBySlot(this.durationWeeks());
     const nextRoutineIds: Record<string, string | undefined> = {};
-    console.log('Applying initial agenda:', this.data.initialAgenda);
-    this.data.initialAgenda.forEach((entry) => {
+    console.log('Applying initial agenda:', this.resolvedData.initialAgenda);
+    this.resolvedData.initialAgenda.forEach((entry) => {
       const normalizedDay = this.normalizeDay(entry.day);
       if (!normalizedDay) {
         return;
@@ -719,7 +768,7 @@ export class PlanCustomizeDialogComponent {
     this.routineIdsBySlot.set(nextRoutineIds);
 
     // En modo edicion se debe mostrar el catalogo completo de ejercicios disponibles.
-    this.availableExercises.set([...this.data.exercises]);
+    this.availableExercises.set([...this.resolvedData.exercises]);
   }
 
   private normalizeDay(day: string): string | null {
@@ -760,7 +809,7 @@ export class PlanCustomizeDialogComponent {
   }
 
   private toAssignedExercise(exercise: ExerciseCatalogItem): AssignedExerciseItem {
-    const defaults = this.getIntensityDefaults(this.form.controls.intensity.value);
+    const defaults = this.getIntensityDefaults(this.form.controls['intensity'].value);
     const assignedExercise = exercise as AssignedExerciseItem;
 
     return {

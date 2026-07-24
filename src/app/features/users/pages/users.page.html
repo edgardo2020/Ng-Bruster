@@ -6,9 +6,34 @@
   />
 
   <section class="entity-layout">
+    <app-plan-customize-dialog
+      *ngIf="alwaysFalse()"
+      style="display:none"
+      [data]="selectedAssignmentData()"
+      (embeddedClose)="closeAssignmentEditor()"
+      (saveCompleted)="handleAssignmentSave($event)"
+    ></app-plan-customize-dialog>
     <article class="card-surface" style="grid-column: 1 / -1">
-      @if (selectedUserForNutrition(); as nutUser) {
+      @if (selectedAssignmentData(); as assignmentData) {
+        <div class="assignment-editor-page">
+          <div class="assignment-editor-header">
+            <button mat-icon-button type="button" aria-label="Volver" (click)="closeAssignmentEditor()" class="btn-back">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+          </div>
+
+          <app-plan-customize-dialog
+            [data]="assignmentData"
+            (embeddedClose)="closeAssignmentEditor()"
+            (saveCompleted)="handleAssignmentSave($event)"
+          ></app-plan-customize-dialog>
+        </div>
+      }
+      @else if (selectedUserForNutrition(); as nutUser) {
         <div class="user-nutrition-page">
+          <button mat-icon-button (click)="closeUserNutrition()" matTooltip="Volver" class="btn-back">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
           <app-user-nutrition-plan-dialog
             [userName]="nutUser.nombre"
             [userId]="nutUser.id"
@@ -16,14 +41,14 @@
           ></app-user-nutrition-plan-dialog>
         </div>
       }
-      @else if (selectedUserForHistory) {
+      @else if (selectedUserForHistory; as historyUser) {
         <div class="user-history-page">
           <button mat-icon-button (click)="closeUserHistory()" matTooltip="Volver" class="btn-back">
             <mat-icon>arrow_back</mat-icon>
           </button>
           <app-user-history-dialog
-            [userName]="selectedUserForHistory.nombre"
-            [userId]="selectedUserForHistory.id"
+            [userName]="historyUser.nombre"
+            [userId]="historyUser.id"
           ></app-user-history-dialog>
         </div>
       }

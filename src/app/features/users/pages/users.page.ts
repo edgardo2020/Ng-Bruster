@@ -24,6 +24,7 @@ import { ExercisesApiService } from '../../exercises/data-access/exercises-api.s
 import { MuscleGroupsApiService } from '../../exercises/data-access/muscle-groups-api.service';
 import {
   PlanCustomizeDialogComponent,
+  PlanCustomizeDialogData,
   PlanCustomizeDialogResult
 } from '../../assignments/components/plan-customize-dialog/plan-customize-dialog.component';
 import { TrainingPlansApiService } from '../../training-plans/data-access/training-plans-api.service';
@@ -58,7 +59,8 @@ import { ToastrService } from 'ngx-toastr';
     MatNativeDateModule,
     PageHeaderComponent,
     UserHistoryDialogComponent,
-    UserNutritionPlanDialogComponent
+    UserNutritionPlanDialogComponent,
+    PlanCustomizeDialogComponent
   ],
   templateUrl: './users.page.html',
   styleUrl: './users.page.scss'
@@ -81,6 +83,7 @@ export class UsersPageComponent implements OnInit {
   public userHistories = new Map<string, UserHistoryRecord[]>();
   public selectedUserForHistory: UserRecord | null = null;
   readonly selectedUserForNutrition = signal<UserRecord | null>(null);
+  readonly selectedAssignmentData = signal<PlanCustomizeDialogData | undefined>(undefined);
 
   readonly pageTitle = computed(() => {
     const nut = this.selectedUserForNutrition();
@@ -168,6 +171,10 @@ export class UsersPageComponent implements OnInit {
       );
   }
 
+  public alwaysFalse(): boolean {
+    return false;
+  }
+
   openDialog(): void {
     // Limitar registro de usuarios usando vm$ y async
     this.store.vm$.pipe(take(1)).subscribe(vm => {
@@ -250,30 +257,25 @@ export class UsersPageComponent implements OnInit {
             .pipe(take(1))
             .subscribe({
               next: ({ plans, exercises, muscleGroups }) => {
-                this.dialog.open(PlanCustomizeDialogComponent, {
-                  width: '1880px',
-                  maxWidth: '100vw',
-                  maxHeight: '96vh',
-                  data: {
-                    plans,
-                    exercises,
-                    muscleGroups,
-                    users: [user],
-                    companyId: this.authService.snapshot?.user.idEmpresa,
-                    lockedAssignment: {
-                      userId: selectedDetail.userId,
-                      userName: selectedDetail.userName,
-                      startDate: selectedDetail.startDate,
-                      planName: selectedDetail.planName
-                    },
-                    editingAssignmentId: selectedDetail.id,
-                    initialDetail: selectedDetail,
-                    initialFocus: selectedDetail.focus,
-                    initialIntensity: selectedDetail.intensity,
-                    initialNotes: selectedDetail.notes,
-                    initialWeeks: selectedDetail.durationWeeks,
-                    initialAgenda: this.normalizeDetailAgenda(selectedDetail.agenda)
-                  }
+                this.selectedAssignmentData.set({
+                  plans,
+                  exercises,
+                  muscleGroups,
+                  users: [user],
+                  companyId: this.authService.snapshot?.user.idEmpresa,
+                  lockedAssignment: {
+                    userId: selectedDetail.userId,
+                    userName: selectedDetail.userName,
+                    startDate: selectedDetail.startDate,
+                    planName: selectedDetail.planName
+                  },
+                  editingAssignmentId: selectedDetail.id,
+                  initialDetail: selectedDetail,
+                  initialFocus: selectedDetail.focus,
+                  initialIntensity: selectedDetail.intensity,
+                  initialNotes: selectedDetail.notes,
+                  initialWeeks: selectedDetail.durationWeeks,
+                  initialAgenda: this.normalizeDetailAgenda(selectedDetail.agenda)
                 });
               },
               error: (error: unknown) => {
@@ -285,6 +287,15 @@ export class UsersPageComponent implements OnInit {
            this.toastr.error(this.getErrorMessage(error, 'No se pudieron cargar las asignaciones del usuario.'));
         }
       });
+  }
+
+  closeAssignmentEditor(): void {
+    this.selectedAssignmentData.set(undefined);
+  }
+
+  handleAssignmentSave(result: PlanCustomizeDialogResult): void {
+    this.selectedAssignmentData.set(undefined);
+    this.toastr.success('La personalización del plan se guardó correctamente.');
   }
 
   openUserRoutines(user: UserRecord): void {
