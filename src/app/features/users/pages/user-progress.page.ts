@@ -31,7 +31,7 @@ import { PageHeaderComponent } from '../../../shared/ui/page-header.component';
     PageHeaderComponent
   ],
   templateUrl: './user-progress.page.html',
-  styleUrl: './user-progress.page.scss'
+  styleUrls: ['./user-progress.page.scss']
 })
 export class UserProgressPageComponent {
   @ViewChild(BaseChartDirective) chartDirective?: BaseChartDirective;

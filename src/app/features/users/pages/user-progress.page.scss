@@ -4,6 +4,80 @@
   gap: 1rem;
 }
 
+:host-context(.dark-theme) {
+  .progress-page {
+    color: #e2e8f0;
+  }
+
+  .card-surface,
+  .chart-card,
+  .weight-table-scroll,
+  .profile-field {
+    background: #0b1220 !important;
+    border: 1px solid rgba(148, 163, 184, 0.18) !important;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32) !important;
+  }
+
+  .panel-header h2,
+  .panel-header h3,
+  .goal-progress-numbers,
+  .profile-value {
+    color: #e2e8f0 !important;
+  }
+
+  .panel-header p,
+  .goal-progress-header,
+  .goal-progress-labels,
+  .empty-chart p,
+  .empty-state,
+  .empty-records,
+  .profile-label,
+  .weight-table th,
+  .weight-table td {
+    color: #94a3b8 !important;
+  }
+
+  .chart-container {
+    background: rgba(148, 163, 184, 0.06) !important;
+    border-radius: 1rem;
+  }
+
+  .goal-progress {
+    border-top-color: rgba(148, 163, 184, 0.16) !important;
+  }
+
+  .goal-progress mat-progress-bar {
+    background: rgba(148, 163, 184, 0.06) !important;
+  }
+
+  .mat-progress-bar-fill::after {
+    background-color: #38bdf8 !important;
+  }
+
+  .weight-table {
+    color: #e2e8f0 !important;
+  }
+
+  .weight-table th {
+    background: rgba(148, 163, 184, 0.08) !important;
+    color: #e2e8f0 !important;
+  }
+
+  .weight-table tr {
+    border-bottom-color: rgba(148, 163, 184, 0.12) !important;
+  }
+
+  .pdf-btn {
+    border-color: rgba(148, 163, 184, 0.18) !important;
+    color: #e2e8f0 !important;
+    background: rgba(148, 163, 184, 0.06) !important;
+  }
+
+  .pdf-btn mat-icon {
+    color: #7dd3fc !important;
+  }
+}
+
 .progress-loading {
   display: flex;
   align-items: center;
