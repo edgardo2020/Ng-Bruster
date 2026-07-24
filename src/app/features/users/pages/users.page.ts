@@ -102,7 +102,7 @@ export class UsersPageComponent implements OnInit {
   readonly store = inject(UsersStore);
   readonly editingId = signal<string | null>(null);
   readonly editingUser = signal<UserRecord | null>(null);
-  readonly displayedColumns = ['nombre', 'roleName', 'membershipStatus', 'expiracion', 'history', 'actions'];
+  readonly displayedColumns = ['nombre', 'roleName', 'membershipStatus', 'expiracion', 'actions'];
   readonly USER_REGISTRATION_LIMIT = environment.USER_REGISTRATION_LIMIT;
   readonly roleNameMap: Record<number, string> = {
     1: 'Trainer',
@@ -114,22 +114,31 @@ export class UsersPageComponent implements OnInit {
     return this.roleNameMap[idRol] || 'Desconocido';
   }
 
+  readonly roleOptions: ReadonlyArray<{ value: number | 'All'; label: string }> = [
+    { value: 'All', label: 'Todos' },
+    { value: 1, label: 'Trainer' },
+    { value: 2, label: 'Trainee' },
+    { value: 3, label: 'Receptionist' }
+  ];
+
   readonly statusOptions: ReadonlyArray<{ value: MembershipStatus | 'All'; label: string }> = [
     { value: 'All', label: 'Todos' },
     { value: 'Active', label: 'Activa' },
     { value: 'Expired', label: 'Expirada' },
     { value: 'Cancelled', label: 'Cancelada' }
   ];
+
   readonly membershipStatusLabelMap: Record<MembershipStatus, string> = {
     Active: 'Activa',
     Expired: 'Expirada',
     Cancelled: 'Cancelada'
   };
+
   readonly membershipValues: MembershipStatus[] = ['Active', 'Expired', 'Cancelled'];
 
   readonly filtersForm = this.formBuilder.nonNullable.group({
     search: [''],
-    idRol: [2 as number | 'All'],
+    idRol: ['All' as number | 'All'],
     status: ['All' as MembershipStatus | 'All']
   });
 

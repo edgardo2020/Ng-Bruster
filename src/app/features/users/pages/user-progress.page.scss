@@ -10,7 +10,7 @@
   justify-content: center;
   gap: 1rem;
   padding: 3rem;
-  color: #666;
+  color: var(--app-text-muted);
 }
 
 .trainee-selector {
@@ -52,7 +52,7 @@
   align-items: center;
   gap: 12px;
   padding: 48px 16px;
-  color: #9ca3af;
+  color: var(--app-text-soft);
 }
 
 .empty-chart mat-icon {
@@ -84,7 +84,7 @@
 
 .goal-progress {
   padding: 16px 0 8px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--app-border);
   margin-top: 16px;
 }
 
@@ -93,20 +93,20 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.9em;
-  color: #374151;
+  color: var(--app-text);
   margin-bottom: 8px;
 }
 
 .goal-progress-numbers {
   font-weight: 600;
-  color: #1976d2;
+  color: var(--app-primary);
 }
 
 .goal-progress-labels {
   display: flex;
   justify-content: space-between;
   font-size: 0.8em;
-  color: #9ca3af;
+  color: var(--app-text-soft);
   margin-top: 4px;
 }
 
@@ -140,7 +140,7 @@
 
 .profile-label {
   font-size: 0.82rem;
-  color: #888;
+  color: var(--app-text-soft);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   font-weight: 600;
@@ -148,7 +148,7 @@
 
 .profile-value {
   font-size: 1.05rem;
-  color: #222;
+  color: var(--app-text);
   font-weight: 500;
 }
 
@@ -158,21 +158,23 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 2rem;
-  color: #888;
+  color: var(--app-text-soft);
 }
 
 .weight-table-scroll {
   max-height: 300px;
   overflow-y: auto;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--app-border);
   border-radius: 10px;
   margin-top: 0.5rem;
+  background: var(--app-surface);
 }
 
 .weight-table {
   font-size: 0.85em;
   width: 100%;
   border-collapse: collapse;
+  color: var(--app-text);
 }
 
 .weight-table th,
@@ -185,15 +187,17 @@
 }
 
 .weight-table th {
-  background: #f5f5f5;
+  background: var(--app-surface-strong);
   font-weight: 600;
   position: sticky;
   top: 0;
   z-index: 1;
+  color: var(--app-text);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .weight-table tr {
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .td-comment {
@@ -206,7 +210,7 @@
 .empty-records {
   padding: 24px 16px;
   text-align: center;
-  color: #9ca3af;
+  color: var(--app-text-soft);
   font-size: 0.95em;
 }
 
@@ -241,17 +245,19 @@
 .panel-header h2 {
   margin: 0;
   font-size: 1.2rem;
+  color: #4f7fbf;
 }
 
 .panel-header h3 {
   margin: 0;
   font-size: 1.1rem;
+  color: #4f7fbf;
 }
 
 .panel-header p {
   margin: 0.15rem 0 0;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--app-text-muted);
 }
 
 @media (max-width: 960px) {

@@ -265,7 +265,7 @@ export class PlanCustomizeDialogComponent {
 
   get dialogTitle(): string {
     if (this.editingAssignmentId != null) {
-      return `Plan personalizado ${this.getSelectedUserName()}`;
+      return `Plan personalizado 2 ${this.getSelectedUserName()}`;
     }
 
     return 'Personalizar plan para usuarios';
