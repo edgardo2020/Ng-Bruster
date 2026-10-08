@@ -28,7 +28,7 @@
   align-items: center;
   gap: 12px;
   padding: 48px 16px;
-  color: #9ca3af;
+  color: var(--app-text-soft);
 }
 
 .empty-chart mat-icon {
@@ -46,7 +46,7 @@
 .empty-records {
   padding: 24px 16px;
   text-align: center;
-  color: #9ca3af;
+  color: var(--app-text-soft);
   font-size: 0.95em;
 }
 
@@ -94,7 +94,7 @@
 }
 
 .weight-table th {
-  background: #f5f5f5;
+  background: #f3f0e6;
   font-weight: 600;
   position: sticky;
   top: 0;
@@ -141,20 +141,20 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.9em;
-  color: #374151;
+  color: var(--app-text);
   margin-bottom: 8px;
 }
 
 .goal-progress-numbers {
   font-weight: 600;
-  color: #1976d2;
+  color: #ffd400;
 }
 
 .goal-progress-labels {
   display: flex;
   justify-content: space-between;
   font-size: 0.8em;
-  color: #9ca3af;
+  color: var(--app-text-soft);
   margin-top: 4px;
 }
 
@@ -215,12 +215,12 @@
 
 .history-date {
   font-size: 0.9em;
-  color: #888;
+  color: var(--app-text-soft);
 }
 
 .history-type {
   font-weight: bold;
-  color: #1976d2;
+  color: #ffd400;
 }
 
 .history-description {
@@ -229,11 +229,11 @@
 
 .history-notes {
   font-size: 0.95em;
-  color: #555;
+  color: var(--app-text-muted);
 }
 
 .empty-history {
-  color: #888;
+  color: var(--app-text-soft);
   text-align: center;
   margin-top: 24px;
 }
@@ -259,7 +259,7 @@
   max-height: 240px;
   overflow-y: auto;
   overflow-x: auto;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 10px;
 }
 

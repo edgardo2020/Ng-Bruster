@@ -20,14 +20,14 @@
           [value]="(vm.data.activeUsers | number) ?? '0'"
           trend="Clientes con membresía vigente"
           icon="groups"
-          accent="#1050d6"
+          accent="#ffd400"
         />
         <app-stat-card
           label="Ingresos del mes"
           [value]="(vm.data.monthlyRevenue | currency:'USD':'symbol':'1.0-0') ?? '$0'"
           trend="Facturación acumulada"
           icon="payments"
-          accent="#0d9488"
+          accent="#ffb300"
         />
         <app-stat-card
           label="Asistencia"
@@ -41,7 +41,7 @@
           [value]="((vm.data.monthlyGrowth / 100) | percent:'1.0-0') ?? '0%'"
           trend="Comparado con el mes anterior"
           icon="trending_up"
-          accent="#7c3aed"
+          accent="#ff8a00"
         />
       </div>
     </section>

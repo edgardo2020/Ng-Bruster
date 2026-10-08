@@ -37,12 +37,13 @@ import { MatIconModule } from '@angular/material/icon';
       place-items: center;
       width: 3.5rem;
       height: 3.5rem;
-      border-radius: 50%;
-      background: rgba(239, 68, 68, 0.12);
       margin-bottom: 1rem;
+      border-radius: 3px;
+      background: rgba(226, 60, 30, 0.16);
+      border: 1px solid rgba(226, 60, 30, 0.45);
 
       mat-icon {
-        color: #dc2626;
+        color: var(--brand-blood);
         font-size: 1.8rem;
         width: 1.8rem;
         height: 1.8rem;
@@ -50,26 +51,32 @@ import { MatIconModule } from '@angular/material/icon';
     }
 
     .expired-dialog__title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #1a1a1a;
       margin: 0 0 0.6rem;
+      font-family: var(--display-font);
+      font-weight: 400;
+      font-size: 1.3rem;
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--app-text);
     }
 
     .expired-dialog__message {
-      font-size: 0.95rem;
-      color: #555;
-      line-height: 1.5;
       margin: 0 0 1.6rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--app-text-muted);
     }
 
     .expired-dialog__btn {
-      background: #dc2626;
+      padding: 0.6rem 2rem;
+      border-radius: 3px;
+      background: var(--brand-blood);
       color: #fff;
-      font-weight: 600;
-      border-radius: 10px;
-      padding: 0.5rem 2rem;
-      font-size: 0.95rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
   `]
 })

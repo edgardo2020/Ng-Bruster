@@ -186,12 +186,12 @@ export class AppShellComponent {
 
   getAvatarGradient(name: string): string {
     const gradients = [
-      'linear-gradient(135deg, #1050D6, #4F8CFF)',
-      'linear-gradient(135deg, #6C5CE7, #A29BFE)',
-      'linear-gradient(135deg, #E17055, #FAB1A0)',
-      'linear-gradient(135deg, #00B894, #55EFC4)',
-      'linear-gradient(135deg, #0984E3, #74B9FF)',
-      'linear-gradient(135deg, #6C5CE7, #FDA7DF)',
+      'linear-gradient(135deg, #FFD400, #FFE44D)',
+      'linear-gradient(135deg, #FFB300, #FFD400)',
+      'linear-gradient(135deg, #E23C1E, #FF8A00)',
+      'linear-gradient(135deg, #C9A400, #FFD400)',
+      'linear-gradient(135deg, #FF8A00, #FFD400)',
+      'linear-gradient(135deg, #8A6F00, #C9A400)',
     ];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {

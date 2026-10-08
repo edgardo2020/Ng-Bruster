@@ -85,14 +85,14 @@
           [value]="getMetricValue('user')"
           trend="Seleccion actual"
           icon="person"
-          accent="#1050d6"
+          accent="#ffd400"
         />
         <app-stat-card
           label="Estado"
           [value]="getMetricValue('status')"
           trend="Condicion del usuario"
           icon="verified_user"
-          accent="#0f766e"
+          accent="#b08000"
         />
         <app-stat-card
           label="Dias activos"
@@ -106,7 +106,7 @@
           [value]="getMetricValue('sessions')"
           trend="Total asignado"
           icon="fitness_center"
-          accent="#7c3aed"
+          accent="#ff8a00"
         />
       </div>
     </section>
@@ -148,7 +148,7 @@
                       <h4 class="agenda-day-title">{{ day }}</h4>
                       <div class="day-actions-group">
                         <button mat-icon-button type="button" aria-label="Reiniciar todo el día" (click)="confirmResetDay(week, day)" [disabled]="getExercisesForSlot(week, day).length === 0" class="reset-day-btn day-action-btn">
-                          <mat-icon style="color: #1976d2;">restart_alt</mat-icon>
+                          <mat-icon style="color: #ffd400;">restart_alt</mat-icon>
                         </button>
                         <button mat-icon-button type="button" aria-label="Limpiar día" (click)="confirmClearDay(week, day)" [disabled]="getExercisesForSlot(week, day).length === 0" class="clear-day-btn day-action-btn">
                           <mat-icon class="clear-day-icon">delete_sweep</mat-icon>

@@ -57,8 +57,8 @@ export class UserProgressPageComponent {
       data: [],
       label: 'Peso (kg)',
       fill: false,
-      borderColor: '#1976d2',
-      backgroundColor: '#1976d2',
+      borderColor: '#ffd400',
+      backgroundColor: '#ffd400',
       tension: 0.3,
       pointRadius: 5,
       pointHoverRadius: 7

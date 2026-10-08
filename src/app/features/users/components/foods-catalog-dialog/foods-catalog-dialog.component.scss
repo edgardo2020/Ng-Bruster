@@ -19,7 +19,7 @@
 .dialog-content {
   max-height: 76vh;
   overflow: auto;
-  background: #f8fafc;
+  background: var(--surface-raised);
   display: grid;
   gap: 0.8rem;
 }
@@ -27,7 +27,7 @@
 .form-card,
 .table-card {
   padding: 0.85rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 }
 
 h3 {
@@ -57,7 +57,7 @@ h3 {
 .table-scroll {
   max-height: 290px;
   overflow: auto;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 0.6rem;
 }
 

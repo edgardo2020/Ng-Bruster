@@ -27,7 +27,7 @@
 }
 
 .routines-dialog-content {
-  background: #f8fafc;
+  background: var(--surface-raised);
 }
 
 .routines-dialog-grid {
@@ -36,11 +36,11 @@
 }
 
 .routine-detail-card {
-  border: 1px solid #dbeafe;
+  border: 1px solid rgba(var(--brand-yellow-rgb), 0.28);
   border-radius: 0.9rem;
   padding: 0.85rem;
   background:
-    linear-gradient(145deg, color-mix(in srgb, #1050d6 8%, white), transparent 40%),
+    linear-gradient(145deg, color-mix(in srgb, #ffd400 8%, white), transparent 40%),
     #ffffff;
 }
 
@@ -57,7 +57,7 @@
 
   p {
     margin: 0.2rem 0 0;
-    color: #475569;
+    color: var(--app-text);
     font-size: 0.86rem;
   }
 }
@@ -66,10 +66,10 @@
   white-space: nowrap;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #1e3a8a;
-  border: 1px solid #bfdbfe;
-  background: #eff6ff;
-  border-radius: 999px;
+  color: #8a6f00;
+  border: 1px solid rgba(var(--brand-yellow-rgb), 0.3);
+  background: var(--surface-raised);
+  border-radius: 3px;
   padding: 0.25rem 0.55rem;
 }
 
@@ -90,9 +90,9 @@
   display: grid;
   gap: 0.15rem;
   padding: 0.5rem 0.6rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   border-radius: 0.7rem;
-  background: #f8fafc;
+  background: var(--surface-raised);
 
   strong {
     font-size: 0.86rem;
@@ -100,7 +100,7 @@
   }
 
   span {
-    color: #64748b;
+    color: var(--app-text-muted);
     font-size: 0.76rem;
   }
 }

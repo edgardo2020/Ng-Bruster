@@ -14,7 +14,7 @@ export class ThemeService {
       if (stored !== null) {
         this.isDark.set(stored === 'dark');
       } else {
-        this.isDark.set(window.matchMedia('(prefers-color-scheme: dark)').matches);
+        this.isDark.set(true);
       }
     }
 

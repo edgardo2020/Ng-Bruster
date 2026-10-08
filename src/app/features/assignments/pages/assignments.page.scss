@@ -21,7 +21,7 @@
     margin-top: 8px;
   }
   .mobile-assignment-card {
-    background: #fff;
+    background: var(--surface-raised);
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.205);
     padding: 12px 14px;
@@ -38,15 +38,15 @@
     margin-bottom: 2px;
   }
   .mobile-assignment-user {
-    color: #222;
+    color: var(--app-text);
     font-weight: 500;
   }
   .mobile-assignment-date {
-    color: #666;
+    color: var(--app-text-muted);
     font-size: 0.95em;
   }
   .mobile-assignment-plan {
-    color: #000;
+    color: var(--app-text);
     font-weight: 400;
     margin-bottom: 1px;
     font-size: .95em;
@@ -87,7 +87,7 @@
   max-height: none;
   overflow: visible;
   padding-top: 0.9rem;
-  background: #f8fafc;
+  background: var(--surface-raised);
 }
 
 .dialog-form {
@@ -102,8 +102,8 @@
 }
 
 :host ::ng-deep mat-dialog-actions {
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border);
   padding: 0.75rem 1rem 1rem;
 }
 

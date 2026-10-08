@@ -6,7 +6,7 @@
     margin-top: 8px;
   }
   .mobile-schedule-card {
-    background: #fff;
+    background: var(--surface-raised);
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.205);
     padding: 12px 14px;
@@ -21,9 +21,9 @@
     padding: 2px 12px;
     font-size: 0.95em;
     font-weight: 600;
-    color: #333;
+    color: var(--app-text);
     background: #e3e6ec;
-    border-radius: 12px;
+    border-radius: var(--cut);
     text-align: center;
     margin-right: 8px;
     letter-spacing: 0.01em;
@@ -36,7 +36,7 @@
     margin-bottom: 2px;
   }
   .mobile-schedule-routine {
-    color: #222;
+    color: var(--app-text);
     font-weight: 400;
     margin-bottom: 1px;
     font-size: .8em;
@@ -47,7 +47,7 @@
     justify-content: flex-end;
   }
   .mobile-schedule-day {
-    color: #000000;
+    color: var(--app-text);
     font-size: 0.8em;
   }
 }
@@ -62,7 +62,7 @@
     right: 0;
     bottom: 0;
     width: 100vw !important;
-    background: #fff;
+    background: var(--surface-raised);
     z-index: 1000;
     box-shadow: 0 -2px 12px rgba(0,0,0,0.07);
     padding: 12px 16px 12px 16px !important;
@@ -92,7 +92,7 @@
   }
   .form-subsection {
     padding: 18px 12px !important;
-    border-radius: 12px;
+    border-radius: var(--cut);
   }
   .subsection-grid {
     display: flex !important;
@@ -147,7 +147,7 @@
     max-height: 100%;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch;
-    background: #f8fafc;
+    background: var(--surface-raised);
     padding-bottom: 1.2rem;
   }
   .full-screen-dialog mat-dialog-actions[align="end"] {
@@ -213,7 +213,7 @@
   mat-dialog-actions[align="end"] {
     position: sticky;
     bottom: 0;
-    background: #f8fafc;
+    background: var(--surface-raised);
     z-index: 2;
     padding-bottom: 1.2rem;
     margin-left: -0.2rem;
@@ -232,7 +232,7 @@
 }
 
 .mobile-plan-card {
-  background: #f8fafc;
+  background: var(--surface-raised);
   border-radius: 10px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   padding: 1rem 0.9rem 0.7rem 0.9rem;
@@ -250,20 +250,20 @@
 }
 
 .mobile-plan-title {
-  color: #222;
+  color: var(--app-text);
 }
 .mobile-plan-weeks {
-  color: #666;
+  color: var(--app-text-muted);
   font-size: 0.98rem;
 }
 .mobile-plan-objective {
-  color: #444;
+  color: var(--app-text);
   font-size: 0.97rem;
   margin-bottom: 0.2rem;
 }
 .mobile-plan-sessions {
   font-size: 0.96rem;
-  color: #333;
+  color: var(--app-text);
 }
 .mobile-plan-actions {
   display: flex;
@@ -293,8 +293,8 @@
 }
 
 :host ::ng-deep .card-surface {
-  background: #fff;
-  border-radius: 12px;
+  background: var(--surface-raised);
+  border-radius: var(--cut);
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
   padding: 1.2rem 1rem;
   margin-bottom: 1.5rem;
@@ -378,7 +378,7 @@
   max-height: none;
   overflow: visible;
   padding-top: 0.9rem;
-  background: #f8fafc;
+  background: var(--surface-raised);
 }
 
 .dialog-form {
@@ -394,7 +394,7 @@
 .form-subsection {
   margin-top: 0.25rem;
   padding: 0.9rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
 
   h3 {
     margin: 0 0 0.6rem;
@@ -411,8 +411,8 @@
 }
 
 :host ::ng-deep mat-dialog-actions {
-  background: #f8fafc;
-  border-top: 1px solid #e2e8f0;
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border);
   padding: 0.75rem 1rem 1rem;
 }
 

@@ -20,74 +20,75 @@ import { MatIconModule } from '@angular/material/icon';
   `,
   styles: [`
     .ask-dialog-modern {
+      position: relative;
       min-width: 320px;
-      max-width: 370px;
-      background: #fff;
-      border-radius: 24px;
-      box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
-      padding: 2.2rem 1.5rem 1.5rem 1.5rem;
+      max-width: 380px;
+      padding: 2.25rem 1.5rem 1.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
+      border-radius: var(--cut);
+      background: var(--app-surface-strong);
+      color: var(--app-text);
+      border: 1px solid var(--app-border);
+      overflow: hidden;
     }
+
+    .ask-dialog-modern::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 22px;
+      height: 5px;
+      background: repeating-linear-gradient(-45deg, #ffd400 0 9px, #0a0a0a 9px 18px);
+    }
+
     .ask-dialog-modern__title {
-      font-size: 1.25rem;
-      font-weight: 700;
       margin-bottom: 0.7rem;
-      color: #222;
+      font-family: var(--display-font);
+      font-weight: 400;
+      font-size: 1.35rem;
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--app-text);
     }
+
     .ask-dialog-modern__message {
-      font-size: 1.02rem;
-      color: #555;
       margin-bottom: 1.7rem;
+      font-size: 0.98rem;
+      color: var(--app-text-muted);
     }
+
     .ask-dialog-modern__actions {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       width: 100%;
       justify-content: center;
     }
+
     .ask-dialog-modern__close {
-      background: #fff;
-  color: #111;
-  font-weight: 500;
-  font-size: 14px;
-  border-radius: 10px;
-  min-width: 96px;
-  padding: 10px 16px;
-  border: 1px solid #e5e5e5;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
-  cursor: pointer;
+      min-width: 104px;
+      padding: 10px 16px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
-    .ask-dialog-modern__close:hover {
-      background: #e0e1e3 !important;
-    }
+
     .ask-dialog-modern__confirm {
-  background: #111;
-  color: #fff;
-  font-weight: 500;
-  font-size: 14px;
-  border-radius: 10px;
-  min-width: 96px;
-  padding: 10px 16px;
-  border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.ask-dialog-modern__confirm:hover {
-  background: #c0c0c0;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  transform: translateY(-1px);
-}
-
-.ask-dialog-modern__confirm:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
+      min-width: 104px;
+      padding: 10px 16px;
+      border-radius: 3px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    }
   `]
 })
 export class AskDialogComponent {

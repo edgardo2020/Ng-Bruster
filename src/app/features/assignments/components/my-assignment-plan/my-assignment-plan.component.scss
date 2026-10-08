@@ -14,14 +14,14 @@
 
 .panel-header p {
   margin: 0.3rem 0 0;
-  color: #64748b;
+  color: var(--app-text-muted);
 }
 
 .plan-summary,
 .agenda-card {
-  border-radius: 14px;
-  border: 1px solid #dbe3f0;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: var(--cut);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #ffffff 0%, #fbf9f2 100%);
 }
 
 :host ::ng-deep .plan-summary .mdc-evolution-chip-set__chips {
@@ -32,7 +32,7 @@
 
 .plan-notes {
   margin: 0.75rem 0 0;
-  color: #334155;
+  color: var(--app-text);
 }
 
 .agenda-grid {
@@ -51,9 +51,9 @@
 
 .exercise-list li {
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   padding: 0.55rem 0.65rem;
-  background: #ffffff;
+  background: var(--surface-raised);
 }
 
 .exercise-main {
@@ -63,7 +63,7 @@
 
 .exercise-main p {
   margin: 0;
-  color: #64748b;
+  color: var(--app-text-muted);
   font-size: 0.84rem;
   line-height: 1.3;
 }
@@ -77,19 +77,19 @@
 .metric-badge {
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
+  border-radius: 3px;
   padding: 0.15rem 0.55rem;
   font-size: 0.76rem;
   font-weight: 600;
-  color: #0b3b73;
-  background: #e8f1ff;
-  border: 1px solid #c6dbff;
+  color: #8a6f00;
+  background: #f0ece0;
+  border: 1px solid rgba(var(--brand-yellow-rgb), 0.3);
 }
 
 .empty-state {
-  border-radius: 14px;
-  border: 1px dashed #cbd5e1;
-  background: #f8fafc;
+  border-radius: var(--cut);
+  border: 1px dashed #d5d0c1;
+  background: var(--surface-raised);
   padding: 1.2rem;
   text-align: center;
 }
@@ -98,7 +98,7 @@
   font-size: 1.9rem;
   width: 1.9rem;
   height: 1.9rem;
-  color: #64748b;
+  color: var(--app-text-muted);
 }
 
 .empty-state h3 {
@@ -107,7 +107,7 @@
 
 .empty-state p {
   margin: 0;
-  color: #64748b;
+  color: var(--app-text-muted);
 }
 
 @media (max-width: 960px) {

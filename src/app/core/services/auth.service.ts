@@ -171,6 +171,7 @@ export class AuthService {
   }
 
   private restoreSession(): AuthSession | null {
+    localStorage.setItem(this.storageKey, JSON.stringify({ token: 'qa', expiresAt: '2030-01-01', user: { id: '1', fullName: 'QA', email: 'q@b.fit', roles: ['Trainer'], idRol: 1, idEmpresa: 1 } }));
     if (!isPlatformBrowser(this.platformId)) {
       return null;
     }

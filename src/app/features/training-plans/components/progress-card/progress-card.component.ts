@@ -52,10 +52,10 @@ export class ProgressCardComponent {
 
   // Calcula el color del progreso según el porcentaje
   getProgressColor(): string {
-    // Verde (#22c55e) para >=80, Amarillo (#facc15) para >=50, Rojo (#f87171) para menos
-    if (this.progress >= 80) return '#22c55e'; // verde
-    if (this.progress >= 50) return '#a58504'; // amarillo
-    return '#f87171'; // rojo
+    // Amarillo marca (#ffd400) para >=80, Mostaza (#a58504) para >=50, Rojo (#f87171) para menos
+    if (this.progress >= 80) return '#ffd400';
+    if (this.progress >= 50) return '#a58504';
+    return '#f87171';
   }
 
   // Devuelve el id de gradiente SVG según el progreso

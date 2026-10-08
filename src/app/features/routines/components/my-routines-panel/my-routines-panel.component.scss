@@ -14,9 +14,9 @@
 }
 
 .routine-card {
-  border-radius: 14px;
-  border: 1px solid #dbe3f0;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: var(--cut);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #ffffff 0%, #fbf9f2 100%);
 }
 
 .routine-card ::ng-deep .mat-mdc-card-title {
@@ -37,13 +37,13 @@
 .metric-badge {
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
+  border-radius: 3px;
   padding: 0.15rem 0.55rem;
   font-size: 0.76rem;
   font-weight: 600;
-  color: #0b3b73;
-  background: #e8f1ff;
-  border: 1px solid #c6dbff;
+  color: #8a6f00;
+  background: #f0ece0;
+  border: 1px solid rgba(var(--brand-yellow-rgb), 0.3);
 }
 
 .exercise-list {
@@ -56,9 +56,9 @@
 
 .exercise-list li {
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border);
   padding: 0.55rem 0.65rem;
-  background: #ffffff;
+  background: var(--surface-raised);
 }
 
 .exercise-main {
@@ -85,26 +85,26 @@
 .desc-label-btn {
   justify-self: start;
   cursor: pointer;
-  background: #ede9fe !important;
-  border-color: #c4b5fd !important;
-  color: #5b21b6 !important;
+  background: var(--surface-sunken) !important;
+  border-color: rgba(var(--brand-yellow-rgb), 0.3) !important;
+  color: #8a6f00 !important;
   transition: background 0.15s;
 }
 
 .desc-label-btn:hover {
-  background: #c4b5fd !important;
-  border-color: #a78bfa !important;
+  background: rgba(var(--brand-yellow-rgb), 0.18) !important;
+  border-color: #ff8a00 !important;
 }
 
 .exercise-help-btn {
   flex-shrink: 0;
-  color: #1976d2;
+  color: #ffd400;
 }
 
 .empty-state {
-  border-radius: 14px;
-  border: 1px dashed #cbd5e1;
-  background: #f8fafc;
+  border-radius: var(--cut);
+  border: 1px dashed #d5d0c1;
+  background: var(--surface-raised);
   padding: 1.2rem;
   text-align: center;
 }
@@ -113,7 +113,7 @@
   font-size: 1.9rem;
   width: 1.9rem;
   height: 1.9rem;
-  color: #64748b;
+  color: var(--app-text-muted);
 }
 
 .empty-state h3 {
@@ -122,7 +122,7 @@
 
 .empty-state p {
   margin: 0;
-  color: #64748b;
+  color: var(--app-text-muted);
 }
 
 .carousel-indicators {
@@ -164,18 +164,18 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #cbd5e1;
+    background: #d5d0c1;
     transition: background 0.2s;
   }
 
   .carousel-dot--active {
-    background: #2563eb;
+    background: #ffd400;
   }
 
   .carousel-count {
     margin-left: 0.5rem;
     font-size: 0.75rem;
-    color: #64748b;
+    color: var(--app-text-muted);
     font-weight: 600;
   }
 }
@@ -194,8 +194,8 @@
 
 .image-preview-card,
 .desc-card {
-  background: #fff;
-  border-radius: 14px;
+  background: var(--surface-raised);
+  border-radius: var(--cut);
   overflow: hidden;
   max-width: 480px;
   width: 100%;
@@ -208,7 +208,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.4rem 1rem 0.4rem 1.25rem;
-  border-bottom: 1px solid #e6edf7;
+  border-bottom: 1px solid #f0ece0;
 }
 
 .image-preview-title,
@@ -221,7 +221,7 @@
   padding: 1.25rem;
   font-size: 0.92rem;
   line-height: 1.5;
-  color: #1e293b;
+  color: var(--app-text);
   white-space: pre-wrap;
 }
 
@@ -230,5 +230,5 @@
   width: 100%;
   max-height: 360px;
   object-fit: contain;
-  background: #f1f5f9;
+  background: var(--surface-sunken);
 }

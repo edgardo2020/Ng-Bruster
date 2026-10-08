@@ -76,7 +76,7 @@ h2.mat-dialog-title, .dialog-title, .dialog-title span {
   }
   .dialog-content .mat-hint {
     font-size: 0.68rem !important;
-    color: #888 !important;
+    color: var(--app-text-soft) !important;
     margin-top: 0.1rem !important;
   }
 }
@@ -148,7 +148,7 @@ tr[mat-header-row], tr[mat-row],
   .user-card {
     background: var(--app-surface-strong) !important;
     border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(16, 34, 53, 0.08) !important;
+    box-shadow: 0 1px 4px rgba(255, 212, 0, 0.08) !important;
     margin-bottom: 1rem;
     padding: 1rem;
     display: flex;
@@ -192,7 +192,7 @@ tr[mat-header-row], tr[mat-row],
   .user-card {
     background: var(--app-surface-strong);
     border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(16, 34, 53, 0.08);
+    box-shadow: 0 1px 4px rgba(255, 212, 0, 0.08);
     margin-bottom: 1rem;
     padding: 1rem;
     display: flex;
@@ -304,11 +304,11 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
   align-items: center;
   gap: 0.4rem;
   padding: 0.65rem 0.95rem;
-  border-radius: 999px;
+  border-radius: 3px;
   background: var(--app-surface);
   color: var(--app-text);
   font-size: 0.95rem;
-  border: 1px solid rgba(16, 34, 53, 0.08);
+  border: 1px solid rgba(255, 212, 0, 0.08);
 }
 
 .list-container {
@@ -341,8 +341,8 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 
 .desktop-table tr.mat-row {
   background: var(--app-surface-strong);
-  border-radius: 16px;
-  box-shadow: inset 0 0 0 1px rgba(16, 34, 53, 0.06);
+  border-radius: var(--cut);
+  box-shadow: inset 0 0 0 1px rgba(255, 212, 0, 0.06);
 }
 
 .user-cell-name {
@@ -373,7 +373,7 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
   width: 100%;
   background: var(--app-surface-strong);
   border: 1px solid var(--app-border);
-  border-radius: 20px;
+  border-radius: var(--cut);
   padding: 1rem;
   display: grid;
   gap: 0.95rem;
@@ -409,7 +409,7 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 
 .badge {
   padding: 0.4rem 0.75rem;
-  border-radius: 999px;
+  border-radius: 3px;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -446,7 +446,7 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
   display: inline-flex;
   align-items: center;
   padding: 0.45rem 0.75rem;
-  border-radius: 999px;
+  border-radius: 3px;
   font-size: 0.82rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -471,7 +471,7 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
   display: inline-flex;
   align-items: center;
   padding: 0.35rem 0.65rem;
-  border-radius: 999px;
+  border-radius: 3px;
   font-size: 0.84rem;
   color: var(--app-text);
   background: var(--app-surface);
@@ -496,7 +496,7 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 .btn-add-user {
   background: var(--app-primary) !important;
   color: #fff !important;
-  border-radius: 999px;
+  border-radius: 3px;
   width: 48px;
   height: 48px;
   display: inline-flex;
@@ -510,7 +510,7 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 }
 
 .user-action-button {
-  border-radius: 14px;
+  border-radius: var(--cut);
   min-width: 40px;
   min-height: 40px;
   width: 40px;
@@ -532,14 +532,14 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 
 .btn-history {
   color: var(--app-secondary);
-  background: rgba(13, 148, 136, 0.12);
-  border-color: rgba(13, 148, 136, 0.25);
+  background: rgba(255, 179, 0, 0.12);
+  border-color: rgba(255, 179, 0, 0.25);
 }
 
 .btn-assignments {
   color: var(--app-primary);
-  background: rgba(16, 80, 214, 0.12);
-  border-color: rgba(16, 80, 214, 0.2);
+  background: rgba(255, 212, 0, 0.12);
+  border-color: rgba(255, 212, 0, 0.2);
 }
 
 .btn-routines {
@@ -549,9 +549,9 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 }
 
 .btn-nutrition {
-  color: #7c3aed;
-  background: rgba(124, 58, 237, 0.14);
-  border-color: rgba(124, 58, 237, 0.22);
+  color: #ff8a00;
+  background: rgba(255, 138, 0, 0.14);
+  border-color: rgba(255, 138, 0, 0.22);
 }
 
 .btn-edit {

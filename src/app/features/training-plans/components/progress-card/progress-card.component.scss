@@ -1,457 +1,280 @@
-.progress-icon {
-  font-size: 3em !important;
-  width: 60px !important;
-  height: 32px !important;
-  background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 8px #38bdf833);
-  margin-left: 10px;
-}
-
-.plan-badge--focus {
-  background: linear-gradient(90deg, #fefce8 0%, #fef9c3 100%);
-  color: #000000;
-  font-weight: 100;
-  border-radius: 4px;
-  padding: 2px 2px;
-  margin-right: 0px;
-  font-size: .7em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0px;
-  box-shadow: 0 2px 8px #facc1522;
-  text-align: justify;
-}
-.plan-badge--focus span {
-  text-align: justify;
-  width: 80px;
-}
-.plan-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 2px;
-}
-
-.plan-name {
-  font-size: .8em;
-  font-weight: 600;
-  color: #000000;
-  margin-right: 8px;
-}
-
-.plan-badge {
-  font-size: 0.9em;
-  font-weight: 500;
-  background: #fcfcfc;
-  border-radius: 8px;
-  padding: 2px 8px;
-  //margin-right: 6px;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.plan-date {
-  font-size: 0.7em;
-  color: #181818;
-  //margin-right: 0px;
-}
-
-/* Segundo row: puedes ajustar según tu estructura */
-.plan-row-2 span {
-  font-size: 0.95em;
-  color: #444;
-  margin-right: 8px;
-}
-.info button {
-  background: linear-gradient(90deg, #bde4cb 0%, #c3f3ed 100%) !important;
-  color: #615c5c !important;
-  border: none;
-  font-weight: 700;
-  box-shadow: 0 2px 8px #38bdf822;
-}
-.info strong {
-  font-size: 2.2em;
-  color: #2563eb;
-  font-weight: 700;
-  line-height: 1.1;
-}
-.badge {
-  display: inline-block;
-  background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
-  color: #fff !important;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 12px;
-  padding: 2px 12px;
-  margin-top: 2px;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px #38bdf822;
-}
+/* Progress card — dark industrial panel with hazard accents */
 
 ::ng-deep .progress-card {
-  border-radius: 16px;
-  padding: 8px 24px 16px 24px;
-  background: linear-gradient(135deg, #e0f2fe 0%, #bccef0 100%);
-  box-shadow: 0 4px 24px 0 #38bdf833;
-  color: #222;
-  max-width: 350px;
-  margin: 2px auto;
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  border: none;
   width: 100%;
+  max-width: 380px;
+  margin: 2px auto;
+  padding: 1.25rem 1.35rem 1.35rem;
+  border: 1px solid var(--app-border);
+  border-radius: var(--cut);
+  background: var(--app-surface-strong);
+  color: var(--app-text);
+  font-family: var(--body-font);
+  box-shadow: var(--app-shadow);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 20px) 0,
+    100% 20px,
+    100% 100%,
+    20px 100%,
+    0 calc(100% - 20px)
+  );
 }
 
 .header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  position: relative;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 84px;
+  height: 3px;
+  background: repeating-linear-gradient(-45deg, #ffd400 0 8px, transparent 8px 16px);
 }
 
 .header h2 {
-  margin: 0 0 2px 0;
-  font-weight: 600;
+  margin: 0 0 0.45rem;
+  font-family: var(--display-font);
+  font-weight: 400;
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--app-text);
 }
 
 .header span {
-  font-size: 13px;
-  color: gray;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--app-text-soft);
+}
+
+.progress-icon {
+  width: 34px !important;
+  height: 34px !important;
+  font-size: 34px !important;
+  background: linear-gradient(135deg, #ffe44d, #ffb300);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(255, 212, 0, 0.35));
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 3px 10px;
+  border-radius: 2px;
+  background: #ffd400;
+  color: #0a0a0a !important;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.plan-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+
+  mat-icon {
+    color: var(--app-primary);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.plan-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 3px 8px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: var(--surface-sunken);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-text-muted);
+
+  mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    color: var(--app-primary);
+  }
+}
+
+.plan-date {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--app-text-soft);
 }
 
 .content {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 20px 0;
-  gap: 16px;
+  gap: 1rem;
+  margin: 1.1rem 0 0.85rem;
 }
 
 .progress-circle {
-  width: 150px;
-  height: 150px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-}
+  flex-shrink: 0;
 
-.progress-circle svg {
-  width: 150px;
-  height: 150px;
-  display: block;
-}
+  svg {
+    display: block;
+    width: 132px;
+    height: 132px;
+  }
 
-.progress-circle .bg {
-  fill: none;
-  stroke: #e0e0e0;
-  stroke-width: 4;
-}
+  .bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.09);
+    stroke-width: 4;
+  }
 
-.progress-circle .progress {
-  fill: none;
-  stroke-width: 4;
-  stroke-linecap: round;
-  /* El color del trazo se define dinámicamente por Angular con stroke='url(#progress-gradient-...)' */
-}
-
-.progress-circle text {
-  fill: #27292e;
-  font-size: 0.5em;
-  font-weight: 700;
-  text-anchor: middle;
-  dominant-baseline: middle;
+  text {
+    fill: var(--app-text);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
 }
 
 .info {
-  text-align: right;
-}
-
-.info p {
-  margin-bottom: 10px;
-}
-
-.stats {
+  flex: 1;
   display: flex;
-  justify-content: space-around;
-  margin-top: 5px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+}
 
-  .stat {
-    width: 80px;
-    height: 80px;
-    display: flex;
-    flex-direction: column; // 👈 esto los pone en vertical
-    align-items: center; // 👈 centra horizontalmente
-    //justify-content: center;
-    text-align: center;
-    gap: 2px; // espacio entre elemento
-    text-align: center;
-   
-    background: linear-gradient(135deg, rgba(96, 144, 247, 0.12), rgba(13, 148, 136, 0.08));
+.plan-badge--focus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 2px;
+  border: 1px solid rgba(var(--brand-yellow-rgb), 0.35);
+  background: rgba(var(--brand-yellow-rgb), 0.12);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--app-text);
 
-    mat-icon {
-      background: linear-gradient(135deg, #3b82f6, #14b8a6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-      
-      .stats {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 5px;
-        gap: 12px;
-      }
-
-      .stat {
-        width: 90px;
-        height: 90px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 2px;
-        background: linear-gradient(135deg, rgba(96, 144, 247, 0.12), rgba(13, 148, 136, 0.08));
-        border-radius: 16px;
-        padding: 8px 0;
-      }
-
-      .stat mat-icon {
-        background: linear-gradient(135deg, #3b82f6, #14b8a6);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-size: 32px;
-        width: 32px;
-        height: 32px;
-      }
-
-      .stat p {
-        font-size: 8px;
-        opacity: 0.7;
-        margin: 0;
-      }
-
-      .stat span {
-        font-size: 10px;
-        font-weight: bold;
-      }
-
-      @media (max-width: 600px) {
-        ::ng-deep .progress-card {
-          max-width: 100%;
-          padding: 16px 4px 12px 4px;
-        }
-
-        .content {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 12px;
-        }
-
-        .stats {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 8px;
-        }
-
-        .stat {
-          width: 100%;
-          height: auto;
-          min-height: 70px;
-        }
-      }
-
-      span {
-        font-size: 10px;
-        color: #630000;
-        font-weight: 500;
-      }
-    }
-
-    .content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 18px 0 10px 0;
-    }
-
-    .progress-circle {
-      width: 140px;
-      height: 140px;
-      background: #fff;
-      border-radius: 50%;
-      box-shadow: 0 2px 12px #38bdf822;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
-
-      svg {
-        width: 100px;
-        height: 100px;
-        transform: rotate(-90deg);
-      }
-
-      .bg {
-        fill: none;
-        stroke: #e0e7ef;
-        stroke-width: 6;
-      }
-
-      .progress {
-        fill: none;
-        stroke: url(#progress-gradient);
-        stroke-width: 2;
-        stroke-linecap: round;
-        transition: stroke-dasharray 0.5s;
-      }
-
-      text {
-        fill: #2563eb;
-        font-size: 1.5em;
-        font-weight: 700;
-        text-anchor: middle;
-        transform: rotate(90deg);
-        dominant-baseline: middle;
-      }
-    }
-
-    .info {
-      text-align: left;
-      flex: 1;
-
-      p {
-        margin: 0 0 18px 0;
-        font-size: 1.1em;
-        color: #222;
-        font-weight: 500;
-      }
-
-      strong {
-        font-size: 1.2em;
-        color: #2563eb;
-      }
-
-      button {
-        width: 100%;
-        border-radius: 32px;
-        font-size: 1.1em;
-        font-weight: 600;
-        padding: 12px 0;
-        background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
-        color: #fff;
-        box-shadow: 0 2px 8px #38bdf822;
-        margin-top: 8px;
-      }
-    }
-
-    .stats {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 18px;
-      gap: 10px;
-
-      .stat {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 2px 8px #38bdf822;
-        padding: 10px 12px 6px 12px;
-        min-width: 80px;
-        text-align: center;
-
-        mat-icon {
-          font-size: 1.5em;
-          color: #38bdf8;
-          margin-bottom: 2px;
-        }
-
-        span {
-          display: block;
-          font-weight: 700;
-          color: #2563eb;
-          font-size: 1.1em;
-        }
-
-        p {
-          font-size: 0.95em;
-          color: #64748b;
-          margin: 0;
-          font-weight: 500;
-        }
-      }
-    }
+  mat-icon {
+    color: var(--app-primary);
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
   }
+}
 
-  .stats {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 18px;
-    gap: 10px;
-
-    .stat {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 2px 8px #38bdf822;
-      padding: 10px 12px 6px 12px;
-      min-width: 80px;
-      text-align: center;
-
-      mat-icon {
-        font-size: 1.5em;
-        color: #38bdf8;
-        margin-bottom: 2px;
-      }
-
-      span {
-        display: block;
-        font-weight: 700;
-        color: #2563eb;
-        font-size: 1.1em;
-      }
-
-      p {
-        font-size: 0.95em;
-        color: #64748b;
-        margin: 0;
-        font-weight: 500;
-      }
-    }
-  }
+.info button {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 3px !important;
+  background: #ffd400 !important;
+  color: #0a0a0a !important;
+  font-weight: 800 !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 
 .stats {
   display: flex;
   justify-content: space-between;
-  margin-top: 18px;
-  gap: 10px;
+  gap: 0.5rem;
+}
 
-  .stat {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px #38bdf822;
-    padding: 10px 12px 6px 12px;
-    min-width: 80px;
-    text-align: center;
+.stats .stat-card {
+  flex: 1;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+}
 
-    mat-icon {
-      font-size: 1.5em;
-      color: #38bdf8;
-      margin-bottom: 2px;
-    }
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.7rem 0.4rem 0.55rem;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--surface-sunken);
 
-    span {
-      display: block;
-      font-weight: 700;
-      color: #000000;
-      font-size: 0.8em;
-    }
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    color: var(--app-primary);
+    margin-bottom: 2px;
+  }
 
-    p {
-      font-size: 0.7em;
-      color: #797979;
-      margin: 0;
-      font-weight: 500;
-    }
+  span {
+    display: block;
+    font-family: var(--display-font);
+    font-weight: 400;
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--app-text);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--app-text-soft);
+  }
+}
+
+@media (max-width: 600px) {
+  ::ng-deep .progress-card {
+    max-width: 100%;
+    padding: 1rem 0.75rem 1.1rem;
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .progress-circle {
+    align-self: center;
+  }
+
+  .stats {
+    gap: 0.4rem;
   }
 }
