@@ -138,7 +138,7 @@ export class UserProgressPageComponent {
         pdf.addImage(logo, 'PNG', margin, yPos - 5, logoSize, logoSize);
         pdf.setFontSize(16);
         pdf.setFont('Helvetica', 'bold');
-        pdf.text('TEAM BRUSTER', margin + logoSize + 4, yPos + 1);
+        pdf.text('Nuvyra', margin + logoSize + 4, yPos + 1);
         pdf.setFont('Helvetica', 'normal');
         yPos += 8;
         pdf.setFontSize(12);
@@ -146,7 +146,7 @@ export class UserProgressPageComponent {
       } else {
         pdf.setFontSize(14);
         pdf.setFont('Helvetica', 'bold');
-        pdf.text(`TEAM BRUSTER - ${this.userName}`, pageWidth / 2, yPos, { align: 'center' });
+        pdf.text(`Nuvyra - ${this.userName}`, pageWidth / 2, yPos, { align: 'center' });
         yPos += 6;
       }
       yPos += 3;

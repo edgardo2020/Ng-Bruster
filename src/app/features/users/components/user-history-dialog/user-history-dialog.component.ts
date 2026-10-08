@@ -347,7 +347,7 @@ export class UserHistoryDialogComponent implements OnInit, AfterViewInit {
       const margin = 14;
       let yPos = 22;
 
-      const SYSTEM_NAME = 'TEAM BRUSTER';
+      const SYSTEM_NAME = 'Nuvyra';
 
       const drawPageHeader = () => {
         if (logo) {
