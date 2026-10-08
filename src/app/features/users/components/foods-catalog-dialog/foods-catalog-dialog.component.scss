@@ -2,23 +2,8 @@
   display: block;
 }
 
-.dialog-title {
-  margin: 0;
-  padding: 0.8rem 1rem;
-  background: var(--mat-sys-primary, #272727);
-  color: var(--mat-sys-on-primary, #ffffff);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  button {
-    color: var(--mat-sys-on-primary, #ffffff);
-  }
-}
-
 .dialog-content {
   max-height: 76vh;
-  overflow: auto;
   background: var(--surface-raised);
   display: grid;
   gap: 0.8rem;
@@ -58,7 +43,7 @@ h3 {
   max-height: 290px;
   overflow: auto;
   border: 1px solid var(--border);
-  border-radius: 0.6rem;
+  border-radius: 3px;
 }
 
 table {

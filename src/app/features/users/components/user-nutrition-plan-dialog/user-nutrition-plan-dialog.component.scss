@@ -4,20 +4,6 @@
   overflow-x: hidden;
 }
 
-.dialog-title {
-  margin: 0;
-  padding: 0.8rem 1rem;
-  background: var(--mat-sys-primary, #272727);
-  color: var(--mat-sys-on-primary, #ffffff);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  button {
-    color: var(--mat-sys-on-primary, #ffffff);
-  }
-}
-
 .inline-header {
   display: flex;
   align-items: center;
@@ -122,7 +108,7 @@ h3 {
   gap: 0.1rem;
   padding: 0.3rem 0.5rem;
   border: 1px solid var(--border);
-  border-radius: 0.4rem;
+  border-radius: 3px;
   background: var(--surface-raised);
 }
 
@@ -142,8 +128,8 @@ h3 {
 
 .meal-builder {
   margin-top: 0.35rem;
-  border: 1px dashed #d5d0c1;
-  border-radius: 0.7rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: 3px;
   padding: 0.5rem;
 
   h4 {
@@ -188,28 +174,19 @@ h3 {
   color: var(--app-text);
 }
 
+/* Frame, sticky header, zebra rows and the `.completed` tint come from the
+   shared `.data-table-wrap` / `.data-table` rules in styles.scss. */
 .table-scroll {
   margin-top: 0.55rem;
   max-height: 260px;
-  overflow: auto;
-  border: 1px solid var(--border);
-  border-radius: 0.6rem;
 }
 
 table {
   width: 100%;
 }
 
-tr.completed {
-  background-color: #fefce8 !important;
-
-  td:not(:last-child) {
-    text-decoration: line-through;
-  }
-}
-
 .food-card.completed {
-  background-color: #fefce8;
+  background: rgba(var(--brand-yellow-rgb), 0.12);
 
   .food-card-value {
     text-decoration: line-through;
@@ -251,7 +228,7 @@ tr.completed {
 .mobile-day-pill {
   flex-shrink: 0;
   border: 1px solid var(--border);
-  border-radius: 1.2rem;
+  border-radius: var(--cut);
   background: var(--surface-raised);
   color: var(--app-text);
   font-size: 0.78rem;
@@ -271,7 +248,7 @@ tr.completed {
 
 .mobile-day-pill--active {
   background: #ffd400;
-  color: #fff;
+  color: #0a0a0a;
   border-color: #ffd400;
 }
 
@@ -282,7 +259,7 @@ tr.completed {
 
 .food-card {
   border: 1px solid var(--border);
-  border-radius: 0.65rem;
+  border-radius: 3px;
   padding: 0;
   overflow: hidden;
   width: 100%;
@@ -368,7 +345,7 @@ tr.completed {
   justify-content: space-between;
   gap: 0.5rem;
   border: 1px solid var(--border);
-  border-radius: 0.65rem;
+  border-radius: 3px;
   padding: 0.55rem 0.65rem;
 
   p {
@@ -609,7 +586,7 @@ tr.completed {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #d5d0c1;
+    background: var(--border-strong);
     transition: background 0.2s;
   }
 
@@ -632,7 +609,7 @@ tr.completed {
       font-size: 0.75rem;
       font-weight: 700;
       color: #fff;
-      background: #d5d0c1;
+      background: var(--border-strong);
       cursor: default;
     }
 

@@ -101,10 +101,10 @@
 }
 
 .splash-content {
-  background: #e8fff3;
-  border: 2px solid #c9a400;
-  border-radius: 18px;
-  box-shadow: 0 8px 32px #34d39933;
+  background: var(--app-surface-strong);
+  border: 2px solid rgba(var(--brand-yellow-rgb), 0.45);
+  border-radius: var(--cut);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   padding: 2.5em 3em;
   text-align: center;
   position: relative;
@@ -223,38 +223,64 @@
   font-size: 1.3em !important;
   color: #facc15 !important;
 }
-.agenda-card--finished {
-  border: 2px solid #facc15;
-   background: linear-gradient(180deg, #fefce8 0%, #dcfce7 100%) !important;
-  box-shadow: 0 2px 12px 0 #facc1522;
-  transition: background 0.3s, border 0.3s;
+/*
+ * Finished state.
+ * Was `border: 2px solid #facc15` — the extra pixel changed the card's box
+ * size versus every other 1px card (visible layout shift), and the yellow
+ * glow fought the flat hazard system. Now the card stays 1px and simply
+ * reads "done" through a dimmed edge and a muted surface.
+ */
+.agenda-card.agenda-card--finished {
+  border-color: rgba(var(--brand-yellow-rgb), 0.38);
+  background: rgba(var(--brand-yellow-rgb), 0.05);
+  box-shadow: none;
+  transition: background 0.25s var(--ease), border-color 0.25s var(--ease);
 }
 
+.agenda-card--finished::before {
+  opacity: 0.4;
+}
 
-.metric-badge--finished-badge {
-  color: #b45309;
-  background: #fef08a !important;
-  border-color: #fde047 !important;
-  margin-left: 1em;
-  border-radius: 4px !important;
-  padding: 0 0.35em !important;
-  font-size: 0.78em !important;
-  line-height: 1 !important;
-  height: 1.3em !important;
-  min-height: 0 !important;
+/*
+ * Doubled class = specificity (0,2,0). `.metric-badge` is declared *later* in
+ * this file with the same (0,1,0) specificity, so a plain
+ * `.metric-badge--finished-badge` lost the cascade and rendered yellow text on
+ * a yellow background (invisible).
+ */
+.metric-badge.metric-badge--finished-badge {
   display: inline-flex;
   align-items: center;
+  gap: 0.3rem;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.55rem !important;
+  height: auto !important;
+  min-height: 0 !important;
+  line-height: 1.4 !important;
+  border-radius: 3px !important;
+  background: #ffd400 !important;
+  border-color: #ffd400 !important;
+  color: #0a0a0a;
+  font-size: 0.7rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .header-spacer {
   flex: 1 1 auto;
 }
 
+/*
+ * Collapsed state. `max-height: 60px` sliced through the card header, which is
+ * what made the finished card look broken. The header carries a badge row plus
+ * title plus subtitle next to a 40px avatar, so it needs ~104px before the
+ * content gets clipped.
+ */
 .agenda-card--collapsed {
-  opacity: 0.7;
-  max-height: 60px;
+  max-height: 104px;
   overflow: hidden;
-  transition: max-height 0.3s, opacity 0.3s;
+  opacity: 0.85;
+  transition: max-height 0.3s var(--ease), opacity 0.25s var(--ease);
 }
 :host {
   display: block;
@@ -277,9 +303,25 @@
 
 .plan-summary,
 .agenda-card {
+  position: relative;
+  overflow: hidden;
   border-radius: var(--cut);
   border: 1px solid var(--border);
-  background: linear-gradient(180deg, #ffffff 0%, #fbf9f2 100%);
+  background: var(--app-surface-strong);
+}
+
+.plan-summary::before,
+.agenda-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--brand-yellow) 0 8px,
+    transparent 8px 16px
+  );
+  opacity: 0.85;
 }
 
 :host ::ng-deep .plan-summary .mdc-evolution-chip-set__chips {
@@ -308,29 +350,30 @@
 }
 
 .exercise-list li {
-  border-radius: 10px;
+  border-radius: 3px;
   border: 1px solid var(--border);
+  border-left: 3px solid var(--app-primary);
   padding: 0.55rem 0.65rem;
-  background: var(--surface-raised);
+  background: var(--surface-sunken);
 }
 
 .exercise-list li.exercise-item--finished {
-  border-color: #86efac;
-  background: linear-gradient(180deg, #fefce8 0%, #dcfce7 100%);
+  border-color: rgba(var(--brand-yellow-rgb), 0.4);
+  background: rgba(var(--brand-yellow-rgb), 0.1);
 }
 
 .exercise-list li.exercise-item--finished .exercise-main strong {
-  color: #6b5200;
+  color: var(--app-primary);
 }
 
 .exercise-list li.exercise-item--finished .exercise-main p {
-  color: #6b5200;
+  color: var(--app-text-soft);
 }
 
 .exercise-list li.exercise-item--finished .metric-badge:not(.metric-badge--success) {
-  color: #6b5200;
-  background: #ecfdf3;
-  border-color: #bbf7d0;
+  color: var(--app-primary);
+  background: rgba(var(--brand-yellow-rgb), 0.14);
+  border-color: rgba(var(--brand-yellow-rgb), 0.34);
 }
 
 .exercise-main {
@@ -358,15 +401,15 @@
   padding: 0.15rem 0.55rem;
   font-size: 0.76rem;
   font-weight: 600;
-  color: #8a6f00;
-  background: #f0ece0;
+  color: var(--app-primary);
+  background: rgba(var(--brand-yellow-rgb), 0.12);
   border: 1px solid rgba(var(--brand-yellow-rgb), 0.3);
 }
 
 .metric-badge--success {
-  color: #6b5200;
-  background: #e8f8ec;
-  border-color: #b9e4c3;
+  background: #ffd400;
+  color: #0a0a0a;
+  border-color: #ffd400;
 }
 
 .exercise-actions {
@@ -375,20 +418,45 @@
 }
 
 .finish-button {
-  color: #15803d;
-  background: #eaf8ee;
-  border: 1px solid #b7e3c2;
+  /*
+   * "Mark exercise as done" CTA.
+   * Was `color: #15803d; background: #eaf8ee` — a green check on pale mint,
+   * the only green left in the app and completely outside the black/yellow
+   * system. Now a solid hazard-yellow square with an ink icon, matching every
+   * other primary action in the product.
+   */
+  --mat-icon-button-icon-color: #0a0a0a;
+  --mat-icon-button-state-layer-color: #0a0a0a;
+  --mat-icon-button-ripple-color: #0a0a0a;
+  color: #0a0a0a;
+  background: #ffd400;
+  border: 1px solid #ffd400;
+  border-radius: 3px;
+  transition: background 0.2s var(--ease), box-shadow 0.2s var(--ease),
+    border-color 0.2s var(--ease);
+}
+
+.finish-button:hover:not([disabled]) {
+  background: #ffe44d;
+  border-color: #ffe44d;
+  box-shadow: 0 4px 14px rgba(var(--brand-yellow-rgb), 0.35);
+}
+
+.finish-button:active:not([disabled]) {
+  background: var(--brand-yellow);
 }
 
 .finish-button[disabled] {
-  color: #6b5200;
-  background: rgba(var(--brand-yellow-rgb), 0.14);
-  border-color: #bbf7d0;
+  --mat-icon-button-icon-color: var(--app-text-faint);
+  color: var(--app-text-faint);
+  background: var(--surface-sunken);
+  border-color: var(--border);
+  box-shadow: none;
 }
 
 .empty-state {
   border-radius: var(--cut);
-  border: 1px dashed #d5d0c1;
+  border: 1px dashed var(--border-strong);
   background: var(--surface-raised);
   padding: 1.2rem;
   text-align: center;
@@ -563,7 +631,7 @@
   cursor: pointer;
   background: var(--surface-sunken) !important;
   border-color: rgba(var(--brand-yellow-rgb), 0.3) !important;
-  color: #8a6f00 !important;
+  color: var(--app-primary) !important;
   transition: background 0.15s;
 }
 
@@ -573,9 +641,9 @@
 }
 
 .desc-label-btn:hover {
-  background: #f59e0b;
-  color: #fff;
-  border-color: #f59e0b;
+  background: #ffd400;
+  color: #0a0a0a;
+  border-color: #ffd400;
 }
 
 .desc-overlay {
@@ -590,25 +658,48 @@
 }
 
 .desc-card {
-  background: var(--surface-raised);
-  border-radius: var(--cut);
+  position: relative;
   overflow: hidden;
   max-width: 480px;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--app-border);
+  border-radius: var(--cut);
+  background: var(--app-surface-strong);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 20px) 0,
+    100% 20px,
+    100% 100%,
+    20px 100%,
+    0 calc(100% - 20px)
+  );
 }
 
 .desc-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.4rem 1rem 0.4rem 1.25rem;
-  border-bottom: 1px solid #f0ece0;
+  gap: 1rem;
+  padding: 0.85rem 1rem 0.85rem 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  background: #ffd400;
+  color: #0a0a0a;
+}
+
+.desc-card__header button {
+  color: #0a0a0a;
 }
 
 .desc-card__title {
-  font-weight: 600;
-  font-size: 1rem;
+  font-family: var(--display-font);
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0a0a0a;
+  min-width: 0;
 }
 
 .desc-card__body {
@@ -655,7 +746,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.4rem 1rem 0.4rem 1.25rem;
-  border-bottom: 1px solid #f0ece0;
+  border-bottom: 1px solid var(--border);
 }
 
 .image-preview-title {

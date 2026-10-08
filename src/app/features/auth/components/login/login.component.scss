@@ -72,9 +72,8 @@
   align-items: center;
   border: 1px solid var(--app-border);
   border-radius: var(--cut);
-  background: rgba(14, 14, 14, 0.9);
+  background: rgba(14, 14, 14, 0.97);
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(16px);
   clip-path: polygon(
     0 0,
     calc(100% - 22px) 0,

@@ -194,11 +194,11 @@
               @if (day) {
                 <mat-tab [label]="dayAbbreviation[day] || day">
                   <ng-template matTabContent>
-                    <div class="table-scroll">
-                      <table mat-table [dataSource]="dayItemsMap().get(day) || []" class="mat-elevation-z0">
+                    <div class="table-scroll data-table-wrap">
+                      <table mat-table [dataSource]="dayItemsMap().get(day) || []" class="data-table mat-elevation-z0">
                         <ng-container matColumnDef="order">
                           <th mat-header-cell *matHeaderCellDef>#</th>
-                          <td mat-cell *matCellDef="let item">{{ item.order ?? 1 }}</td>
+                          <td mat-cell *matCellDef="let item" class="num">{{ item.order ?? 1 }}</td>
                         </ng-container>
                         <ng-container matColumnDef="mealType">
                           <th mat-header-cell *matHeaderCellDef>Comida</th>
@@ -210,20 +210,20 @@
                         </ng-container>
                         <ng-container matColumnDef="quantity">
                           <th mat-header-cell *matHeaderCellDef>Cant.</th>
-                          <td mat-cell *matCellDef="let item">{{ item.quantity }} x {{ item.serving }}</td>
+                          <td mat-cell *matCellDef="let item" class="num">{{ item.quantity }} x {{ item.serving }}</td>
                         </ng-container>
                         <ng-container matColumnDef="kcal">
                           <th mat-header-cell *matHeaderCellDef>Kcal</th>
-                          <td mat-cell *matCellDef="let item">{{ item.calories }}</td>
+                          <td mat-cell *matCellDef="let item" class="num">{{ item.calories }}</td>
                         </ng-container>
                         <ng-container matColumnDef="macros">
                           <th mat-header-cell *matHeaderCellDef>Macros</th>
-                          <td mat-cell *matCellDef="let item">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
+                          <td mat-cell *matCellDef="let item" class="num">P {{ item.protein }} · C {{ item.carbs }} · G {{ item.fats }}</td>
                         </ng-container>
                         <ng-container matColumnDef="actions">
                           <th mat-header-cell *matHeaderCellDef>Acciones</th>
-                          <td mat-cell *matCellDef="let item">
-                            <button mat-icon-button type="button" (click)="removeMealItem(item.id)">
+                          <td mat-cell *matCellDef="let item" class="actions">
+                            <button mat-icon-button type="button" (click)="removeMealItem(item.id)" aria-label="Quitar alimento">
                               <mat-icon>delete</mat-icon>
                             </button>
                           </td>

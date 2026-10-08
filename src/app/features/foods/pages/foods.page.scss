@@ -131,8 +131,8 @@ table {
 }
 
 .plan-item--complete {
-  border-color: #c9a400;
-  background-color: #fefce8;
+  border-color: rgba(var(--brand-yellow-rgb), 0.45);
+  background: rgba(var(--brand-yellow-rgb), 0.1);
   box-shadow: 0 1px 4px rgba(255, 212, 0, 0.1);
 }
 
@@ -186,32 +186,24 @@ table {
   }
 }
 
-tr.completed {
-  background-color: #fefce8 !important;
-
-  td:not(:last-child) {
-    text-decoration: line-through;
-  }
-}
-
+/* `.completed` rows get their tint from the shared `.data-table` rules. */
 .mobile-card.completed {
-  background-color: #fefce8;
-  border-color: #86efac;
+  background: rgba(var(--brand-yellow-rgb), 0.12);
+  border-color: rgba(var(--brand-yellow-rgb), 0.4);
   position: relative;
   overflow: hidden;
 
   &::before {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: 0 auto 0 0;
     width: 3px;
-    background: #c9a400;
-    border-radius: 0.75rem 0 0 0.75rem;
+    background: var(--brand-yellow);
   }
 
   .mobile-card__value {
     text-decoration: line-through;
-    color: #c9a400;
+    color: var(--app-text-soft);
   }
 }
 

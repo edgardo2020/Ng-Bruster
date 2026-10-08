@@ -1,9 +1,9 @@
-@let isDesktop = !!(isDesktop$ | async);
-<mat-sidenav-container class="shell-container" [class.shell-container--collapsed]="collapsed() && isDesktop">
+@let desktop = isDesktop();
+<mat-sidenav-container class="shell-container" [class.shell-container--collapsed]="collapsed() && desktop">
   <mat-sidenav
     class="shell-sidenav"
-    [class.collapsed]="collapsed() && isDesktop"
-    [mode]="isDesktop ? 'side' : 'over'"
+    [class.collapsed]="collapsed() && desktop"
+    [mode]="desktop ? 'side' : 'over'"
     [opened]="navOpen()"
     (closedStart)="navOpen.set(false)"
   >
@@ -85,8 +85,8 @@
                 mat-list-item
                 [routerLink]="item.route"
                 routerLinkActive="is-active"
-                [routerLinkActiveOptions]="{ exact: true }"
-                (click)="closeOnMobile(isDesktop)"
+                [routerLinkActiveOptions]="routerLinkActiveOptions"
+                (click)="closeOnMobile(desktop)"
                 class="shell-nav-item"
                 [attr.aria-current]="isActiveRoute(item.route) ? 'page' : null"
               >
@@ -105,7 +105,7 @@
     </mat-nav-list>
 
     <!-- Stats Summary for Trainers (Desktop only) -->
-    @if (isTrainer() && isDesktop && (trainerStats$ | async); as stats) {
+    @if (isTrainer() && desktop && (trainerStats$ | async); as stats) {
       <mat-divider class="shell-divider"></mat-divider>
       <section class="shell-stats" aria-label="Resumen de actividad">
         <h4 class="shell-section-title">Hoy</h4>
@@ -160,7 +160,7 @@
       }
     </mat-toolbar>
 
-    @if (loadingService.isLoading$ | async) {
+    @if (loadingService.isLoading()) {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     }
 

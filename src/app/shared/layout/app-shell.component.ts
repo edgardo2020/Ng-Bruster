@@ -3,7 +3,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { Component, computed, inject, signal, effect } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { map, shareReplay, take } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -42,6 +42,24 @@ interface TrainerStats {
   pendingPlans: number;
 }
 
+/**
+ * Hoisted so every change-detection pass feeds RouterLinkActive the very same
+ * object reference. A literal in the template creates a new instance each pass
+ * and trips ExpressionChangedAfterItHasBeenChecked in dev mode.
+ */
+const EXACT_MATCH_OPTIONS: { exact: true } = { exact: true };
+
+/* Kept deliberately light: the initials are drawn in near-black (#0a0a0a) on
+   top, so every stop has to stay bright enough for that to stay readable. */
+const AVATAR_GRADIENTS: readonly string[] = [
+  'linear-gradient(135deg, #FFD400, #FFE44D)',
+  'linear-gradient(135deg, #FFB300, #FFD400)',
+  'linear-gradient(135deg, #FFC933, #FFEB99)',
+  'linear-gradient(135deg, #FFD666, #FFF0A6)',
+  'linear-gradient(135deg, #FF9E1B, #FFC93C)',
+  'linear-gradient(135deg, #FFE066, #FFF3B0)',
+];
+
 @Component({
   selector: 'app-shell',
   standalone: true,
@@ -76,12 +94,18 @@ export class AppShellComponent {
   readonly navOpen = signal(true);
   readonly collapsed = signal(false);
 
-  readonly isDesktop$ = this.breakpointObserver.observe('(min-width: 960px)').pipe(
-    map((result) => result.matches),
-    shareReplay({ bufferSize: 1, refCount: true })
+  /**
+   * A signal instead of an async pipe + @let: it is read synchronously, never
+   * resolves twice, and cannot flip between the two dev-mode passes.
+   */
+  readonly isDesktop = toSignal(
+    this.breakpointObserver.observe('(min-width: 960px)').pipe(map((result) => result.matches)),
+    { initialValue: false }
   );
 
   readonly isTrainer = computed(() => this.authService.hasAnyRole(['Trainer']));
+
+  readonly routerLinkActiveOptions = EXACT_MATCH_OPTIONS;
 
   readonly navigationSections = computed<NavSection[]>(() => {
     const isTrainer = this.isTrainer();
@@ -147,9 +171,10 @@ export class AppShellComponent {
   );
 
   constructor() {
-    this.isDesktop$.pipe(takeUntilDestroyed()).subscribe((isDesktop) => {
-      this.navOpen.set(isDesktop);
-      this.collapsed.set(false);
+    // `effect` defers the writes out of the current change-detection pass, so
+    // `navOpen` never changes between the check and the no-change re-check.
+    effect(() => {
+      this.navOpen.set(this.isDesktop());
     });
 
     this.authService.refreshCurrentUser().pipe(take(1)).subscribe(() => {
@@ -159,16 +184,10 @@ export class AppShellComponent {
 
   toggleSidebar(): void {
     if (this.isDesktop()) {
-      this.collapsed.update(v => !v);
+      this.collapsed.update((v) => !v);
     } else {
-      this.navOpen.update(v => !v);
+      this.navOpen.update((v) => !v);
     }
-  }
-
-  isDesktop(): boolean {
-    let result = false;
-    this.isDesktop$.pipe(take(1)).subscribe(v => result = v);
-    return result;
   }
 
   closeOnMobile(isDesktop: boolean): void {
@@ -185,14 +204,7 @@ export class AppShellComponent {
   }
 
   getAvatarGradient(name: string): string {
-    const gradients = [
-      'linear-gradient(135deg, #FFD400, #FFE44D)',
-      'linear-gradient(135deg, #FFB300, #FFD400)',
-      'linear-gradient(135deg, #E23C1E, #FF8A00)',
-      'linear-gradient(135deg, #C9A400, #FFD400)',
-      'linear-gradient(135deg, #FF8A00, #FFD400)',
-      'linear-gradient(135deg, #8A6F00, #C9A400)',
-    ];
+    const gradients = AVATAR_GRADIENTS;
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);

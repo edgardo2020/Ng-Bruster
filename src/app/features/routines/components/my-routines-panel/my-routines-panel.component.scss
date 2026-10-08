@@ -14,9 +14,25 @@
 }
 
 .routine-card {
+  position: relative;
+  overflow: hidden;
   border-radius: var(--cut);
   border: 1px solid var(--border);
-  background: linear-gradient(180deg, #ffffff 0%, #fbf9f2 100%);
+  background: var(--app-surface-strong);
+}
+
+/* Hazard hairline along the top edge, matching the other trainee cards. */
+.routine-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--brand-yellow) 0 8px,
+    transparent 8px 16px
+  );
+  opacity: 0.85;
 }
 
 .routine-card ::ng-deep .mat-mdc-card-title {
@@ -41,8 +57,8 @@
   padding: 0.15rem 0.55rem;
   font-size: 0.76rem;
   font-weight: 600;
-  color: #8a6f00;
-  background: #f0ece0;
+  color: var(--app-primary);
+  background: rgba(var(--brand-yellow-rgb), 0.12);
   border: 1px solid rgba(var(--brand-yellow-rgb), 0.3);
 }
 
@@ -55,10 +71,11 @@
 }
 
 .exercise-list li {
-  border-radius: 10px;
+  border-radius: 3px;
   border: 1px solid var(--border);
+  border-left: 3px solid var(--app-primary);
   padding: 0.55rem 0.65rem;
-  background: var(--surface-raised);
+  background: var(--surface-sunken);
 }
 
 .exercise-main {
@@ -87,7 +104,7 @@
   cursor: pointer;
   background: var(--surface-sunken) !important;
   border-color: rgba(var(--brand-yellow-rgb), 0.3) !important;
-  color: #8a6f00 !important;
+  color: var(--app-primary) !important;
   transition: background 0.15s;
 }
 
@@ -98,12 +115,12 @@
 
 .exercise-help-btn {
   flex-shrink: 0;
-  color: #ffd400;
+  color: var(--app-primary);
 }
 
 .empty-state {
   border-radius: var(--cut);
-  border: 1px dashed #d5d0c1;
+  border: 1px dashed var(--border-strong);
   background: var(--surface-raised);
   padding: 1.2rem;
   text-align: center;
@@ -164,7 +181,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #d5d0c1;
+    background: var(--border-strong);
     transition: background 0.2s;
   }
 
@@ -194,12 +211,22 @@
 
 .image-preview-card,
 .desc-card {
-  background: var(--surface-raised);
-  border-radius: var(--cut);
+  position: relative;
   overflow: hidden;
   max-width: 480px;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+  border: 1px solid var(--app-border);
+  border-radius: var(--cut);
+  background: var(--app-surface-strong);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 20px) 0,
+    100% 20px,
+    100% 100%,
+    20px 100%,
+    0 calc(100% - 20px)
+  );
 }
 
 .image-preview-header,
@@ -207,14 +234,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.4rem 1rem 0.4rem 1.25rem;
-  border-bottom: 1px solid #f0ece0;
+  gap: 1rem;
+  padding: 0.85rem 1rem 0.85rem 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  background: #ffd400;
+  color: #0a0a0a;
+}
+
+.image-preview-header button,
+.desc-card__header button {
+  color: #0a0a0a;
 }
 
 .image-preview-title,
 .desc-card__title {
-  font-weight: 600;
-  font-size: 1rem;
+  font-family: var(--display-font);
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0a0a0a;
+  min-width: 0;
 }
 
 .desc-card__body {

@@ -24,7 +24,7 @@
   gap: 1rem;
   padding: 1rem;
   background:
-    linear-gradient(135deg, color-mix(in srgb, #ffd400 10%, white), transparent 45%),
+    linear-gradient(135deg, rgba(var(--brand-yellow-rgb), 0.1), transparent 45%),
     var(--surface-raised);
 
   h3,
@@ -58,7 +58,7 @@
 :host ::ng-deep .customize-metrics .stat-card__icon {
   width: 2.1rem;
   height: 2.1rem;
-  border-radius: 0.7rem;
+  border-radius: 3px;
 }
 
 :host ::ng-deep .customize-metrics .stat-card__label {
@@ -98,7 +98,7 @@
 .selected-user-note {
   margin-top: 0.8rem;
   padding: 0.6rem 0.75rem;
-  border-radius: 0.8rem;
+  border-radius: var(--cut);
   border: 1px solid rgba(var(--brand-yellow-rgb), 0.3);
   background: var(--surface-raised);
   display: grid;
@@ -106,7 +106,7 @@
 
   strong {
     font-size: 0.82rem;
-    color: #8a6f00;
+    color: var(--app-primary);
   }
 
   span {
@@ -153,8 +153,8 @@
 }
 
 .agenda-day-dropzone {
-  border: 1px dashed #d5d0c1;
-  border-radius: 0.8rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--cut);
   padding: 0.45rem;
   min-height: 92px;
   background: var(--surface-raised);
@@ -177,7 +177,7 @@
   display: grid;
   gap: 0.12rem;
   padding: 0.5rem 0.55rem;
-  border-radius: 0.7rem;
+  border-radius: 3px;
   border: 1px solid var(--border);
   background: var(--surface-raised);
   cursor: grab;
@@ -202,7 +202,7 @@
 
 .cdk-drag-preview {
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.2);
-  border-radius: 0.9rem;
+  border-radius: var(--cut);
 }
 
 .cdk-drag-placeholder {
@@ -219,8 +219,8 @@
   display: grid;
   gap: 0.12rem;
   padding: 0.55rem 0.65rem;
-  border-radius: 0.7rem;
-  background: color-mix(in srgb, #ffd400 7%, white);
+  border-radius: 3px;
+  background: rgba(var(--brand-yellow-rgb), 0.08);
 
   strong {
     font-size: 0.86rem;
@@ -235,28 +235,9 @@
 
 .empty-state.compact {
   padding: 0.85rem;
-  border-radius: 0.85rem;
+  border-radius: var(--cut);
   background: var(--surface-sunken);
   color: var(--app-text-soft);
-}
-
-.dialog-title {
-  margin: 0;
-  padding: 0.8rem 1rem;
-  background: var(--mat-sys-primary, #272727);
-  color: var(--mat-sys-on-primary, #ffffff);
-  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-primary, #272727) 80%, black);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  span {
-    font-weight: 600;
-  }
-
-  button {
-    color: var(--mat-sys-on-primary, #ffffff);
-  }
 }
 
 :host ::ng-deep mat-dialog-actions {

@@ -48,12 +48,18 @@
   scrollbar-color: rgba(var(--brand-yellow-rgb), 0.18) transparent;
 }
 
+/*
+ * The grunge texture used to sit here behind `background-attachment: fixed`,
+ * which stops the browser from caching the paint with the element: because
+ * this panel scrolls on its own (`overflow-y: auto`), the SVG-filtered
+ * background was re-rasterised on every scroll frame. At 280px wide the
+ * texture was also scaled down to the point of being invisible, so it is
+ * replaced with a cheap gradient plus a single hazard hairline.
+ */
 :root .shell-sidenav {
   background:
-    var(--grunge-sparse),
+    linear-gradient(115deg, rgba(255, 212, 0, 0.05) 0%, transparent 38%),
     linear-gradient(180deg, #14120c 0%, #0a0906 100%);
-  background-size: cover, auto;
-  background-attachment: fixed;
 }
 
 /* --------------------------------------------------------------------------
@@ -477,8 +483,9 @@
   height: 60px;
   color: #f4f4f2;
   border-bottom: 1px solid rgba(var(--brand-yellow-rgb), 0.14);
-  background: rgba(10, 10, 10, 0.82);
-  backdrop-filter: blur(14px);
+  /* Was `backdrop-filter: blur(14px)`: on a sticky element that means the
+     backdrop is re-sampled on every scroll frame. Near-opaque fill instead. */
+  background: rgba(10, 10, 10, 0.97);
   transition: margin-left 0.3s ease;
 }
 

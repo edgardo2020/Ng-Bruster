@@ -24,15 +24,15 @@
   --cut: 14px;
 }
 
-/* Global grunge wash */
+/* Global grunge wash. No `filter` — a viewport-sized filtered layer re-renders
+   on every scroll frame; the brightening is baked into grunge-grain-bright. */
 .login-page::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: var(--grunge-sparse);
+  background-image: var(--grunge-grain-bright);
   background-size: cover;
-  opacity: 0.22;
-  filter: saturate(1.25) brightness(1.6);
+  opacity: 0.34;
   pointer-events: none;
 }
 
@@ -65,9 +65,8 @@
   padding: 2.25rem 1.75rem 1.75rem;
   border: 1px solid rgba(255, 212, 0, 0.2);
   border-radius: var(--cut);
-  background: rgba(12, 12, 12, 0.92);
+  background: rgba(12, 12, 12, 0.97);
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(18px);
   clip-path: polygon(
     0 0,
     calc(100% - 22px) 0,
@@ -325,6 +324,20 @@ mat-spinner {
   opacity: 0.22;
   mix-blend-mode: screen;
   animation: spin 30s linear infinite;
+}
+
+/* Three infinite repaints is a real cost on low-end machines; honour the
+   OS-level motion preference instead of forcing it on everyone. */
+@media (prefers-reduced-motion: reduce) {
+  .mascot-orbit__ring--outer,
+  .mascot-orbit__ring--mid,
+  .mascot-orbit__ring--inner {
+    animation: none;
+  }
+
+  .mascot-orbit__ring--inner {
+    opacity: 0.14;
+  }
 }
 
 @keyframes spin {
