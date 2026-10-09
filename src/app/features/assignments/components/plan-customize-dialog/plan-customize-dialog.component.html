@@ -137,13 +137,45 @@
           </div>
         </div>
 
-        <div class="agenda-weeks">
+        <mat-tab-group
+          class="week-tab-group"
+          [selectedIndex]="mobileWeek() - 1"
+          (selectedTabChange)="selectMobileWeek($event.index + 1)"
+          aria-label="Semanas"
+        >
           @for (week of weekNumbers(); track week) {
-            <section class="agenda-week-row">
-              <div class="agenda-week-label">Semana {{ week }}</div>
+            <mat-tab [label]="'Semana ' + week">
+              <div class="day-tabs" role="tablist" aria-label="Días de la semana">
+                <button mat-icon-button type="button" class="day-nav-btn" aria-label="Día anterior" (click)="stepMobileDay(-1)">
+                  <mat-icon>chevron_left</mat-icon>
+                </button>
+                <div class="day-chips">
+                  @for (day of days; track day) {
+                    <button
+                      mat-button
+                      type="button"
+                      role="tab"
+                      class="day-chip"
+                      [class.day-chip--active]="mobileDay() === day"
+                      [attr.aria-selected]="mobileDay() === day"
+                      [attr.aria-label]="day"
+                      [matTooltip]="day"
+                      (click)="selectMobileDay(day)"
+                    >
+                      {{ getDayInitial(day) }}
+                    </button>
+                  }
+                </div>
+                <button mat-icon-button type="button" class="day-nav-btn" aria-label="Día siguiente" (click)="stepMobileDay(1)">
+                  <mat-icon>chevron_right</mat-icon>
+                </button>
+                <button mat-icon-button type="button" class="day-add-btn" [attr.aria-label]="'Agregar ejercicio al ' + mobileDay()" matTooltip="Agregar ejercicio" (click)="openMobileAddExercise(week)">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
               <div class="agenda-board">
                 @for (day of days; track day) {
-                  <section class="agenda-day-column">
+                  <section class="agenda-day-column" [class.day-active]="mobileDay() === day">
                     <div class="agenda-day-header-row">
                       <h4 class="agenda-day-title">{{ day }}</h4>
                       <div class="day-actions-group">
@@ -189,7 +221,7 @@
                                     (mousedown)="$event.stopPropagation()"
                                     (click)="resetExerciseFinished(week, day, index)"
                                   >
-                                    <mat-icon style="color: #388e3c;">restart_alt</mat-icon>
+                                    <mat-icon>restart_alt</mat-icon>
                                   </button>
                                 }
                               </div>
@@ -243,9 +275,9 @@
                   </section>
                 }
               </div>
-            </section>
+            </mat-tab>
           }
-        </div>
+        </mat-tab-group>
       </article>
 
       @if (showExercisesPanel()) {
@@ -253,7 +285,7 @@
         <div class="panel-header exercises-panel-header">
           <h3>Ejercicios disponibles</h3>
           <div class="exercises-panel-controls">
-            <mat-form-field appearance="fill" class="muscle-group-filter muscle-group-select" [floatLabel]="'auto'">
+            <mat-form-field appearance="outline" class="muscle-group-filter muscle-group-select" [floatLabel]="'auto'" subscriptSizing="dynamic">
               <mat-label>Grupo muscular</mat-label>
               <mat-select [value]="selectedMuscleGroupId()" (valueChange)="setSelectedMuscleGroup($event)">
                 <mat-option value="all">Todos</mat-option>
@@ -285,6 +317,9 @@
                       </span>
                     </div>
                   </div>
+                  @if (exercise.description) {
+                    <p class="exercise-card-description">{{ exercise.description }}</p>
+                  }
                 </div>
               }
             </div>

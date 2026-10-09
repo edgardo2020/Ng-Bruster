@@ -313,10 +313,15 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 
 .list-container {
   width: 100%;
+  overflow-x: auto;
+  padding-right: 0.5rem;
+  padding-bottom: 0.25rem;
 }
 
 .desktop-table {
   width: 100%;
+  table-layout: fixed;
+  min-width: 860px;
   border-collapse: separate;
   border-spacing: 0 0.75rem;
 }
@@ -337,6 +342,14 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
   vertical-align: middle;
   border: none;
   color: var(--app-text);
+}
+
+.mat-column-nombre {
+  width: 28%;
+}
+
+.mat-column-actions {
+  width: 312px;
 }
 
 .desktop-table tr.mat-row {
@@ -363,6 +376,9 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 .desktop-actions {
   display: flex;
   gap: 0.4rem;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  overflow: visible;
 }
 
 .mobile-list {
@@ -586,6 +602,11 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
     margin: 1rem 0 1rem;
   }
 
+  .filter-role,
+  .filter-status {
+    display: none !important;
+  }
+
   .panel-header {
     gap: 1rem;
     display: flex;
@@ -643,12 +664,40 @@ mat-form-field, .mat-form-field, .mat-select, .mat-option {
 
 .assignment-editor-page {
   padding-top: 0.25rem;
+  width: 100%;
 }
 
 .embedded-back-bar {
   margin-bottom: 0.5rem;
   padding-top: 0.1rem;
   padding-bottom: 0.1rem;
+}
+
+/* Allow embedded editor to expand full width when sidebar is collapsed */
+:host ::ng-deep app-plan-customize-dialog .customize-dialog-content {
+  max-height: none !important;
+  overflow: visible !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+:host ::ng-deep app-plan-customize-dialog .customize-shell {
+  width: 100%;
+}
+
+:host ::ng-deep app-plan-customize-dialog .customize-grid {
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) 250px;
+}
+
+:host ::ng-deep app-plan-customize-dialog .customize-grid.exercises-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 1400px) {
+  :host ::ng-deep app-plan-customize-dialog .customize-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 // Responsividad

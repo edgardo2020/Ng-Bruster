@@ -659,6 +659,12 @@
   padding: 1.75rem 2rem 3rem;
   transition: margin-left 0.3s ease;
   max-width: 1560px;
+  width: 100%;
+  margin-right: auto;
+}
+
+.shell-container--collapsed .shell-content {
+  max-width: none;
 }
 
 @media (max-width: 959px) {

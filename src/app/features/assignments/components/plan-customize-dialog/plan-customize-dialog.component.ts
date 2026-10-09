@@ -9,6 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Observable, Subject, debounceTime, startWith, switchMap, take } from 'rxjs';
 import { RoutinesApiService } from '../../../routines/data-access/routines-api.service';
 
@@ -16,6 +18,7 @@ import { ExerciseCatalogItem, MuscleGroupCatalogItem, Routine, RoutineExercise, 
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AskDialogComponent } from '../../../../shared/ui/ask-dialog.component';
+import { MobileExercisesDialogComponent } from './mobile-exercises-dialog.component';
 import { AssignmentDetail } from '../../data-access/assignments-api.service';
 import { AssignmentsStore } from '../../data-access/assignments.store';
 import { StatCardComponent } from '../../../../shared/ui/stat-card.component';
@@ -81,6 +84,8 @@ export interface PlanCustomizeDialogResult {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
+    MatTabsModule,
+    MatTooltipModule,
     StatCardComponent
   ],
   templateUrl: './plan-customize-dialog.component.html',
@@ -205,6 +210,15 @@ export class PlanCustomizeDialogComponent {
     );
   }
   readonly days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+  readonly dayInitials: Record<string, string> = {
+    Lunes: 'L',
+    Martes: 'M',
+    Miercoles: 'X',
+    Jueves: 'J',
+    Viernes: 'V',
+    Sabado: 'S',
+    Domingo: 'D'
+  };
   readonly availableExercises = signal<ExerciseCatalogItem[]>([]);
   readonly selectedMuscleGroupId = signal<number | 'all'>('all');
   get focusOptions(): string[] {
@@ -217,6 +231,8 @@ export class PlanCustomizeDialogComponent {
   readonly showDashboardCard = signal(true);
   readonly showExercisesPanel = signal(true);
   readonly durationWeeks = signal(1);
+  readonly mobileWeek = signal(1);
+  readonly mobileDay = signal<string>('Lunes');
   readonly weekNumbers = computed(() => Array.from({ length: this.durationWeeks() }, (_, index) => index + 1));
   readonly agendaBySlot = signal<Record<string, AssignedExerciseItem[]>>({});
   readonly routineIdsBySlot = signal<Record<string, string | undefined>>({});
@@ -360,6 +376,7 @@ export class PlanCustomizeDialogComponent {
 
     const nextWeek = currentWeeks + 1;
     this.durationWeeks.set(nextWeek);
+    this.mobileWeek.set(nextWeek);
 
     const bySlot = { ...this.agendaBySlot() };
     this.days.forEach((day) => {
@@ -381,7 +398,67 @@ export class PlanCustomizeDialogComponent {
 
     this.agendaBySlot.set(bySlot);
     this.durationWeeks.set(currentWeeks - 1);
+    this.mobileWeek.set(Math.min(this.mobileWeek(), currentWeeks - 1));
     this.queueDetailSync();
+  }
+
+  selectMobileWeek(week: number): void {
+    this.mobileWeek.set(week);
+  }
+
+  selectMobileDay(day: string): void {
+    this.mobileDay.set(day);
+  }
+
+  stepMobileDay(delta: number): void {
+    const index = this.days.indexOf(this.mobileDay());
+    const next = (index + delta + this.days.length) % this.days.length;
+    this.mobileDay.set(this.days[next]);
+  }
+
+  getDayInitial(day: string): string {
+    return this.dayInitials[day] ?? day.slice(0, 1).toUpperCase();
+  }
+
+  openMobileAddExercise(week: number): void {
+    const day = this.mobileDay();
+    this.matDialog
+      .open<MobileExercisesDialogComponent, { title: string; exercises: ExerciseCatalogItem[]; muscleGroups: MuscleGroupCatalogItem[] }, ExerciseCatalogItem>(
+        MobileExercisesDialogComponent,
+        {
+          width: '480px',
+          maxWidth: '94vw',
+          maxHeight: '88vh',
+          data: {
+            title: `Agregar · ${day} · S${week}`,
+            exercises: this.getAvailableExercises(),
+            muscleGroups: this.resolvedData.muscleGroups
+          }
+        }
+      )
+      .afterClosed()
+      .pipe(take(1))
+      .subscribe((exercise) => {
+        if (exercise) {
+          this.addAvailableExerciseToDay(week, day, exercise);
+        }
+      });
+  }
+
+  addAvailableExerciseToDay(week: number, day: string, exercise: ExerciseCatalogItem): void {
+    const key = this.getSlotKey(week, day);
+    const bySlot = { ...this.agendaBySlot() };
+    const target = [...(bySlot[key] ?? [])];
+
+    if (this.hasLockedAssignment && this.containsExercise(target, exercise.id)) {
+      this.notificationService.info('Ese ejercicio ya esta agregado en el dia seleccionado.');
+      return;
+    }
+
+    target.push(this.toAssignedExercise(exercise));
+    bySlot[key] = target;
+    this.agendaBySlot.set(bySlot);
+    this.syncSlotRoutine(week, day);
   }
 
   getSelectedUser(): UserRecord | undefined {

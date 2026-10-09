@@ -1,9 +1,11 @@
 <section class="app-page">
-  <app-page-header
-    [title]="pageTitle()"
-    [subtitle]="pageSubtitle()"
-    [meta]="pageMeta()"
-  />
+  @if (!selectedAssignmentData()) {
+    <app-page-header
+      [title]="pageTitle()"
+      [subtitle]="pageSubtitle()"
+      [meta]="pageMeta()"
+    />
+  }
 
   <section class="entity-layout">
     <article class="card-surface" style="grid-column: 1 / -1">
@@ -63,7 +65,7 @@
             </button>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="filter-field" [floatLabel]="'auto'">
+          <mat-form-field appearance="outline" class="filter-field filter-role" [floatLabel]="'auto'">
             <mat-label>Rol</mat-label>
             <mat-select formControlName="idRol">
               @for (role of roleOptions; track role.value) {
@@ -72,7 +74,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="filter-field" [floatLabel]="'auto'">
+          <mat-form-field appearance="outline" class="filter-field filter-status" [floatLabel]="'auto'">
             <mat-label>Estado</mat-label>
             <mat-select formControlName="status">
               @for (status of statusOptions; track status.value) {
