@@ -6,11 +6,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UsersApiService } from './features/users/data-access/users-api.service';
 import { SwUpdate, VersionEvent } from '@angular/service-worker';
 import { filter } from 'rxjs/operators';
+import { PwaInstallPromptComponent } from './shared/ui/pwa-install-prompt.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, PwaInstallPromptComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
