@@ -1,5 +1,6 @@
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal, AfterViewInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -63,6 +64,8 @@ export class RoutinesPageComponent implements OnInit {
   private readonly routinesApiService = inject(RoutinesApiService);
   private readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private dialogRef: MatDialogRef<unknown> | null = null;
 
   readonly store = inject(RoutinesStore);
@@ -137,6 +140,13 @@ export class RoutinesPageComponent implements OnInit {
           this.subtitle.set('');
           this.meta.set('Trainee');
         });
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.route.snapshot.queryParamMap.get('new') === '1' && this.isRole1()) {
+      setTimeout(() => this.openDialog(), 300);
+      void this.router.navigate([], { queryParams: {} });
     }
   }
 

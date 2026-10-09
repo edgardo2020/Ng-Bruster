@@ -2,7 +2,8 @@ import { environment } from '../../../../environments/environment';
 // ...existing code...
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Component, computed, DestroyRef, OnInit, TemplateRef, ViewChild, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, OnInit, TemplateRef, ViewChild, inject, signal, AfterViewInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin, startWith, take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -79,6 +80,8 @@ export class UsersPageComponent implements OnInit {
    private readonly toastr = inject(ToastrService);
   private readonly authService = inject(AuthService);
   private readonly dialog = inject(MatDialog);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private dialogRef: MatDialogRef<unknown> | null = null;
   public userHistories = new Map<string, UserHistoryRecord[]>();
   public selectedUserForHistory: UserRecord | null = null;
@@ -169,6 +172,13 @@ export class UsersPageComponent implements OnInit {
           status: filters.status
         })
       );
+  }
+
+  ngAfterViewInit(): void {
+    if (this.route.snapshot.queryParamMap.get('new') === '1') {
+      setTimeout(() => this.openDialog(), 300);
+      void this.router.navigate([], { queryParams: {} });
+    }
   }
 
   public alwaysFalse(): boolean {

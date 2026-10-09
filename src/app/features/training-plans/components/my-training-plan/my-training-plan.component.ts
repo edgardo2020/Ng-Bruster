@@ -77,8 +77,211 @@ export class MyTrainingPlanComponent {
 
 
 
-  public irARutina() {
-    const renderedItems = this.exerciseItems?.toArray() ?? [];
+  /** Comparte el avance con imagen de marca para redes + texto. */
+  public async shareProgress(): Promise<void> {
+    const detail = this.latestDetail;
+    if (!detail) {
+      this.toastr.info('No hay avance para compartir.');
+      return;
+    }
+    const progress = this.getPlanProgress(detail);
+    const total = this.getAgendaWithExercises(detail).length || 0;
+    const week = this.getCurrentWeek(detail);
+    const totalWeeks = this.getEffectiveWeeks(detail);
+    const url = window.location.href;
+    const focus = detail.focus || 'General';
+    const message =
+      progress >= 100 ? '¡Plan completado! 🏆' :
+      progress >= 70 ? '¡Ya casi lo logro! 🔥' :
+      progress >= 30 ? '¡Buen ritmo, sin parar! 💪' : '¡Recién empiezo, acompáñame! 🚀';
+    const text =
+      `💪 Llevo ${progress}% de mi plan "${detail.planName || 'de entrenamiento'}" ` +
+      `(semana ${week}/${totalWeeks}, foco ${focus}, ` +
+      `${this.generalStats.completedRoutines}/${total} rutinas, ` +
+      `${this.generalStats.completedExercises} ejercicios, ` +
+      `${this.generalStats.trainingDays} días) en NUVYRA 🏋️ ${message} ¡Únete!`;
+    const nav = navigator as Navigator & {
+      share?: (d: ShareData) => Promise<void>;
+      canShare?: (d: ShareData) => boolean;
+    };
+
+    // 1. Generar imagen promocional con canvas
+    let file: File | null = null;
+    try {
+      const blob = await this.buildShareImage(
+        detail.planName || 'Mi plan',
+        progress,
+        this.generalStats.completedRoutines,
+        total,
+        this.generalStats.completedExercises,
+        this.generalStats.trainingDays,
+        focus,
+        week,
+        totalWeeks,
+        message,
+      );
+      file = new File([blob], 'mi-avance-nuvyra.png', { type: 'image/png' });
+    } catch { file = null; }
+
+    // 2. Web Share con archivos (ideal para Instagram / WhatsApp / X en móvil)
+    try {
+      if (file && nav.canShare?.({ files: [file] })) {
+        await nav.share?.({ title: 'Mi avance en NUVYRA', text, url, files: [file] });
+        return;
+      }
+      if (nav.share && !file) {
+        await nav.share({ title: 'Mi avance', text, url });
+        return;
+      }
+      throw new Error('no-share');
+    } catch {
+      // 3. Fallback desktop: descargar imagen + copiar texto + abrir WhatsApp
+      if (file) {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(file);
+        a.download = file.name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      }
+      const fullText = `${text} ${url}`;
+      try {
+        await navigator.clipboard.writeText(fullText);
+      } catch { /* sin portapapeles */ }
+      const encoded = encodeURIComponent(fullText);
+      window.open(`https://wa.me/?text=${encoded}`, '_blank', 'noopener');
+      this.toastr.success('Imagen descargada y texto copiado. ¡Compártelos en tus redes!');
+    }
+  }
+
+  /** Genera PNG usando share-template.png de fondo + overlay con stats. */
+  private buildShareImage(
+    planName: string, progress: number, routines: number, totalRoutines: number,
+    exercises: number, days: number, focus: string, week: number, totalWeeks: number,
+    message: string,
+  ): Promise<Blob> {
+    const loadTemplate = (): Promise<HTMLImageElement | null> => {
+      const urls = ['assets/share-template.png', 'share-template.png', '/share-template.png'];
+      const tryUrl = (i: number): Promise<HTMLImageElement | null> => {
+        if (i >= urls.length) return Promise.resolve(null);
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = () => void tryUrl(i + 1).then(resolve);
+          img.src = urls[i];
+        });
+      };
+      return tryUrl(0);
+    };
+
+    return loadTemplate().then((img) => new Promise<Blob>((resolve, reject) => {
+      const W = 1080;
+      const H = img ? Math.round(W * img.naturalHeight / img.naturalWidth) : 1080;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { reject(new Error('no-canvas')); return; }
+
+      if (img) {
+        // Fondo foto en cover
+        ctx.drawImage(img, 0, 0, W, H);
+      } else {
+        const bg = ctx.createLinearGradient(0, 0, 0, H);
+        bg.addColorStop(0, '#0d1526');
+        bg.addColorStop(1, '#070c18');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, W, H);
+      }
+      // Overlay oscuro para legibilidad (más arriba, menos abajo)
+      const ov = ctx.createLinearGradient(0, 0, 0, H);
+      ov.addColorStop(0, 'rgba(4,7,14,0.82)');
+      ov.addColorStop(0.55, 'rgba(4,7,14,0.55)');
+      ov.addColorStop(1, 'rgba(4,7,14,0.88)');
+      ctx.fillStyle = ov;
+      ctx.fillRect(0, 0, W, H);
+
+      // Franja hazard amarilla arriba
+      ctx.fillStyle = '#ffd400';
+      for (let x = -40; x < W + 40; x += 48) {
+        ctx.save();
+        ctx.translate(x, 0);
+        ctx.rotate(-Math.PI / 4);
+        ctx.fillRect(0, -60, 24, 120);
+        ctx.restore();
+      }
+
+      const cx = W / 2;
+      const u = H / 1080; // escala según alto del template
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#ffd400';
+      ctx.font = `800 ${Math.round(46 * u)}px system-ui, sans-serif`;
+      ctx.fillText('NUVYRA', cx, 165 * u);
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = `600 ${Math.round(25 * u)}px system-ui, sans-serif`;
+      ctx.fillText('MI AVANCE DE ENTRENAMIENTO', cx, 208 * u);
+
+      // Badge semana + foco
+      ctx.font = `700 ${Math.round(24 * u)}px system-ui, sans-serif`;
+      const badge = `SEMANA ${week} DE ${totalWeeks}  •  FOCO ${focus.toUpperCase().slice(0, 18)}`;
+      const bw = ctx.measureText(badge).width + 48 * u;
+      const bx = cx - bw / 2, by = 232 * u, bh = 48 * u;
+      ctx.fillStyle = 'rgba(255,212,0,0.16)';
+      ctx.strokeStyle = 'rgba(255,212,0,0.55)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(bx, by, bw, bh, 10);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#ffe44d';
+      ctx.fillText(badge, cx, by + 32 * u);
+
+      // Anillo de progreso
+      const cy = 490 * u, r = 160 * u;
+      ctx.lineWidth = 36 * u;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = '#ffd400';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (progress / 100));
+      ctx.stroke();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `800 ${Math.round(92 * u)}px system-ui, sans-serif`;
+      ctx.fillText(`${progress}%`, cx, cy + 32 * u);
+
+      // Plan + stats
+      ctx.fillStyle = '#eef2ff';
+      ctx.font = `700 ${Math.round(36 * u)}px system-ui, sans-serif`;
+      ctx.fillText(planName.slice(0, 32), cx, 770 * u);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = `600 ${Math.round(30 * u)}px system-ui, sans-serif`;
+      ctx.fillText(`${routines}/${totalRoutines} rutinas  •  ${exercises} ejercicios  •  ${days} dias`, cx, 820 * u);
+      // Mensaje motivacional según progreso
+      ctx.fillStyle = '#ffe44d';
+      ctx.font = `700 ${Math.round(28 * u)}px system-ui, sans-serif`;
+      ctx.fillText(message.slice(0, 44), cx, 866 * u);
+
+      // CTA
+      const btnW = 520 * u, btnH = 76 * u, btnX = (W - btnW) / 2, btnY = H - 160 * u;
+      ctx.fillStyle = '#ffd400';
+      ctx.beginPath();
+      ctx.roundRect(btnX, btnY, btnW, btnH, 12);
+      ctx.fill();
+      ctx.fillStyle = '#0a0a0a';
+      ctx.font = `800 ${Math.round(31 * u)}px system-ui, sans-serif`;
+      ctx.fillText('ENTRENA EN NUVYRA', cx, btnY + 50 * u);
+
+      canvas.toBlob((b) => b ? resolve(b) : reject(new Error('blob-fail')), 'image/png');
+    }));
+  }
+
+  public irARutina() {    const detail = this.latestDetail;
+    if (detail) this.jumpToFirstUnfinished(detail);
+    // Esperar al re-render de las tabs antes de buscar el elemento
+    setTimeout(() => {
+      const renderedItems = this.exerciseItems?.toArray() ?? [];
     console.log('Ejercicios renderizados:', renderedItems.length);
     if (!renderedItems.length) {
       this.toastr.info('No hay ejercicios para mostrar.');
@@ -96,6 +299,7 @@ export class MyTrainingPlanComponent {
       return;
     }
     this.toastr.info('¡Ya completaste todos los ejercicios!');
+    }, 50);
   }
 
   // Alterna el estado de comprimido/expandido para una card
@@ -128,6 +332,13 @@ export class MyTrainingPlanComponent {
     this.detailsState.set(nextDetails);
     this.hasAutoScrolledToFinished = false;
 
+    // Posicionar las tabs (semana/día) en el primer ejercicio sin finalizar
+    const latest = [...nextDetails].sort(
+      (a, b) =>
+        new Date(b.startDate).getTime() - new Date(a.startDate).getTime(),
+    )[0];
+    if (latest) this.jumpToFirstUnfinished(latest);
+
     const userId = nextDetails[0]?.userId;
     if (!userId) {
       this.routinesState.set([]);
@@ -151,6 +362,27 @@ export class MyTrainingPlanComponent {
 
   get details(): AssignmentDetail[] {
     return this.detailsState();
+  }
+
+  /** Busca el primer ejercicio sin finalizar y selecciona su semana/día. */
+  private jumpToFirstUnfinished(detail: AssignmentDetail): void {
+    const agenda = this.getAgendaWithExercises(detail);
+    if (!agenda.length) return;
+
+    const firstPending = [...agenda]
+      .sort((a, b) => Number(a.week ?? 0) - Number(b.week ?? 0))
+      .find((item) => (item.exercises ?? []).some((ex) => !ex.isFinished));
+    if (!firstPending) return;
+
+    const week = Number(firstPending.week);
+    if (Number.isFinite(week)) this.selectedWeek.set(week);
+    const day = firstPending.day?.trim();
+    if (day) {
+      // Asegurar que el día se resuelva dentro de la semana recién seleccionada
+      const prevWeek = this.selectedWeek();
+      void prevWeek;
+      this.selectedDay.set(day);
+    }
   }
 
   private readonly defaultsByIntensity: Record<

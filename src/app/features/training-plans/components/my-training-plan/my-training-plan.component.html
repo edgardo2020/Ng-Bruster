@@ -105,7 +105,8 @@
     [planName]="plan.planName"
     [startDate]="plan.startDate"
     [focus]="plan.focus || 'General'"
-    (continue)="irARutina()">
+    (continue)="irARutina()"
+    (share)="shareProgress()">
   </app-progress-card>
   <header class="panel-header">
   </header>
@@ -141,26 +142,34 @@
 
     @if (getAgendaWithExercises(plan).length > 0) {
       @if (getAvailableWeeks(plan).length > 1) {
-        <div class="hazard-nav">
-          <button mat-icon-button type="button" (click)="stepWeek(plan, -1)" [disabled]="getWeekIndex(plan) === 0" aria-label="Semana anterior">
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <span class="hazard-nav__label">Semana {{ getResolvedWeek(plan) }} / {{ getAvailableWeeks(plan).length }}</span>
-          <button mat-icon-button type="button" (click)="stepWeek(plan, 1)" [disabled]="getWeekIndex(plan) >= getAvailableWeeks(plan).length - 1" aria-label="Semana siguiente">
-            <mat-icon>chevron_right</mat-icon>
-          </button>
-        </div>
+        <mat-tab-group
+          class="plan-tab-group plan-tab-group--weeks"
+          [selectedIndex]="getWeekIndex(plan)"
+          (selectedTabChange)="onWeekTabChange(plan, $event.index)">
+          @for (week of getAvailableWeeks(plan); track week) {
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="week-label week-label--full">Semana {{ week }}</span>
+                <span class="week-label week-label--short">S{{ week }}</span>
+              </ng-template>
+            </mat-tab>
+          }
+        </mat-tab-group>
       }
       @if (getAvailableDays(plan).length > 1) {
-        <div class="hazard-nav hazard-nav--day">
-          <button mat-icon-button type="button" (click)="stepDay(plan, -1)" [disabled]="getDayIndex(plan) === 0" aria-label="Día anterior">
-            <mat-icon>chevron_left</mat-icon>
-          </button>
-          <span class="hazard-nav__label">{{ getResolvedDay(plan) }}</span>
-          <button mat-icon-button type="button" (click)="stepDay(plan, 1)" [disabled]="getDayIndex(plan) >= getAvailableDays(plan).length - 1" aria-label="Día siguiente">
-            <mat-icon>chevron_right</mat-icon>
-          </button>
-        </div>
+        <mat-tab-group
+          class="plan-tab-group plan-tab-group--days"
+          [selectedIndex]="getDayIndex(plan)"
+          (selectedTabChange)="onDayTabChange(plan, $event.index)">
+          @for (day of getAvailableDays(plan); track day) {
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <span class="day-label day-label--full">{{ day }}</span>
+                <span class="day-label day-label--short">{{ getDayShort(day) }}</span>
+              </ng-template>
+            </mat-tab>
+          }
+        </mat-tab-group>
       }
       <div class="agenda-grid">
         @for (item of getAgendaForDay(plan); track $index) {

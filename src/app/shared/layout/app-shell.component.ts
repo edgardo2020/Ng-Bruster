@@ -194,8 +194,19 @@ export class AppShellComponent {
     if (!isDesktop) this.navOpen.set(false);
   }
 
-  navigate(route: string): void {
-    this.router.navigate([route]);
+  navigate(route: string, queryParams?: Record<string, string>): void {
+    this.router.navigate([route], queryParams ? { queryParams } : undefined);
+    if (!this.isDesktop()) this.navOpen.set(false);
+  }
+
+  quickCreate(target: 'users' | 'routines' | 'training-plans' | 'assignments'): void {
+    const routes: Record<string, string> = {
+      users: '/users',
+      routines: '/routines',
+      'training-plans': '/training-plans',
+      assignments: '/assignments',
+    };
+    this.router.navigate([routes[target]], { queryParams: { new: '1' } });
     if (!this.isDesktop()) this.navOpen.set(false);
   }
 

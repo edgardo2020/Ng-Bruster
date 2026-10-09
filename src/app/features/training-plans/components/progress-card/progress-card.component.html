@@ -6,6 +6,9 @@
     </div>
     <div style="display: flex; align-items: center; gap: 4px;">
       <mat-icon class="progress-icon">trending_up</mat-icon>
+      <button mat-icon-button type="button" class="share-icon-btn" (click)="onShare()" matTooltip="Compartir mi avance" aria-label="Compartir mi avance">
+        <mat-icon>share</mat-icon>
+      </button>
       <button mat-icon-button (click)="toggleCollapse()" [attr.aria-label]="isCollapsed ? 'Expandir' : 'Comprimir'">
         <mat-icon>{{ isCollapsed ? 'unfold_more' : 'unfold_less' }}</mat-icon>
       </button>

@@ -1,5 +1,6 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal, AfterViewInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -100,6 +101,8 @@ export class TrainingPlansPageComponent implements OnInit {
 
 
   private readonly toastr = inject(ToastrService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   constructor(
     private readonly formBuilder: FormBuilder,
@@ -156,6 +159,13 @@ export class TrainingPlansPageComponent implements OnInit {
 
     this.usersStore.load();
     this.usersStore.vm$.subscribe((vm) => this.users.set(vm.data.filter((user) => user.active)));
+  }
+
+  ngAfterViewInit(): void {
+    if (this.route.snapshot.queryParamMap.get('new') === '1' && this.isRole1()) {
+      setTimeout(() => this.openDialog(), 300);
+      void this.router.navigate([], { queryParams: {} });
+    }
   }
 
   isRole1(): boolean {

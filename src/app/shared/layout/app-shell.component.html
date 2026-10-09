@@ -53,19 +53,19 @@
       <section class="shell-quick-actions">
         <h3 class="shell-section-title">Acciones rápidas</h3>
         <div class="shell-quick-actions__grid">
-          <button mat-flat-button class="quick-action-btn" (click)="navigate('/users/new')" type="button">
+          <button mat-flat-button class="quick-action-btn" (click)="quickCreate('users')" type="button">
             <mat-icon>person_add</mat-icon>
             <span>Nuevo cliente</span>
           </button>
-          <button mat-flat-button class="quick-action-btn" (click)="navigate('/routines/new')" type="button">
+          <button mat-flat-button class="quick-action-btn" (click)="quickCreate('routines')" type="button">
             <mat-icon>fitness_center</mat-icon>
             <span>Nueva rutina</span>
           </button>
-          <button mat-flat-button class="quick-action-btn" (click)="navigate('/training-plans/new')" type="button">
+          <button mat-flat-button class="quick-action-btn" (click)="quickCreate('training-plans')" type="button">
             <mat-icon>calendar_month</mat-icon>
             <span>Nuevo plan</span>
           </button>
-          <button mat-flat-button class="quick-action-btn" (click)="navigate('/assignments/new')" type="button">
+          <button mat-flat-button class="quick-action-btn" (click)="quickCreate('assignments')" type="button">
             <mat-icon>assignment_ind</mat-icon>
             <span>Asignar</span>
           </button>

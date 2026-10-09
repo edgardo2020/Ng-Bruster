@@ -4,6 +4,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AssignmentDetail } from '../../../assignments/data-access/assignments-api.service';
 import { CommonModule, DatePipe } from '@angular/common';
 @Component({
@@ -14,6 +15,7 @@ import { CommonModule, DatePipe } from '@angular/common';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     DatePipe
   ],
   animations: [
@@ -45,9 +47,14 @@ export class ProgressCardComponent {
   @Input() notes="";
 
   @Output() continue = new EventEmitter<void>();
+  @Output() share = new EventEmitter<void>();
     isCollapsed = false;
   onContinue() {
     this.continue.emit();
+  }
+
+  onShare() {
+    this.share.emit();
   }
 
   // Calcula el color del progreso según el porcentaje
