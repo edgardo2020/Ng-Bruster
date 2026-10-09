@@ -1,5 +1,6 @@
 import { AsyncPipe, DatePipe } from '@angular/common';
-import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, computed, inject, signal, AfterViewInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { map, switchMap, take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -76,6 +77,8 @@ export class AssignmentsPageComponent implements OnInit {
   private readonly muscleGroupsApiService = inject(MuscleGroupsApiService);
   private dialogRef: MatDialogRef<unknown> | null = null;
   private readonly toastr = inject(ToastrService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   readonly store = inject(AssignmentsStore);
   readonly editingId = signal<number | null>(null);
@@ -161,6 +164,13 @@ export class AssignmentsPageComponent implements OnInit {
       .getAll(companyId!!)
       .pipe(take(1))
       .subscribe((muscleGroups) => this.muscleGroups.set(muscleGroups));
+  }
+
+  ngAfterViewInit(): void {
+    if (this.route.snapshot.queryParamMap.get('new') === '1' && this.isRole1()) {
+      setTimeout(() => this.openCreateDialog(), 300);
+      void this.router.navigate([], { queryParams: {} });
+    }
   }
 
   isRole1(): boolean {
