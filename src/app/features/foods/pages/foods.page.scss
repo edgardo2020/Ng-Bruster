@@ -325,9 +325,9 @@ table {
   margin-top: 0.3rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #92400e;
-  background: rgba(var(--brand-yellow-rgb), 0.14);
-  border: 1px solid rgba(var(--brand-yellow-rgb), 0.4);
+  color: #0a0a0a;
+  background: var(--brand-yellow);
+  border: 1px solid var(--brand-yellow);
   border-radius: 3px;
   padding: 0.1rem 0.6rem;
   line-height: 1.5;
@@ -340,33 +340,19 @@ table {
   margin-top: 0.25rem;
 }
 
-.field-label--notes {
-  background: #ecfdf5;
+button.field-label.field-label--notes,
+button.field-label.field-label--obj {
+  background: var(--brand-yellow);
   font-family: inherit;
   cursor: pointer;
-  color: #d9a800;
-  border-color: #d9a800;
-  transition: background 0.15s;
+  color: #0a0a0a;
+  border-color: var(--brand-yellow);
+  transition: background 0.15s, color 0.15s;
 
   &:hover {
-    background: #d9a800;
-    color: #fff;
-    border-color: #d9a800;
-  }
-}
-
-.field-label--obj {
-  background: var(--surface-raised);
-  font-family: inherit;
-  cursor: pointer;
-  color: #ffd400;
-  border-color: #ffd400;
-  transition: background 0.15s;
-
-  &:hover {
-    background: #ffd400;
-    color: #fff;
-    border-color: #ffd400;
+    background: var(--brand-yellow-hot);
+    color: #0a0a0a;
+    border-color: var(--brand-yellow-hot);
   }
 }
 

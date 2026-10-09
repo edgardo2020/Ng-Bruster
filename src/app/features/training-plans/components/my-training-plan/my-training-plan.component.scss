@@ -92,7 +92,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(200, 255, 200, 0.85);
+  background: rgba(10, 10, 10, 0.65);
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -101,21 +101,32 @@
 }
 
 .splash-content {
-  background: var(--app-surface-strong);
-  border: 2px solid rgba(var(--brand-yellow-rgb), 0.45);
+  background: var(--surface-raised);
+  color: var(--app-text);
+  border: 1px solid var(--brand-yellow);
   border-radius: var(--cut);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   padding: 2.5em 3em;
   text-align: center;
   position: relative;
   min-width: 320px;
+
+  h2 {
+    color: var(--app-text);
+    margin: 0 0 0.25em;
+  }
+
+  p {
+    color: var(--app-text-muted);
+    margin: 0;
+  }
 }
 
 .splash-emoji {
   font-size: 3.5em;
   margin-bottom: 0.2em;
   animation: splash-pop 0.7s;
-  filter: drop-shadow(0 0 8px #34d39988);
+  filter: drop-shadow(0 0 8px rgba(var(--brand-yellow-rgb), 0.55));
 }
 
 .splash-fireworks {
@@ -134,19 +145,19 @@
   pointer-events: none;
 }
 .fw1 {
-  background: radial-gradient(circle, #c9a400 60%, transparent 70%);
+  background: radial-gradient(circle, var(--brand-yellow) 60%, transparent 70%);
   left: -60px;
   top: -30px;
   animation: fw-burst 1.2s 0.1s both;
 }
 .fw2 {
-  background: radial-gradient(circle, #6ee7b7 60%, transparent 70%);
+  background: radial-gradient(circle, var(--brand-yellow-hot) 60%, transparent 70%);
   left: 0px;
   top: -70px;
   animation: fw-burst 1.2s 0.3s both;
 }
 .fw3 {
-  background: radial-gradient(circle, #d9a800 60%, transparent 70%);
+  background: radial-gradient(circle, var(--brand-yellow-deep) 60%, transparent 70%);
   left: 60px;
   top: -30px;
   animation: fw-burst 1.2s 0.5s both;
@@ -217,6 +228,54 @@
   color: #92400e;
   font-weight: bold;
   font-size: 1.1em;
+}
+
+.week-tabs {
+  margin-bottom: 0.5rem;
+}
+
+.hazard-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0a0a0a;
+  color: #fff;
+  border-radius: var(--cut);
+  overflow: hidden;
+  padding: 0.55rem 0.4rem 0.55rem;
+  margin-bottom: 0.5rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--brand-yellow) 0 8px,
+      #0a0a0a 8px 16px
+    );
+  }
+
+  button {
+    color: var(--brand-yellow);
+  }
+
+  button[disabled] {
+    color: rgba(255, 255, 255, 0.25);
+  }
+}
+
+.hazard-nav__label {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+}
+
+.hazard-nav--day {
+  margin-top: 0.5rem;
 }
 
 .stat-icon {

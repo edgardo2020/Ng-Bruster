@@ -17,6 +17,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
   AssignmentDetail,
@@ -39,6 +40,7 @@ import { ProgressCardComponent } from '../progress-card/progress-card.component'
     MatChipsModule,
     MatDividerModule,
     MatIconModule,
+    MatTabsModule,
     MatTooltipModule,
     ProgressCardComponent
   ],
@@ -180,9 +182,9 @@ export class MyTrainingPlanComponent {
   }
 
   getAgendaLabel(week?: number, day?: string): string {
-    const resolvedWeek = Number.isFinite(Number(week)) ? Number(week) : 1;
+    //const resolvedWeek = Number.isFinite(Number(week)) ? Number(week) : 1;
     const resolvedDay = day?.trim() || 'Dia programado';
-    return `Semana ${resolvedWeek} - ${resolvedDay}`;
+    return `${resolvedDay}`;
   }
 
   getEffectiveWeeks(detail: AssignmentDetail): number {
@@ -224,6 +226,101 @@ export class MyTrainingPlanComponent {
     return (detail.agenda ?? []).filter(
       (item) => (item.exercises?.length ?? 0) > 0,
     );
+  }
+
+  readonly selectedWeek = signal<number | null>(null);
+
+  getAvailableWeeks(detail: AssignmentDetail): number[] {
+    const weeks = this.getAgendaWithExercises(detail)
+      .map((item) => Number(item.week))
+      .filter((w) => Number.isFinite(w));
+    return [...new Set(weeks)].sort((a, b) => a - b);
+  }
+
+  getResolvedWeek(detail: AssignmentDetail): number {
+    const weeks = this.getAvailableWeeks(detail);
+    if (!weeks.length) return 1;
+    const sel = this.selectedWeek();
+    if (sel != null && weeks.includes(sel)) return sel;
+    const current = this.getCurrentWeek(detail);
+    return weeks.includes(current) ? current : weeks[0];
+  }
+
+  selectWeek(week: number): void {
+    this.selectedWeek.set(week);
+    this.selectedDay.set(null);
+    this.hasAutoScrolledToFinished = false;
+  }
+
+  readonly selectedDay = signal<string | null>(null);
+
+  getAvailableDays(detail: AssignmentDetail): string[] {
+    return this.getAgendaForWeek(detail).map((item) => item.day?.trim() || 'Día programado');
+  }
+
+  getResolvedDay(detail: AssignmentDetail): string {
+    const days = this.getAvailableDays(detail);
+    if (!days.length) return '';
+    const sel = this.selectedDay();
+    if (sel != null && days.includes(sel)) return sel;
+    return days[0];
+  }
+
+  getDayIndex(detail: AssignmentDetail): number {
+    const idx = this.getAvailableDays(detail).indexOf(this.getResolvedDay(detail));
+    return idx >= 0 ? idx : 0;
+  }
+
+  onDayTabChange(detail: AssignmentDetail, index: number): void {
+    const days = this.getAvailableDays(detail);
+    if (days[index] != null) {
+      this.selectedDay.set(days[index]);
+      this.hasAutoScrolledToFinished = false;
+    }
+  }
+
+  stepDay(detail: AssignmentDetail, delta: 1 | -1): void {
+    const days = this.getAvailableDays(detail);
+    const next = this.getDayIndex(detail) + delta;
+    if (next >= 0 && next < days.length) {
+      this.selectedDay.set(days[next]);
+      this.hasAutoScrolledToFinished = false;
+    }
+  }
+
+  getAgendaForDay(detail: AssignmentDetail) {
+    const day = this.getResolvedDay(detail);
+    return this.getAgendaForWeek(detail).filter(
+      (item) => (item.day?.trim() || 'Día programado') === day,
+    );
+  }
+
+  getDayShort(day: string): string {
+    const clean = (day || '').trim();
+    if (!clean) return '·';
+    return clean.charAt(0).toUpperCase();
+  }
+
+  getAgendaForWeek(detail: AssignmentDetail) {
+    const week = this.getResolvedWeek(detail);
+    return this.getAgendaWithExercises(detail).filter((item) => Number(item.week) === week);
+  }
+
+  getWeekIndex(detail: AssignmentDetail): number {
+    const weeks = this.getAvailableWeeks(detail);
+    const idx = weeks.indexOf(this.getResolvedWeek(detail));
+    return idx >= 0 ? idx : 0;
+  }
+
+  onWeekTabChange(detail: AssignmentDetail, index: number): void {
+    const weeks = this.getAvailableWeeks(detail);
+    if (weeks[index] != null) this.selectWeek(weeks[index]);
+  }
+
+  stepWeek(detail: AssignmentDetail, delta: 1 | -1): void {
+    const weeks = this.getAvailableWeeks(detail);
+    const next = this.getWeekIndex(detail) + delta;
+    if (next >= 0 && next < weeks.length) this.selectWeek(weeks[next]);
   }
 
   isExerciseFinished(exercise: AssignmentDetailExercise): boolean {
