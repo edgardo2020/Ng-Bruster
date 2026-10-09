@@ -125,9 +125,12 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     const days = this.availableDays();
     const idx = days.indexOf(day);
     if (idx >= 0) this.selectedDayIndex.set(idx);
+    if (day) {
+      this.mealForm.patchValue({ day } as never, { emitEvent: false });
+    }
     const dayItems = this.selectedItems().filter((i) => i.day === day);
     const nextOrder = Math.max(...dayItems.map((i) => i.order || 0), 0) + 1;
-    this.mealForm.patchValue({ order: nextOrder });
+    this.mealForm.patchValue({ order: nextOrder } as never, { emitEvent: false });
   }
 
   readonly pageSize = 4;
@@ -196,6 +199,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   readonly currentDay = computed(() => this.selectedDayFilter() || 'Lunes');
 
   readonly mealForm = this.fb.nonNullable.group({
+    day: ['Lunes', Validators.required],
     mealType: [{ id: 0, nombre: ''} , Validators.required],
     foodId: [0, Validators.required],
     quantity: [1, [Validators.required, Validators.min(0.1)]],
@@ -207,6 +211,16 @@ export class UserNutritionPlanDialogComponent implements OnInit {
     this.loadFoods();
     this.loadPlans();
     this.loadMeals();
+    this.mealForm.controls.day.valueChanges.subscribe((day) => {
+      if (!day) return;
+      this.selectedDayFilter.set(day);
+      this.mealForm.patchValue({ order: this.nextOrderForDay(day) } as never, { emitEvent: false });
+    });
+  }
+
+  private nextOrderForDay(day: string): number {
+    const dayItems = this.selectedItems().filter((i) => (i.day || '') === day);
+    return Math.max(...dayItems.map((i) => i.order || 0), 0) + 1;
   }
 
   onFoodSelected(event: { option: { value: number } }): void {
@@ -229,7 +243,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       return;
     }
 
-    const day = this.currentDay();
+    const day = (raw as { day?: string }).day || this.currentDay();
     const qty = Number(raw.quantity) || 1;
     const newItem: UserNutritionPlanMealItem = {
       id: "",
@@ -252,7 +266,9 @@ export class UserNutritionPlanDialogComponent implements OnInit {
 
     const dayItems = this.selectedItems().filter((i) => i.day === day);
     const nextOrder = Math.max(...dayItems.map((i) => i.order || 0), 0) + 1;
+    this.selectedDayFilter.set(day);
     this.mealForm.patchValue({
+      day,
       mealType: raw.mealType,
       foodId: 0,
       quantity: 1,
@@ -430,7 +446,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
   }
 
   handleBack(): void {
-    if (this.isMobile && !this.mobileViewPlansOnly()) {
+    if (!this.mobileViewPlansOnly()) {
       this.mobileViewPlansOnly.set(true);
       this.resetForms();
     } else {
@@ -520,6 +536,7 @@ export class UserNutritionPlanDialogComponent implements OnInit {
       notes: ''
     });
     this.mealForm.reset({
+      day: 'Lunes',
       mealType: { id: 0, nombre: ''},
       foodId: 0,
       quantity: 1,

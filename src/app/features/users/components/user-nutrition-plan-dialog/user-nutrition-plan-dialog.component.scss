@@ -469,8 +469,17 @@ table {
   }
 
   .meal-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 0.4rem;
+
+    > mat-form-field:not(.half):not(.full-span) {
+      grid-column: 1 / -1;
+    }
+
+    > .half {
+      grid-column: auto;
+      min-width: 0;
+    }
   }
 
   .meal-builder {

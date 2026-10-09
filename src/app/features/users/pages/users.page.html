@@ -1,5 +1,5 @@
 <section class="app-page">
-  @if (!selectedAssignmentData()) {
+  @if (!selectedAssignmentData() && !selectedUserForNutrition()) {
     <app-page-header
       [title]="pageTitle()"
       [subtitle]="pageSubtitle()"
@@ -23,9 +23,6 @@
       }
       @else if (selectedUserForNutrition(); as nutUser) {
         <div class="user-nutrition-page">
-          <button mat-icon-button (click)="closeUserNutrition()" matTooltip="Volver" class="btn-back">
-            <mat-icon>arrow_back</mat-icon>
-          </button>
           <app-user-nutrition-plan-dialog
             [userName]="nutUser.nombre"
             [userId]="nutUser.id"

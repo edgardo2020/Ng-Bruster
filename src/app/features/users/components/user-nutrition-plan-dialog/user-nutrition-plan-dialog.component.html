@@ -131,6 +131,15 @@
 
           <div class="meal-grid">
             <mat-form-field appearance="outline">
+              <mat-label>Día</mat-label>
+              <mat-select formControlName="day">
+                @for (day of daysOfWeek; track day) {
+                  <mat-option [value]="day">{{ day }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
               <mat-label>Comida</mat-label>
               <mat-select formControlName="mealType">
                 @for (mealType of mealTypeOptions; track mealType.id) {
@@ -149,12 +158,12 @@
               </mat-autocomplete>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="half">
               <mat-label>Cantidad</mat-label>
               <input matInput type="number" min="0.1" step="0.1" formControlName="quantity" />
             </mat-form-field>
 
-            <mat-form-field appearance="outline" class="desktop-only">
+            <mat-form-field appearance="outline" class="half">
               <mat-label>Orden</mat-label>
               <input matInput type="number" min="1" step="1" formControlName="order" />
             </mat-form-field>
